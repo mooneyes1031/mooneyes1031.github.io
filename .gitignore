@@ -1,0 +1,30 @@
+# Bundler 缓存
+.bundle
+vendor
+Gemfile.lock
+
+# Jekyll 缓存
+.jekyll-cache
+.jekyll-metadata
+_site
+
+# RubyGems
+*.gem
+
+# NPM
+node_modules
+package-lock.json
+
+# IDE
+.idea
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+
+# 其他
+_sass/vendors
+assets/js/dist
+*~
+.DS_Store
+Thumbs.db

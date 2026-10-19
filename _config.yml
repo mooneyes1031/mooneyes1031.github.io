@@ -1,0 +1,231 @@
+# ==========================================================================
+#  Chirpy 站点配置
+#  带 ★ 的项是你必须改的（★ 只出现在注释里，不会影响 YAML 解析）
+# ==========================================================================
+
+# 引入主题（不要动）
+theme: jekyll-theme-chirpy
+
+# 界面语言：zh-CN = 简体中文；英文用 en
+lang: zh-CN
+
+# 时区：不改的话文章日期会差 8 小时
+# 完整列表 › https://zones.arilyn.cc
+timezone: Asia/Shanghai
+
+# ---------------------------------------------------------------------------
+# 以下属于 jekyll-seo-tag 设置，影响标题栏、分享卡片、RSS 和搜索引擎
+# ---------------------------------------------------------------------------
+
+# ★ 站点主标题：显示在侧边栏、浏览器标签
+title: 我的博客
+
+# 副标题：显示在主标题下方
+tagline: 记录一些技术笔记与生活
+
+# 站点描述：用于 SEO 和 RSS
+description: >-
+  一个使用 Jekyll + Chirpy 搭建的个人博客。
+
+# ★ 站点完整地址。必须带 https:// ，结尾不要有斜杠
+#   用户站点填 https://你的用户名.github.io
+#   绑了自定义域名填 https://example.com
+url: "https://mooneyes1031.github.io"
+
+# GitHub 用户名（页脚图标、文章的"编辑此页"链接会用到）
+github:
+  username: mooneyes1031
+
+# Twitter 用户名，没有就留空
+twitter:
+  username:
+
+social:
+  # ★ 你的名字：作为文章默认作者、页脚版权人
+  name: 你的名字
+  # ★ 你的邮箱
+  email: you@example.com
+  # Mastodon 等联邦宇宙账号，没有就留空
+  fediverse_handle:
+  links:
+    # 第一个链接同时作为"版权人"的跳转目标
+    - https://github.com/mooneyes1031
+    # 想加更多就照着下面格式取消注释
+    # - https://twitter.com/your-username
+    # - https://space.bilibili.com/xxxxx
+
+# 站长验证码：提交搜索引擎收录时把拿到的码填进来
+webmaster_verifications:
+  google:
+  bing:
+  baidu:
+  yandex:
+  facebook:
+  alexa:
+
+# ---------------------------------------------------------------------------
+# 访问统计：选一个填即可，全部留空就不会加载任何统计脚本
+# ---------------------------------------------------------------------------
+analytics:
+  google:
+    id:                     # Google Analytics 4 的 G-XXXXXXXXXX
+  umami:
+    id:                     # Umami 的 Website ID
+    domain:                 # 你的 Umami 域名
+  cloudflare:
+    id:                     # Cloudflare Web Analytics 的 token
+  goatcounter:
+    id:
+  matomo:
+    id:
+    domain:
+  fathom:
+    id:
+
+# 文章阅读量（目前只支持 goatcounter）
+pageviews:
+  provider:
+
+# 默认配色。留空 = 跟随系统（侧边栏左下角会出现明暗切换按钮）
+# 可选值：light / dark
+theme_mode:
+
+# 静态资源 CDN 地址，例如 https://cdn.example.com ，不用就留空
+cdn:
+
+# ★ 侧边栏头像。支持本地路径（如 /assets/img/avatar.png）或跨域图片链接
+avatar:
+
+# 站点级社交分享封面图；单篇文章可以用 page.image 覆盖
+social_preview_image:
+
+# 文章右侧是否默认显示目录
+toc: true
+
+# 每篇文章底部的"编辑此页"链接
+actions:
+  edit_post:
+    enabled: false          # 改成 true 开启
+    url: "https://github.com/mooneyes1031/mooneyes1031.github.io/edit/main"
+    static_url: false
+
+# ---------------------------------------------------------------------------
+# 评论系统：全局开关，provider 留空 = 关闭
+# 可选：disqus | utterances | giscus     推荐 giscus（免费、无广告、基于 Discussions）
+#
+# 配置步骤：
+#   1. 仓库 → Settings → General → Features → 勾选 Discussions
+#   2. 打开 https://github.com/apps/giscus 安装并授权你的博客仓库
+#   3. 打开 https://giscus.app/zh-CN 填仓库名，把生成的参数抄到下面
+#   4. 最后把下面的 provider 改成 giscus
+# ---------------------------------------------------------------------------
+comments:
+  provider:
+  disqus:
+    shortname:
+  utterances:
+    repo:
+    issue_term:
+  giscus:
+    repo:                   # 例：mooneyes1031/mooneyes1031.github.io
+    repo_id:
+    category:
+    category_id:
+    mapping: pathname
+    strict: "0"
+    input_position: bottom
+    lang: zh-CN
+    reactions_enabled: "1"
+
+# 自托管静态资源（把 JS 库从 CDN 换成本地）。默认关闭，不用管。
+assets:
+  self_host:
+    enabled:
+    env:
+
+# 渐进式 Web 应用：开启后浏览器可以把你的博客"安装"成桌面应用
+pwa:
+  enabled: true
+  cache:
+    enabled: true
+    deny_paths:
+
+# 首页每页显示几篇文章
+paginate: 10
+
+# ★ 站点路径。用户站点留空；项目站点（用户名.github.io/blog）填 "/blog"
+baseurl: ""
+
+# ===========================================================================
+# 以下内容不建议修改
+# ===========================================================================
+
+kramdown:
+  footnote_backlink: "&#8617;&#xfe0e;"
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: highlight
+    span:
+      line_numbers: false
+    block:
+      line_numbers: true
+      start_line: 1
+
+collections:
+  tabs:
+    output: true
+    sort_by: order
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      comments: true
+      toc: true
+      # 不要改这个 permalink，否则所有文章链接都会变
+      permalink: /posts/:title/
+  - scope:
+      path: _drafts
+    values:
+      comments: false
+  - scope:
+      path: ""
+      type: tabs
+    values:
+      layout: page
+      permalink: /:title/
+
+sass:
+  style: compressed
+
+compress_html:
+  clippings: all
+  comments: all
+  endings: all
+  profile: false
+  blanklines: false
+  ignore:
+    envs: [development]
+
+exclude:
+  - "*.gem"
+  - "*.gemspec"
+  - docs
+  - tools
+  - README.md
+  - LICENSE
+  - purgecss.js
+  - "*.config.js"
+  - "package*.json"
+
+# 自动生成 /categories/ 和 /tags/ 归档页
+jekyll-archives:
+  enabled: [categories, tags]
+  layouts:
+    category: category
+    tag: tag
+  permalinks:
+    tag: /tags/:name/
+    category: /categories/:name/

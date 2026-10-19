@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "本地预览（Git Bash）",
+      "type": "shell",
+      "command": "bash ./tools/run.sh",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": [],
+      "detail": "启动 Jekyll，支持实时刷新。需要装 Git Bash。"
+    },
+    {
+      "label": "本地预览（PowerShell / cmd）",
+      "type": "shell",
+      "command": "bundle exec jekyll s -l",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "不依赖 bash 的版本，Windows 原生终端直接跑。"
+    },
+    {
+      "label": "构建生产版本",
+      "type": "shell",
+      "command": "bundle exec jekyll b",
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "输出到 _site/，和线上构建结果一致（不含 htmlproofer 检查）。"
+    }
+  ]
+}
