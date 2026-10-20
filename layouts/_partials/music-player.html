@@ -1,0 +1,48 @@
+{{- /* 网易云音乐悬浮播放器：填了歌单/单曲 ID 才渲染 */ -}}
+{{- /* 外链类型：0=歌单 1=专辑 2=单曲 3=节目 4=电台。填错类型会报"资源加载失败" */ -}}
+{{- with .Site.Params.netease -}}
+  {{- $id := "" -}}
+  {{- $type := "" -}}
+  {{- $kind := "" -}}
+  {{- $height := "430" -}}
+  {{- if .playlistID -}}
+    {{- $id = .playlistID -}}
+    {{- $type = "0" -}}
+    {{- $kind = "网易云歌单" -}}
+  {{- else if .songID -}}
+    {{- $id = .songID -}}
+    {{- $type = "2" -}}
+    {{- $kind = "网易云单曲" -}}
+    {{- $height = "66" -}}
+  {{- end -}}
+
+  {{- if $id -}}
+    {{- $auto := "0" -}}
+    {{- if .autoPlay }}{{ $auto = "1" }}{{ end -}}
+    {{- $src := printf "https://music.163.com/outchain/player?type=%s&id=%s&auto=%s&height=%s" $type $id $auto $height -}}
+    <div class="music-player" id="music-player">
+      <button type="button" class="music-toggle" id="music-toggle"
+              aria-expanded="false" aria-controls="music-panel"
+              aria-label="打开音乐播放器" title="音乐">
+        <i class="fa-solid fa-music" aria-hidden="true"></i>
+      </button>
+      <div class="music-panel" id="music-panel" hidden>
+        <div class="music-panel-head">
+          <span>{{ $kind }}</span>
+          <button type="button" class="music-close" id="music-close" aria-label="关闭播放器">×</button>
+        </div>
+        <div class="music-frame" id="music-frame"
+             data-src="{{ $src }}" data-height="{{ $height }}"></div>
+      </div>
+    </div>
+
+    {{- /* 只有启用播放器时才加载这段脚本 */ -}}
+    {{- if hugo.IsServer -}}
+      {{- $js := resources.Get "js/music-player.js" -}}
+      <script src="{{ $js.RelPermalink }}"></script>
+    {{- else -}}
+      {{- $js := resources.Get "js/music-player.js" | resources.Minify | resources.Fingerprint -}}
+      <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

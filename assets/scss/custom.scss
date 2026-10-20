@@ -105,3 +105,150 @@ h1, h2, h3, h4, h5, h6,
 .list ul li .title {
   font-family: $cjk-font;
 }
+
+
+// --------------------------------------------------------------------------
+//  7. 网易云音乐播放器（左下角悬浮）
+//  在 hugo.toml 的 [params.netease] 填了 ID 才会出现。
+//  面板第一次点开时才加载 iframe，平时不占网速。
+// --------------------------------------------------------------------------
+.music-player {
+  position: fixed;
+  left: 2rem;
+  bottom: 2rem;
+  z-index: 100;
+}
+
+.music-toggle {
+  display: block;
+  width: 4.4rem;
+  height: 4.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #e0e0e0;
+  color: #212121;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.85;
+  box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.18);
+  transition: all 0.25s ease-in;
+
+  &:hover,
+  &:focus {
+    opacity: 1;
+    background: #1565c0;
+    color: #fff;
+    outline: none;
+  }
+}
+
+.music-panel {
+  position: absolute;
+  left: 0;
+  bottom: 5.6rem;
+  width: 33rem;
+  max-width: calc(100vw - 4rem);
+  max-height: calc(100vh - 10rem);
+  overflow-y: auto;
+  background: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.4rem;
+  box-shadow: 0 0.8rem 2.4rem rgba(0, 0, 0, 0.22);
+}
+
+.music-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  font-size: 1.4rem;
+  color: #212121;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.music-close {
+  padding: 0 0.4rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+
+  &:hover,
+  &:focus {
+    opacity: 1;
+  }
+}
+
+.music-frame iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+}
+
+// 深色模式（手动切换）
+body.colorscheme-dark {
+  .music-toggle {
+    background: #424242;
+    color: #dadada;
+  }
+
+  .music-toggle:hover,
+  .music-toggle:focus {
+    background: #42a5f5;
+    color: #212121;
+  }
+
+  .music-panel {
+    background: #212121;
+    border-color: #424242;
+  }
+
+  .music-panel-head {
+    color: #dadada;
+    border-bottom-color: #424242;
+  }
+}
+
+// 深色模式（跟随系统）
+@media (prefers-color-scheme: dark) {
+  body.colorscheme-auto {
+    .music-toggle {
+      background: #424242;
+      color: #dadada;
+    }
+
+    .music-toggle:hover,
+    .music-toggle:focus {
+      background: #42a5f5;
+      color: #212121;
+    }
+
+    .music-panel {
+      background: #212121;
+      border-color: #424242;
+    }
+
+    .music-panel-head {
+      color: #dadada;
+      border-bottom-color: #424242;
+    }
+  }
+}
+
+// 手机上贴边近一点，面板占满可用宽度
+@media only screen and (max-width: 768px) {
+  .music-player {
+    left: 1.2rem;
+    bottom: 1.2rem;
+  }
+
+  .music-panel {
+    width: calc(100vw - 2.4rem);
+    max-width: none;
+  }
+}
