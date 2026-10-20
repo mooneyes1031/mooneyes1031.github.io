@@ -112,9 +112,21 @@ pagerSize = 10
   url = "https://github.com/mooneyes1031/"
 
 [[params.social]]
+  name = "邮箱"
+  icon = "fa-solid fa-envelope fa-2x"
+  weight = 2
+  url = "mailto:atonce1031@proton.me"
+
+[[params.social]]
+  name = "网易云"
+  icon = "fa-solid fa-headphones fa-2x"
+  weight = 3
+  url = "https://music.163.com/#/user/home?id=1767946284"
+
+[[params.social]]
   name = "RSS"
   icon = "fa-solid fa-rss fa-2x"
-  weight = 2
+  weight = 4
   url = "https://mooneyes1031.github.io/index.xml"
   rel = "alternate"
   type = "application/rss+xml"
