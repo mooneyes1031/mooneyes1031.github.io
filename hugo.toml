@@ -1,0 +1,146 @@
+# ==========================================================================
+#  Hugo Coder 站点配置
+#  带 ★ 的项是需要你改的
+#  格式说明：TOML，字符串用双引号，布尔值写 true / false，不需要缩进对齐
+# ==========================================================================
+
+# ★ 站点地址。必须带 https:// 且结尾有斜杠
+baseURL = "https://mooneyes1031.github.io/"
+
+# ★ 站点标题：显示在页面左上角和浏览器标签
+title = "無限月読の世界"
+
+# 主题名（对应 themes/ 下的文件夹名，不要动）
+theme = "hugo-coder"
+
+# 内容语言：zh-cn = 简体中文
+locale = "zh-cn"
+defaultContentLanguage = "zh-cn"
+
+# 允许在正文里直接用 emoji 短代码，如 :smile:
+enableEmoji = true
+
+# 自动生成 robots.txt
+enableRobotsTXT = true
+
+# 每页显示几篇文章
+[pagination]
+pagerSize = 10
+
+# 代码高亮配置
+[markup]
+  [markup.highlight]
+    noClasses = false
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      # 允许在 Markdown 里直接写 HTML
+      unsafe = true
+
+# 分类法：文章里写 categories / tags / series 会自动生成归档页
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+  series = "series"
+
+# ---------------------------------------------------------------------------
+# 站点参数
+# ---------------------------------------------------------------------------
+[params]
+  # ★ 你的名字：显示在页头和页脚
+  author = "月の眼"
+
+  # ★ 一句话副标题，显示在名字下面
+  info = "新世界"
+
+  # ★ 站点描述，用于 SEO 和 RSS
+  description = "月の眼の個人ブログ。新世界を記録する。"
+
+  # SEO 关键词，逗号分隔
+  keywords = "blog,技术,笔记,编程"
+
+  # ★ 头像：图片放在 static/images/ 下，这里写相对路径
+  #   留空则不显示头像。换头像时直接覆盖 static/images/avatar.jpg 即可
+  avatarURL = "images/avatar.jpg"
+
+  # 日期显示格式（Go 的时间格式，2006-01-02 就是 年-月-日）
+  dateFormat = "2006-01-02"
+
+  # 页脚显示的起始年份
+  since = 2026
+
+  # 配色：auto = 跟随系统 / light = 浅色 / dark = 深色
+  colorScheme = "auto"
+
+  # 是否隐藏右上角的明暗切换按钮
+  hideColorSchemeToggle = false
+
+  # 文章底部"相关文章"最多显示几条
+  maxSeeAlsoItems = 5
+
+  # ★ 自定义样式：assets/scss/custom.scss
+  #   排版微调（行宽、行高、导航间距）都写在这个文件里，改完保存即可
+  customSCSS = ["scss/custom.scss"]
+
+# ---------------------------------------------------------------------------
+# 页头社交图标
+# 图标名来自 Font Awesome，想加就照格式复制一段
+# ---------------------------------------------------------------------------
+[[params.social]]
+  name = "GitHub"
+  icon = "fa-brands fa-github fa-2x"
+  weight = 1
+  url = "https://github.com/mooneyes1031/"
+
+[[params.social]]
+  name = "RSS"
+  icon = "fa-solid fa-rss fa-2x"
+  weight = 2
+  url = "https://mooneyes1031.github.io/index.xml"
+  rel = "alternate"
+  type = "application/rss+xml"
+
+# ---------------------------------------------------------------------------
+# 导航菜单
+# ---------------------------------------------------------------------------
+[[menu.main]]
+  name = "文章"
+  weight = 1
+  url = "posts/"
+
+[[menu.main]]
+  name = "标签"
+  weight = 2
+  url = "tags/"
+
+[[menu.main]]
+  name = "关于"
+  weight = 3
+  url = "about/"
+
+# ---------------------------------------------------------------------------
+# 评论系统（默认关闭，想用再取消注释）
+#
+# giscus 配置步骤：
+#   1. 仓库 → Settings → General → Features → 勾选 Discussions
+#   2. https://github.com/apps/giscus 安装并授权你的博客仓库
+#   3. https://giscus.app/zh-CN 填仓库名，把生成的参数抄到下面
+# ---------------------------------------------------------------------------
+# [params.giscus]
+#   repo = "mooneyes1031/mooneyes1031.github.io"
+#   repoID = ""
+#   category = "General"
+#   categoryID = ""
+#   mapping = "pathname"
+#   strict = "0"
+#   reactionsEnabled = "1"
+#   emitMetadata = "0"
+#   inputPosition = "bottom"
+#   theme = "preferred_color_scheme"
+#   lang = "zh-CN"
+#   loading = "lazy"
+
+# ---------------------------------------------------------------------------
+# 访问统计（默认关闭，全部留空 = 不加载任何脚本）
+# 支持：fathom / plausible / goatcounter / cloudflare / counterdev / matomo
+#        googleTagManager / umami / pirsch / microAnalytics
+# ---------------------------------------------------------------------------

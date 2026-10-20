@@ -1,0 +1,29 @@
+{{/*
+  首页「最新文章」区块（覆盖主题的同名空文件）
+
+  - 只取 posts 分区（content/posts/）下的文章
+  - 按日期倒序，显示最新 5 篇
+  - 想改数量：把下面的 5 改成 8、10 都可以
+  - 不想要这个区块：把本文件内容清空即可
+*/}}
+{{ $posts := (where .Site.RegularPages "Section" "posts").ByDate.Reverse }}
+{{ with $posts }}
+  <section class="container list home-posts">
+    <header>
+      <h1 class="title">
+        <a class="title-link" href="{{ `posts/` | relURL }}">最新文章</a>
+      </h1>
+    </header>
+    <ul>
+      {{ range first 5 . }}
+        <li>
+          <span class="date">{{ .Date | time.Format (.Site.Params.dateFormat | default "2006-01-02") }}</span>
+          <a class="title" href="{{ .Params.externalLink | default .RelPermalink }}">{{ .Title }}</a>
+        </li>
+      {{ end }}
+    </ul>
+    <p class="home-posts-more">
+      <a href="{{ `posts/` | relURL }}">查看全部文章 →</a>
+    </p>
+  </section>
+{{ end }}

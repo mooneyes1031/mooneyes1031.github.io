@@ -1,30 +1,17 @@
-# Bundler 缓存
-.bundle
-vendor
-Gemfile.lock
+# Hugo 构建产物（每次构建自动生成，不要提交）
+public/
+resources/_gen/
+.hugo_build.lock
+.hugo_stats.json
 
-# Jekyll 缓存
-.jekyll-cache
-.jekyll-metadata
-_site
+# 本地日志 / 缓存
+build.log
 
-# RubyGems
-*.gem
-
-# NPM
-node_modules
-package-lock.json
-
-# IDE
-.idea
-.vscode/*
-!.vscode/settings.json
-!.vscode/extensions.json
-!.vscode/tasks.json
-
-# 其他
-_sass/vendors
-assets/js/dist
-*~
+# 系统垃圾
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# 编辑器
+.vscode/
+.idea/

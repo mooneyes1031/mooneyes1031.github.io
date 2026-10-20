@@ -1,0 +1,8 @@
+{{/*
+  站点图标（覆盖主题同名文件）
+
+  主题默认会引用三个文件：favicon.svg / favicon-32x32.png / favicon-16x16.png。
+  本项目只放了 svg，所以这里只输出一行，避免另外两个 404。
+  想换成自己的图标：替换 static/images/favicon.svg 即可。
+*/}}
+<link rel="icon" type="image/svg+xml" href="{{ .Site.Params.faviconSVG | default "/images/favicon.svg" | relURL }}" sizes="any">

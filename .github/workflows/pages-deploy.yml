@@ -4,12 +4,6 @@ on:
   push:
     branches:
       - main
-      - master
-    paths-ignore:
-      - .gitignore
-      - README.md
-      - LICENSE
-
   # 允许在 Actions 页面手动点按钮触发
   workflow_dispatch:
 
@@ -30,40 +24,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      # 用和本地完全一致的 Hugo Extended 版本，避免"本地能跑、线上报错"
+      # 主题用了 SCSS（toCSS），必须用 extended 版
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
         with:
-          # fetch-depth: 0 是必须的，_plugins/posts-lastmod-hook.rb 要靠完整的 git 历史
-          # 来推算每篇文章的最后修改时间
-          fetch-depth: 0
-          # submodules: true
-          # 如果你启用了 chirpy-static-assets 子模块（自托管 JS 库），就取消上面这行的注释
+          hugo-version: "0.168.0"
+          extended: true
 
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v6
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.4
-          bundler-cache: true        # 自动 bundle install 并缓存，后续构建会快很多
-
       - name: Build site
-        run: bundle exec jekyll b -d "_site${{ steps.pages.outputs.base_path }}"
-        env:
-          JEKYLL_ENV: "production"
-
-      # 检查站内链接是否有效（外链不检查，避免网络问题误报）
-      # 如果它老是报错挡住你发布，直接把下面这个 step 删掉即可
-      - name: Test site
-        run: |
-          bundle exec htmlproofer _site \
-            --disable-external \
-            --ignore-urls "/^http:\/\/127.0.0.1/,/^http:\/\/0.0.0.0/,/^http:\/\/localhost/"
+        run: hugo --minify --gc --baseURL "${{ steps.pages.outputs.base_url }}/"
 
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: "_site${{ steps.pages.outputs.base_path }}"
+          path: "./public"
 
   deploy:
     environment:

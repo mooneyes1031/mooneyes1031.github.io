@@ -1,0 +1,28 @@
+{{/*
+  自定义样式加载（覆盖主题同名文件）
+
+  和主题原版的区别：开发模式下也加文件指纹。
+  这样改完 assets/scss/custom.scss，刷新浏览器一定能拿到新样式，
+  不会被浏览器缓存卡住（主题原版在开发模式下文件名固定，容易看到旧样式）。
+*/}}
+{{ range .Site.Params.customCSS }}
+  {{ if hugo.IsServer }}
+    {{ $styles := resources.Get . | resources.Fingerprint }}
+    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" media="screen">
+  {{ else }}
+    {{ $styles := resources.Get . | resources.Minify | resources.Fingerprint }}
+    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" integrity="{{ $styles.Data.Integrity }}" crossorigin="anonymous" media="screen" />
+  {{ end }}
+{{ end }}
+
+{{ range .Site.Params.customSCSS }}
+  {{ if hugo.IsServer }}
+    {{ $cssOpts := (dict "targetPath" "scss/custom.css" "enableSourceMap" true) }}
+    {{ $styles := resources.Get . | toCSS $cssOpts | resources.Fingerprint }}
+    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" media="screen">
+  {{ else }}
+    {{ $cssOpts := (dict "targetPath" "scss/custom.css") }}
+    {{ $styles := resources.Get . | toCSS $cssOpts | resources.Minify | resources.Fingerprint }}
+    <link rel="stylesheet" href="{{ $styles.RelPermalink }}" integrity="{{ $styles.Data.Integrity }}" crossorigin="anonymous" media="screen" />
+  {{ end }}
+{{ end }}
