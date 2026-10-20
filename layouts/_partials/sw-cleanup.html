@@ -1,0 +1,26 @@
+{{/*
+  只执行一次：注销旧 Jekyll/Chirpy 留下的 Service Worker，并清空 Cache Storage。
+  旧站开启了 PWA，缓存优先，会把迁移前的页面一直喂给老访客。
+  这是 /sw.min.js 自毁脚本之外的兜底；过几周确认没有旧访客后可以删掉本文件和引用。
+*/}}
+<script>
+(function () {
+  if (!("serviceWorker" in navigator)) return;
+
+  var KEY = "sw-cleanup-2026-10-20";
+  try { if (localStorage.getItem(KEY)) return; } catch (e) {}
+
+  var done = function () {
+    try { localStorage.setItem(KEY, "1"); } catch (e) {}
+  };
+
+  navigator.serviceWorker.getRegistrations().then(function (regs) {
+    return Promise.all(regs.map(function (reg) { return reg.unregister(); }));
+  }).then(function () {
+    if (!window.caches) return;
+    return caches.keys().then(function (keys) {
+      return Promise.all(keys.map(function (key) { return caches.delete(key); }));
+    });
+  }).then(done, done);
+})();
+</script>
