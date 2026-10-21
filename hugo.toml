@@ -145,8 +145,13 @@ pagerSize = 10
   url = "tags/"
 
 [[menu.main]]
-  name = "关于"
+  name = "照片"
   weight = 3
+  url = "photos/"
+
+[[menu.main]]
+  name = "关于"
+  weight = 4
   url = "about/"
 
 # ---------------------------------------------------------------------------

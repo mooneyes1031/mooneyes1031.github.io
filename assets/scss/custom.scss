@@ -252,3 +252,241 @@ body.colorscheme-dark {
     max-width: none;
   }
 }
+
+// --------------------------------------------------------------------------
+//  8. 照片墙 / Photo wall
+// --------------------------------------------------------------------------
+
+.photo-wall {
+  column-count: 3;
+  column-gap: 1.2rem;
+  margin: 2rem 0 3rem;
+}
+
+.photo-item {
+  break-inside: avoid;
+  margin: 0 0 1.2rem;
+  border-radius: 0.6rem;
+  overflow: hidden;
+  background: #ececec;
+}
+
+.photo-link {
+  display: block;
+  line-height: 0;
+  overflow: hidden;
+}
+
+.photo-link img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.4s ease, opacity 0.3s ease;
+}
+
+.photo-link:hover img,
+.photo-link:focus img {
+  transform: scale(1.03);
+  opacity: 0.9;
+}
+
+.photo-item figcaption {
+  padding: 0.8rem 1rem;
+  background: #f5f5f5;
+  color: #555;
+  font-size: 1.4rem;
+  line-height: 1.5;
+}
+
+.photo-wall-empty {
+  margin: 2rem 0 3rem;
+  padding: 6rem 2rem;
+  border: 1px dashed #ddd;
+  border-radius: 0.6rem;
+  color: #999;
+  font-size: 1.6rem;
+  text-align: center;
+}
+
+.photo-wall-empty i {
+  display: block;
+  margin-bottom: 1.2rem;
+  font-size: 2.4rem;
+  opacity: 0.6;
+}
+
+.photos-page .photo-wall-empty p {
+  margin: 0;
+  text-align: center;
+}
+
+.photo-lightbox {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  background: rgba(8, 8, 8, 0.94);
+}
+
+.photo-lightbox[hidden] {
+  display: none;
+}
+
+.photo-lb-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 92vw;
+  max-height: 90vh;
+  margin: 0;
+}
+
+.photo-lb-figure img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 92vw;
+  max-height: 82vh;
+  border-radius: 0.4rem;
+  box-shadow: 0 1rem 4rem rgba(0, 0, 0, 0.5);
+}
+
+.photo-lb-figure figcaption {
+  margin-top: 1.2rem;
+  color: #ddd;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.photo-lb-btn {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.6rem;
+  height: 4.6rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 2.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.photo-lb-btn:hover,
+.photo-lb-btn:focus {
+  background: rgba(255, 255, 255, 0.28);
+  outline: none;
+}
+
+.photo-lb-close {
+  top: 2rem;
+  right: 2rem;
+}
+
+.photo-lb-prev {
+  top: 50%;
+  left: 2rem;
+  transform: translateY(-50%);
+}
+
+.photo-lb-next {
+  top: 50%;
+  right: 2rem;
+  transform: translateY(-50%);
+}
+
+body.photo-lb-open {
+  overflow: hidden;
+}
+
+// 深色模式：手动切换
+body.colorscheme-dark {
+  .photo-item {
+    background: #2a2a2a;
+  }
+
+  .photo-item figcaption {
+    background: #2a2a2a;
+    color: #bbb;
+  }
+
+  .photo-wall-empty {
+    border-color: #424242;
+    color: #888;
+  }
+}
+
+// 深色模式：跟随系统
+@media (prefers-color-scheme: dark) {
+  body.colorscheme-auto {
+    .photo-item {
+      background: #2a2a2a;
+    }
+
+    .photo-item figcaption {
+      background: #2a2a2a;
+      color: #bbb;
+    }
+
+    .photo-wall-empty {
+      border-color: #424242;
+      color: #888;
+    }
+  }
+}
+
+// 窄屏两列
+@media only screen and (max-width: 768px) {
+  .photo-wall {
+    column-count: 2;
+    column-gap: 0.8rem;
+  }
+
+  .photo-item {
+    margin-bottom: 0.8rem;
+    border-radius: 0.4rem;
+  }
+
+  .photo-item figcaption {
+    padding: 0.6rem 0.7rem;
+    font-size: 1.2rem;
+  }
+
+  .photo-lightbox {
+    padding: 1.2rem;
+  }
+
+  .photo-lb-figure img {
+    max-height: 78vh;
+  }
+
+  .photo-lb-btn {
+    width: 3.8rem;
+    height: 3.8rem;
+    font-size: 2.2rem;
+  }
+
+  .photo-lb-close {
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .photo-lb-prev {
+    left: 0.6rem;
+  }
+
+  .photo-lb-next {
+    right: 0.6rem;
+  }
+}
