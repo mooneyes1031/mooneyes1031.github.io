@@ -21,7 +21,7 @@
         <link>{{ .Permalink }}</link>
         <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
         <guid>{{ .Permalink }}</guid>
-        <description>{{ .Summary | transform.XMLEscape | safeHTML }}</description>
+        <description>{{ (.Description | default .Summary) | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | strings.TrimSpace | transform.XMLEscape | safeHTML }}</description>
       </item>
     {{ end }}
   </channel>
