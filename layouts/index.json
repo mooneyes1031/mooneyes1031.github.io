@@ -1,0 +1,14 @@
+{{- $posts := (where .Site.RegularPages "Section" "posts").ByDate.Reverse -}}
+{{- $items := slice -}}
+{{- range $posts -}}
+  {{- $items = $items | append (dict
+    "title" .Title
+    "permalink" .Permalink
+    "date" (.Date.Format "2006-01-02")
+    "tags" (.Params.tags | default (slice))
+    "categories" (.Params.categories | default (slice))
+    "summary" ((.Description | default .Summary) | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | htmlUnescape | strings.TrimSpace | truncate 200)
+    "content" (.Plain | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | htmlUnescape | strings.TrimSpace)
+  ) -}}
+{{- end -}}
+{{- $items | jsonify -}}

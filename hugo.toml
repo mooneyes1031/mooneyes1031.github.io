@@ -23,6 +23,10 @@ enableEmoji = true
 # 自动生成 robots.txt
 enableRobotsTXT = true
 
+# 首页额外输出 JSON 搜索索引（/index.json），站内搜索用
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
 # 每页显示几篇文章
 [pagination]
 pagerSize = 10
@@ -41,6 +45,24 @@ pagerSize = 10
   category = "categories"
   tag = "tags"
   series = "series"
+
+# 相关文章：按标签、分类、系列匹配；threshold 越高越严格
+[related]
+  threshold = 50
+  includeNewer = true
+  toLower = true
+
+  [[related.indices]]
+    name = "tags"
+    weight = 100
+
+  [[related.indices]]
+    name = "categories"
+    weight = 50
+
+  [[related.indices]]
+    name = "series"
+    weight = 80
 
 # ---------------------------------------------------------------------------
 # 分享封面：所有页面默认使用 static/images/og-cover.jpg（1200×630）
@@ -88,6 +110,11 @@ pagerSize = 10
   # ★ 自定义样式：assets/scss/custom.scss
   #   排版微调（行宽、行高、导航间距）都写在这个文件里，改完保存即可
   customSCSS = ["scss/custom.scss"]
+
+  # 文章目录：默认开启，默认收起；单篇文章可在 front matter 写 toc = false 关掉
+  [params.entry]
+    toc = true
+    tocOpen = false
 
 # ---------------------------------------------------------------------------
 # 网易云音乐播放器（左下角悬浮）
@@ -140,18 +167,28 @@ pagerSize = 10
   url = "posts/"
 
 [[menu.main]]
-  name = "标签"
+  name = "归档"
   weight = 2
+  url = "archives/"
+
+[[menu.main]]
+  name = "标签"
+  weight = 3
   url = "tags/"
 
 [[menu.main]]
+  name = "搜索"
+  weight = 4
+  url = "search/"
+
+[[menu.main]]
   name = "照片"
-  weight = 3
+  weight = 5
   url = "photos/"
 
 [[menu.main]]
   name = "关于"
-  weight = 4
+  weight = 6
   url = "about/"
 
 # ---------------------------------------------------------------------------

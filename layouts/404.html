@@ -1,0 +1,24 @@
+{{ define "title" }}404 · {{ .Site.Title }}{{ end }}
+{{ define "content" }}
+  <section class="container page error-page">
+    <p class="error-code">404</p>
+    <h1>迷失在月读里</h1>
+    <p class="error-desc">这个页面不存在，可能已经被删掉，或者从来就没有过。</p>
+
+    <form class="error-search" action="{{ "search/" | relURL }}" method="get">
+      <input type="search" name="q" placeholder="搜索文章…" aria-label="搜索文章">
+      <button type="submit">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <span>搜索</span>
+      </button>
+    </form>
+
+    <p class="error-links">
+      <a href="{{ "/" | relURL }}">返回首页</a>
+      <span>·</span>
+      <a href="{{ "posts/" | relURL }}">浏览文章</a>
+      <span>·</span>
+      <a href="{{ "tags/" | relURL }}">按标签浏览</a>
+    </p>
+  </section>
+{{ end }}

@@ -4,3 +4,9 @@
 */}}
 {{ partial "music-player.html" . }}
 {{ partial "sw-cleanup.html" . }}
+
+{{- /* 文章页的小工具：代码复制、阅读进度 */ -}}
+{{ if and .IsPage (eq .Section "posts") }}
+  {{ partial "code-copy.html" . }}
+  {{ partial "reading-progress.html" . }}
+{{ end }}

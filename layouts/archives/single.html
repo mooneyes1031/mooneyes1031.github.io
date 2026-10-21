@@ -1,0 +1,48 @@
+{{ define "title" }}{{ .Title }} · {{ .Site.Title }}{{ end }}
+{{ define "content" }}
+  <section class="container page archives-page">
+    <article>
+      <header>
+        <h1 class="title">
+          <a class="title-link" href="{{ .Permalink | safeURL }}">{{ .Title }}</a>
+        </h1>
+      </header>
+
+      {{ .Content }}
+
+      {{ $posts := where .Site.RegularPages "Section" "posts" }}
+      {{ $posts = $posts.ByDate.Reverse }}
+
+      {{ with $posts }}
+        <p class="archive-count">共 {{ len . }} 篇文章</p>
+
+        {{ range .GroupByDate "2006" }}
+          <section class="archive-year">
+            <h2>
+              {{ .Key }}
+              <span class="archive-year-count">{{ len .Pages }}</span>
+            </h2>
+            <ul>
+              {{ range .Pages }}
+                <li>
+                  <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "01-02" }}</time>
+                  <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                </li>
+              {{ end }}
+            </ul>
+          </section>
+        {{ end }}
+      {{ else }}
+        <p class="archive-empty">还没有文章。</p>
+      {{ end }}
+
+      <p class="archive-more">
+        也可以
+        <a href="{{ "tags/" | relURL }}">按标签</a> ·
+        <a href="{{ "categories/" | relURL }}">按分类</a> ·
+        <a href="{{ "series/" | relURL }}">按系列</a> ·
+        <a href="{{ "search/" | relURL }}">搜索</a>。
+      </p>
+    </article>
+  </section>
+{{ end }}

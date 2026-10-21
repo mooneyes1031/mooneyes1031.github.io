@@ -1,0 +1,16 @@
+{{- $entry := .Site.Params.entry | default dict -}}
+{{- $toc := $entry.toc | default false -}}
+{{- if .Params.toc -}}{{- $toc = true -}}{{- else if eq .Params.toc false -}}{{- $toc = false -}}{{- end -}}
+
+{{- $tocOpen := $entry.tocOpen | default false -}}
+{{- if .Params.tocOpen -}}{{- $tocOpen = true -}}{{- else if eq .Params.tocOpen false -}}{{- $tocOpen = false -}}{{- end -}}
+
+{{- if and $toc .TableOfContents -}}
+<details class="entry__toc toc" {{ if $tocOpen }}open{{ end }}>
+  <summary class="toc__title">
+    <i class="fa-solid fa-list-ul" aria-hidden="true"></i>
+    目录
+  </summary>
+  {{ .TableOfContents }}
+</details>
+{{- end -}}

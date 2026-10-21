@@ -1,0 +1,21 @@
+{{- $page := . -}}
+{{- $related := first 4 (.Site.RegularPages.Related .) -}}
+{{- $items := slice -}}
+{{- range $related -}}
+  {{- if ne .Permalink $page.Permalink -}}
+    {{- $items = $items | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- with first 3 $items }}
+<section class="related-posts">
+  <h2>相关文章</h2>
+  <ul>
+    {{ range . }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        <span class="date">{{ .Date | time.Format (.Site.Params.dateFormat | default "2006-01-02") }}</span>
+      </li>
+    {{ end }}
+  </ul>
+</section>
+{{- end -}}

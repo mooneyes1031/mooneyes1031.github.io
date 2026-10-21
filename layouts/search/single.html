@@ -1,0 +1,35 @@
+{{ define "title" }}{{ .Title }} · {{ .Site.Title }}{{ end }}
+{{ define "content" }}
+  <section class="container page search-page">
+    <article>
+      <header>
+        <h1 class="title">
+          <a class="title-link" href="{{ .Permalink | safeURL }}">{{ .Title }}</a>
+        </h1>
+      </header>
+
+      {{ .Content }}
+
+      <div class="search-box" data-index="{{ "index.json" | relURL }}?v={{ now.Unix }}">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input id="search-input" type="search" placeholder="搜索标题、标签、正文…" autocomplete="off" aria-label="搜索文章">
+      </div>
+
+      <p class="search-status" id="search-status" aria-live="polite">正在加载索引…</p>
+      <ul class="search-results" id="search-results"></ul>
+
+      <noscript>
+        <p class="search-noscript">搜索需要启用 JavaScript。你可以直接浏览 <a href="{{ "posts/" | relURL }}">文章列表</a>。</p>
+      </noscript>
+    </article>
+  </section>
+
+  {{ with resources.Get "js/search.js" }}
+    {{ if hugo.IsServer }}
+      <script src="{{ .RelPermalink }}" defer></script>
+    {{ else }}
+      {{ $js := . | resources.Minify | resources.Fingerprint }}
+      <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+    {{ end }}
+  {{ end }}
+{{ end }}
