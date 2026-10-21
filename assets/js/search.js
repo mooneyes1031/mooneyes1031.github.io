@@ -20,6 +20,12 @@
       return (value || "").toString().toLowerCase();
     }
 
+    function toList(value) {
+      if (Array.isArray(value)) return value;
+      if (value === null || value === undefined || value === "") return [];
+      return [value];
+    }
+
     function setStatus(text) {
       status.textContent = text;
     }
@@ -46,8 +52,8 @@
 
     function score(item, query) {
       var title = normalize(item.title);
-      var tags = normalize((item.tags || []).join(" "));
-      var categories = normalize((item.categories || []).join(" "));
+      var tags = normalize(toList(item.tags).join(" "));
+      var categories = normalize(toList(item.categories).join(" "));
       var summary = normalize(item.summary);
       var content = normalize(item.content);
       var tokens = query.split(/\s+/).filter(Boolean);
@@ -94,7 +100,8 @@
 
       var bits = [];
       if (item.date) bits.push(item.date);
-      if (item.tags && item.tags.length) bits.push(item.tags.join(" / "));
+      var tags = toList(item.tags);
+      if (tags.length) bits.push(tags.join(" / "));
 
       if (bits.length) {
         var meta = document.createElement("p");
