@@ -1329,3 +1329,720 @@ body.colorscheme-dark {
     font-size: 2.2rem;
   }
 }
+
+
+// --------------------------------------------------------------------------
+//  13. 文章图片 + 图片灯箱
+//  正文里的 Markdown 图片会自动套上 .post-figure：
+//  - 默认懒加载
+//  - 有说明文字时显示在图片下面（写法见维护手册 3.4）
+//  - 点击图片打开灯箱，支持键盘和手机滑动
+// --------------------------------------------------------------------------
+
+.post-figure {
+  display: block;
+  margin: 2.4rem 0;
+  text-align: center;
+}
+
+.post-figure img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+  border-radius: 0.6rem;
+  cursor: zoom-in;
+}
+
+.post-caption {
+  display: block;
+  margin-top: 0.8rem;
+  color: #777;
+  font-size: 1.4rem;
+  font-style: italic;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.image-lightbox {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  background: rgba(8, 8, 8, 0.94);
+}
+
+.image-lightbox[hidden] {
+  display: none;
+}
+
+.image-lb-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 92vw;
+  max-height: 90vh;
+  margin: 0;
+}
+
+.image-lb-figure img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 92vw;
+  max-height: 82vh;
+  border-radius: 0.4rem;
+  box-shadow: 0 1rem 4rem rgba(0, 0, 0, 0.5);
+}
+
+.image-lb-figure figcaption {
+  margin-top: 1.2rem;
+  color: #ddd;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.image-lb-btn {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.6rem;
+  height: 4.6rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 2.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.image-lb-btn:hover,
+.image-lb-btn:focus {
+  background: rgba(255, 255, 255, 0.28);
+  outline: none;
+}
+
+.image-lb-close {
+  top: 2rem;
+  right: 2rem;
+}
+
+.image-lb-prev {
+  top: 50%;
+  left: 2rem;
+  transform: translateY(-50%);
+}
+
+.image-lb-next {
+  top: 50%;
+  right: 2rem;
+  transform: translateY(-50%);
+}
+
+body.image-lb-open {
+  overflow: hidden;
+}
+
+
+// --------------------------------------------------------------------------
+//  14. 首页精选 / 文章列表卡片
+//  首页在 front matter 写 featured = true 的文章会进入「精选文章」，
+//  最新文章、/posts/、标签/分类/系列页都使用同一套卡片样式。
+// --------------------------------------------------------------------------
+
+.home-featured {
+  margin-top: 3rem;
+}
+
+.home-posts-empty {
+  margin: 2rem 0 0;
+  color: #999;
+  font-size: 1.5rem;
+  text-align: left;
+}
+
+.taxonomy-empty {
+  margin: 2rem 0;
+  color: #999;
+  font-size: 1.5rem;
+  text-align: left;
+}
+
+.home-featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+  gap: 1.6rem;
+  margin-top: 2rem;
+}
+
+.home-featured-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #e5e5e5;
+  border-radius: 0.8rem;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.home-featured-card:hover {
+  border-color: #1565c0;
+  box-shadow: 0 0.6rem 1.8rem rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.home-featured-image {
+  display: block;
+  line-height: 0;
+  overflow: hidden;
+}
+
+.home-featured-image img {
+  display: block;
+  width: 100%;
+  height: 18rem;
+  object-fit: cover;
+}
+
+.home-featured-body {
+  padding: 1.6rem;
+}
+
+.home-featured-kicker {
+  margin: 0;
+  color: #1565c0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: left;
+}
+
+.home-featured-kicker i {
+  margin-right: 0.3rem;
+}
+
+.home-featured-card h2 {
+  margin: 0.6rem 0;
+  font-size: 2rem;
+  line-height: 1.45;
+}
+
+.home-featured-card h2 a {
+  color: #212121;
+  text-decoration: none;
+}
+
+.home-featured-card h2 a:hover,
+.home-featured-card h2 a:focus {
+  color: #1565c0;
+}
+
+.home-featured-summary {
+  margin: 0.6rem 0;
+  color: #666;
+  font-size: 1.5rem;
+  line-height: 1.7;
+  text-align: left;
+}
+
+.home-featured-meta {
+  margin: 0;
+  color: #999;
+  font-size: 1.3rem;
+  text-align: left;
+}
+
+.list ul li.post-list-item {
+  display: block;
+  margin: 0;
+  padding: 1.8rem 0;
+  border-top: 1px solid #e5e5e5;
+  font-size: 1.6rem;
+}
+
+.list ul li.post-list-item:first-child {
+  border-top: 0;
+  padding-top: 0.4rem;
+}
+
+.post-list-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  color: #999;
+  font-size: 1.3rem;
+  line-height: 1.5;
+}
+
+.post-list-reading i {
+  margin-right: 0.2rem;
+}
+
+.post-list-pin {
+  color: #1565c0;
+}
+
+.list ul li .post-list-title {
+  display: block;
+  flex: none;
+  margin: 0.5rem 0 0;
+  color: #212121;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.45;
+  text-decoration: none;
+}
+
+.list ul li .post-list-title:hover,
+.list ul li .post-list-title:focus {
+  color: #1565c0;
+  text-decoration: none;
+}
+
+.post-list-summary {
+  margin: 0.6rem 0 0;
+  color: #555;
+  font-size: 1.5rem;
+  line-height: 1.75;
+  text-align: left;
+}
+
+.post-list-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+
+.post-list-tag {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.4rem;
+  background: #f0f0f0;
+  color: #666;
+  font-size: 1.2rem;
+  line-height: 1.6;
+  text-decoration: none;
+}
+
+.post-list-tag:hover,
+.post-list-tag:focus {
+  background: #e3f2fd;
+  color: #1565c0;
+  text-decoration: none;
+}
+
+
+// --------------------------------------------------------------------------
+//  15. 系列文章盒子 / 分享按钮
+// --------------------------------------------------------------------------
+
+.post-series {
+  margin: 2rem 0 2.4rem;
+  padding: 1.4rem 1.6rem;
+  border: 1px solid #e5e5e5;
+  border-left: 3px solid #1565c0;
+  border-radius: 0.4rem;
+  background: #f7f9fc;
+}
+
+.post-series-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.post-series-label {
+  color: #1565c0;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.post-series-label i {
+  margin-right: 0.3rem;
+}
+
+.post-series-name {
+  color: #212121;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.post-series-pos {
+  margin-left: auto;
+  color: #999;
+  font-size: 1.2rem;
+}
+
+.post-series-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.post-series-list li {
+  display: flex;
+  gap: 0.8rem;
+  padding: 0.25rem 0;
+  font-size: 1.4rem;
+  line-height: 1.6;
+}
+
+.post-series-num {
+  flex: 0 0 2rem;
+  color: #999;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  text-align: right;
+}
+
+.post-series-title {
+  color: #555;
+}
+
+.post-series-list li.is-current .post-series-title {
+  color: #1565c0;
+  font-weight: 600;
+}
+
+.post-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e5e5;
+}
+
+.post-share-label {
+  color: #999;
+  font-size: 1.4rem;
+}
+
+.post-share-label i {
+  margin-right: 0.3rem;
+}
+
+.post-share-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.4rem;
+  background: #fafafa;
+  color: #555;
+  font-family: inherit;
+  font-size: 1.3rem;
+  line-height: 1.4;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.share-btn:hover,
+.share-btn:focus {
+  border-color: #1565c0;
+  color: #1565c0;
+  text-decoration: none;
+}
+
+.share-btn.is-copied {
+  border-color: #2e7d32;
+  color: #2e7d32;
+}
+
+// 深色模式：手动切换
+body.colorscheme-dark {
+  .post-caption {
+    color: #aaa;
+  }
+
+  .home-featured-card {
+    border-color: #424242;
+    background: #2a2a2a;
+  }
+
+  .home-featured-card:hover {
+    border-color: #42a5f5;
+    box-shadow: 0 0.6rem 1.8rem rgba(0, 0, 0, 0.35);
+  }
+
+  .home-featured-kicker {
+    color: #42a5f5;
+  }
+
+  .home-featured-card h2 a {
+    color: #dadada;
+  }
+
+  .home-featured-card h2 a:hover,
+  .home-featured-card h2 a:focus {
+    color: #42a5f5;
+  }
+
+  .home-featured-summary,
+  .post-list-summary {
+    color: #bbb;
+  }
+
+  .home-featured-meta,
+  .post-list-meta,
+  .home-posts-empty,
+  .taxonomy-empty {
+    color: #888;
+  }
+
+  .list ul li.post-list-item {
+    border-top-color: #424242;
+  }
+
+  .list ul li .post-list-title {
+    color: #dadada;
+  }
+
+  .list ul li .post-list-title:hover,
+  .list ul li .post-list-title:focus {
+    color: #42a5f5;
+  }
+
+  .post-list-pin {
+    color: #42a5f5;
+  }
+
+  .post-list-tag {
+    background: #333;
+    color: #bbb;
+  }
+
+  .post-list-tag:hover,
+  .post-list-tag:focus {
+    background: #1e3a52;
+    color: #42a5f5;
+  }
+
+  .post-series {
+    border-color: #424242;
+    border-left-color: #42a5f5;
+    background: #262626;
+  }
+
+  .post-series-label,
+  .post-series-list li.is-current .post-series-title {
+    color: #42a5f5;
+  }
+
+  .post-series-name {
+    color: #dadada;
+  }
+
+  .post-series-pos,
+  .post-series-num {
+    color: #888;
+  }
+
+  .post-series-title {
+    color: #bbb;
+  }
+
+  .post-share {
+    border-top-color: #424242;
+  }
+
+  .share-btn {
+    border-color: #424242;
+    background: #2a2a2a;
+    color: #aaa;
+  }
+
+  .share-btn:hover,
+  .share-btn:focus {
+    border-color: #42a5f5;
+    color: #42a5f5;
+  }
+}
+
+// 深色模式：跟随系统
+@media (prefers-color-scheme: dark) {
+  body.colorscheme-auto {
+    .post-caption {
+      color: #aaa;
+    }
+
+    .home-featured-card {
+      border-color: #424242;
+      background: #2a2a2a;
+    }
+
+    .home-featured-card:hover {
+      border-color: #42a5f5;
+      box-shadow: 0 0.6rem 1.8rem rgba(0, 0, 0, 0.35);
+    }
+
+    .home-featured-kicker {
+      color: #42a5f5;
+    }
+
+    .home-featured-card h2 a {
+      color: #dadada;
+    }
+
+    .home-featured-card h2 a:hover,
+    .home-featured-card h2 a:focus {
+      color: #42a5f5;
+    }
+
+    .home-featured-summary,
+    .post-list-summary {
+      color: #bbb;
+    }
+
+    .home-featured-meta,
+    .post-list-meta,
+    .home-posts-empty,
+    .taxonomy-empty {
+      color: #888;
+    }
+
+    .list ul li.post-list-item {
+      border-top-color: #424242;
+    }
+
+    .list ul li .post-list-title {
+      color: #dadada;
+    }
+
+    .list ul li .post-list-title:hover,
+    .list ul li .post-list-title:focus {
+      color: #42a5f5;
+    }
+
+    .post-list-pin {
+      color: #42a5f5;
+    }
+
+    .post-list-tag {
+      background: #333;
+      color: #bbb;
+    }
+
+    .post-list-tag:hover,
+    .post-list-tag:focus {
+      background: #1e3a52;
+      color: #42a5f5;
+    }
+
+    .post-series {
+      border-color: #424242;
+      border-left-color: #42a5f5;
+      background: #262626;
+    }
+
+    .post-series-label,
+    .post-series-list li.is-current .post-series-title {
+      color: #42a5f5;
+    }
+
+    .post-series-name {
+      color: #dadada;
+    }
+
+    .post-series-pos,
+    .post-series-num {
+      color: #888;
+    }
+
+    .post-series-title {
+      color: #bbb;
+    }
+
+    .post-share {
+      border-top-color: #424242;
+    }
+
+    .share-btn {
+      border-color: #424242;
+      background: #2a2a2a;
+      color: #aaa;
+    }
+
+    .share-btn:hover,
+    .share-btn:focus {
+      border-color: #42a5f5;
+      color: #42a5f5;
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .image-lightbox {
+    padding: 1.2rem;
+  }
+
+  .image-lb-figure img {
+    max-height: 78vh;
+  }
+
+  .image-lb-btn {
+    width: 3.8rem;
+    height: 3.8rem;
+    font-size: 2.2rem;
+  }
+
+  .image-lb-close {
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .image-lb-prev {
+    left: 0.6rem;
+  }
+
+  .image-lb-next {
+    right: 0.6rem;
+  }
+
+  .home-featured-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-featured-image img {
+    height: 16rem;
+  }
+
+  .list ul li .post-list-title {
+    font-size: 1.8rem;
+  }
+
+  .post-list-summary {
+    font-size: 1.4rem;
+  }
+
+  .post-series-pos {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .post-share {
+    align-items: flex-start;
+  }
+}

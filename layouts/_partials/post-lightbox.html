@@ -1,0 +1,22 @@
+{{/*
+  文章图片灯箱：只在普通页面输出一次。
+  页面里由 render-image.html 生成的 .post-figure 图片会自动接入。
+*/}}
+<div class="image-lightbox" id="image-lightbox" hidden role="dialog" aria-modal="true" aria-label="图片预览">
+  <button type="button" class="image-lb-btn image-lb-close" data-action="close" aria-label="关闭">&times;</button>
+  <button type="button" class="image-lb-btn image-lb-prev" data-action="prev" aria-label="上一张">&lsaquo;</button>
+  <figure class="image-lb-figure">
+    <img id="image-lb-img" alt="">
+    <figcaption id="image-lb-caption" hidden></figcaption>
+  </figure>
+  <button type="button" class="image-lb-btn image-lb-next" data-action="next" aria-label="下一张">&rsaquo;</button>
+</div>
+
+{{- with resources.Get "js/post-lightbox.js" }}
+  {{- if hugo.IsServer }}
+<script src="{{ .RelPermalink }}" defer></script>
+  {{- else }}
+    {{- $js := . | resources.Minify | resources.Fingerprint }}
+<script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+  {{- end }}
+{{- end }}

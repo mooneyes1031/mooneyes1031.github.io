@@ -1,0 +1,35 @@
+{{/*
+  文章列表卡片：/posts/、标签页、分类页、系列页、首页「最新文章」共用。
+  想改摘要长度，调下面的 truncate 140。
+*/}}
+{{- $summary := .Description | default .Summary | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | htmlUnescape | strings.TrimSpace -}}
+<li class="post-list-item{{ if .Params.featured }} is-featured{{ end }}">
+  <div class="post-list-meta">
+    <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format (.Site.Params.dateFormat | default "2006-01-02") }}</time>
+    <span class="post-list-dot" aria-hidden="true">·</span>
+    <span class="post-list-reading">
+      <i class="fa-regular fa-clock" aria-hidden="true"></i>
+      {{ .ReadingTime }} 分钟
+    </span>
+    {{- if .Params.featured }}
+    <span class="post-list-pin">
+      <i class="fa-solid fa-thumbtack" aria-hidden="true"></i>
+      精选
+    </span>
+    {{- end }}
+  </div>
+
+  <a class="title post-list-title" href="{{ .Params.externalLink | default .RelPermalink }}">{{ .Title }}</a>
+
+  {{- with $summary }}
+  <p class="post-list-summary">{{ . | truncate 140 }}</p>
+  {{- end }}
+
+  {{- with .GetTerms "tags" }}
+  <div class="post-list-tags">
+    {{- range . }}
+    <a class="post-list-tag" href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a>
+    {{- end }}
+  </div>
+  {{- end }}
+</li>

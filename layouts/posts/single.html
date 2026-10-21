@@ -38,19 +38,22 @@
       </header>
 
       {{ partial "toc.html" . }}
+      {{ partial "posts/series.html" . }}
 
       <div class="post-content">
         {{ if .Params.featuredImage }}
-          <img src="{{ .Params.featuredImage | relURL }}" alt="Featured image"/>
+          <figure class="post-figure post-featured-image">
+            <img src="{{ .Params.featuredImage | relURL }}" alt="{{ .Title }}" loading="lazy" decoding="async">
+          </figure>
         {{ end }}
         {{ .Content }}
       </div>
 
+      {{ partial "posts/share.html" . }}
       {{ partial "posts/prev-next.html" . }}
       {{ partial "posts/related.html" . }}
 
       <footer>
-        {{ partial "posts/series.html" . }}
         {{ partial "posts/disqus.html" . }}
         {{ partial "posts/commento.html" . }}
         {{ partial "posts/utterances.html" . }}

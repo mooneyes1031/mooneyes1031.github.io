@@ -17,6 +17,9 @@ theme = "hugo-coder"
 locale = "zh-cn"
 defaultContentLanguage = "zh-cn"
 
+# 按中文习惯统计字数和阅读时间（中文没有空格，不开这个阅读时间会算错）
+hasCJKLanguage = true
+
 # 允许在正文里直接用 emoji 短代码，如 :smile:
 enableEmoji = true
 
@@ -180,18 +183,28 @@ pagerSize = 10
   url = "tags/"
 
 [[menu.main]]
-  name = "搜索"
+  name = "分类"
   weight = 4
+  url = "categories/"
+
+[[menu.main]]
+  name = "系列"
+  weight = 5
+  url = "series/"
+
+[[menu.main]]
+  name = "搜索"
+  weight = 6
   url = "search/"
 
 [[menu.main]]
   name = "照片"
-  weight = 5
+  weight = 7
   url = "photos/"
 
 [[menu.main]]
   name = "关于"
-  weight = 6
+  weight = 8
   url = "about/"
 
 # ---------------------------------------------------------------------------

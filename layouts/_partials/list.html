@@ -1,0 +1,36 @@
+{{/*
+  通用列表页（标签、分类、系列等）：
+  - 分类/标签/系列的「总览页」交给主题的 terms.html
+  - 具体某个标签/分类/系列下的文章，用和 /posts/ 一样的卡片
+*/}}
+{{- if eq .Kind "taxonomy" -}}
+  {{ partial "terms.html" . }}
+{{- else -}}
+<section class="container list">
+  <header>
+    <h1 class="title">
+      <a class="title-link" href="{{ .Permalink | safeURL }}">
+        {{- if eq .Kind "term" -}}
+          {{- i18n .Data.Plural 1 | title -}}
+          {{- print ": " -}}
+        {{- end -}}
+        {{- i18n (lower .Title) | default .Title | title -}}
+      </a>
+    </h1>
+  </header>
+  {{ .Content }}
+  <ul>
+    {{ range .Paginator.Pages }}
+      {{- if eq .Section "posts" -}}
+        {{ partial "posts/list-item.html" . }}
+      {{- else -}}
+        <li>
+          <span class="date">{{ .Date | time.Format (.Site.Params.dateFormat | default "2006-01-02") }}</span>
+          <a class="title" href="{{ .Params.externalLink | default .RelPermalink }}">{{ .Title }}</a>
+        </li>
+      {{- end -}}
+    {{ end }}
+  </ul>
+  {{ partial "pagination.html" . }}
+</section>
+{{- end -}}

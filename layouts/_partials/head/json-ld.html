@@ -1,0 +1,88 @@
+{{/*
+  结构化数据（JSON-LD）
+  - 首页：WebSite + Person，告诉搜索引擎站点名称、作者和站内搜索
+  - 文章页：BlogPosting + BreadcrumbList，帮助搜索结果展示标题、日期、作者
+  - 其他页面：WebPage
+  不想用可以删掉本文件，或把 head/extensions.html 里的引用去掉。
+*/}}
+{{- $lang := .Site.Language.Lang -}}
+{{- $siteURL := .Site.Home.Permalink -}}
+{{- $authorName := .Site.Params.author | default .Site.Title -}}
+{{- $avatar := "" -}}
+{{- with .Site.Params.avatarURL -}}{{- $avatar = . | absURL -}}{{- end -}}
+
+{{- if .IsHome -}}
+  {{- $person := dict "@type" "Person" "name" $authorName "url" $siteURL -}}
+  {{- with $avatar -}}{{- $person = merge $person (dict "image" .) -}}{{- end -}}
+  {{- $search := dict
+    "@type" "SearchAction"
+    "target" (dict "@type" "EntryPoint" "urlTemplate" (printf "%ssearch/?q={search_term_string}" $siteURL))
+    "query-input" "required name=search_term_string"
+  -}}
+  {{- $website := dict
+    "@type" "WebSite"
+    "@id" $siteURL
+    "name" .Site.Title
+    "url" $siteURL
+    "description" .Site.Params.description
+    "inLanguage" $lang
+    "publisher" $person
+    "potentialAction" $search
+  -}}
+  {{- $graph := dict "@context" "https://schema.org" "@graph" (slice $person $website) -}}
+  <script type="application/ld+json">{{ $graph | jsonify | safeJS }}</script>
+{{- else if and .IsPage (eq .Section "posts") -}}
+  {{- $page := . -}}
+  {{- $description := .Description | default (.Summary | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | htmlUnescape | strings.TrimSpace | truncate 200) -}}
+  {{- $tags := .Params.tags | default (slice) -}}
+  {{- if not (reflect.IsSlice $tags) -}}{{- $tags = slice $tags -}}{{- end -}}
+  {{- $categories := .Params.categories | default (slice) -}}
+  {{- if not (reflect.IsSlice $categories) -}}{{- $categories = slice $categories -}}{{- end -}}
+  {{- $image := "" -}}
+  {{- with .Params.images -}}
+    {{- if reflect.IsSlice . -}}
+      {{- $image = index . 0 | absURL -}}
+    {{- else -}}
+      {{- $image = . | absURL -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $author := dict "@type" "Person" "name" $authorName "url" $siteURL -}}
+  {{- with $avatar -}}{{- $author = merge $author (dict "image" .) -}}{{- end -}}
+  {{- $post := dict
+    "@type" "BlogPosting"
+    "headline" .Title
+    "description" $description
+    "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00")
+    "dateModified" (.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+    "author" $author
+    "publisher" $author
+    "mainEntityOfPage" (dict "@type" "WebPage" "@id" .Permalink)
+    "url" .Permalink
+    "inLanguage" $lang
+    "wordCount" .WordCount
+  -}}
+  {{- with $image -}}{{- $post = merge $post (dict "image" .) -}}{{- end -}}
+  {{- with $tags -}}{{- $post = merge $post (dict "keywords" (delimit . ", ")) -}}{{- end -}}
+  {{- with $categories -}}{{- $post = merge $post (dict "articleSection" (delimit . ", ")) -}}{{- end -}}
+
+  {{- $items := slice (dict "@type" "ListItem" "position" 1 "name" "首页" "item" $siteURL) -}}
+  {{- with .Site.GetPage "section" "posts" -}}
+    {{- $items = $items | append (dict "@type" "ListItem" "position" 2 "name" .Title "item" .Permalink) -}}
+  {{- end -}}
+  {{- $items = $items | append (dict "@type" "ListItem" "position" (add (len $items) 1) "name" $page.Title "item" $page.Permalink) -}}
+  {{- $breadcrumb := dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $items -}}
+  {{- $graph := dict "@context" "https://schema.org" "@graph" (slice $post $breadcrumb) -}}
+  <script type="application/ld+json">{{ $graph | jsonify | safeJS }}</script>
+{{- else -}}
+  {{- $description := .Description | default (.Summary | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | htmlUnescape | strings.TrimSpace | truncate 200) -}}
+  {{- $webpage := dict
+    "@type" "WebPage"
+    "name" .Title
+    "url" .Permalink
+    "description" $description
+    "inLanguage" $lang
+    "isPartOf" (dict "@type" "WebSite" "@id" $siteURL "name" .Site.Title "url" $siteURL)
+  -}}
+  {{- $graph := dict "@context" "https://schema.org" "@graph" (slice $webpage) -}}
+  <script type="application/ld+json">{{ $graph | jsonify | safeJS }}</script>
+{{- end -}}

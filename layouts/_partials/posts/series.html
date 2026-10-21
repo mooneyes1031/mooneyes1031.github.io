@@ -1,0 +1,42 @@
+{{/*
+  系列文章盒子：文章 front matter 里写了 series = ["..."] 才会出现。
+  会列出同一系列的全部文章，并标出当前这篇是第几篇。
+*/}}
+{{- $page := . -}}
+{{- with .GetTerms "series" -}}
+  {{- range . -}}
+    {{- $pages := .Pages.ByDate -}}
+    {{- if gt (len $pages) 1 -}}
+      {{- $pos := 0 -}}
+      {{- range $i, $p := $pages -}}
+        {{- if eq $p.RelPermalink $page.RelPermalink -}}
+          {{- $pos = add $i 1 -}}
+        {{- end -}}
+      {{- end -}}
+      <section class="post-series">
+        <div class="post-series-head">
+          <span class="post-series-label">
+            <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+            系列
+          </span>
+          <a class="post-series-name" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+          {{- if gt $pos 0 }}
+          <span class="post-series-pos">第 {{ $pos }} / {{ len $pages }} 篇</span>
+          {{- end }}
+        </div>
+        <ol class="post-series-list">
+          {{- range $i, $p := $pages }}
+          <li{{ if eq $p.RelPermalink $page.RelPermalink }} class="is-current" aria-current="page"{{ end }}>
+            <span class="post-series-num" aria-hidden="true">{{ add $i 1 }}</span>
+            {{- if eq $p.RelPermalink $page.RelPermalink }}
+            <span class="post-series-title">{{ $p.Title }}</span>
+            {{- else }}
+            <a class="post-series-title" href="{{ $p.RelPermalink }}">{{ $p.Title }}</a>
+            {{- end }}
+          </li>
+          {{- end }}
+        </ol>
+      </section>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

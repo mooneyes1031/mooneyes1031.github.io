@@ -1,29 +1,70 @@
 {{/*
-  首页「最新文章」区块（覆盖主题的同名空文件）
+  首页：精选文章 + 最新文章
 
-  - 只取 posts 分区（content/posts/）下的文章
-  - 按日期倒序，显示最新 5 篇
-  - 想改数量：把下面的 5 改成 8、10 都可以
-  - 不想要这个区块：把本文件内容清空即可
+  - 在文章 front matter 里写 featured = true，就会出现在「精选文章」里
+  - 精选最多显示 3 篇，并按日期倒序
+  - 「最新文章」显示 5 篇，不重复显示精选过的文章
+  - 想改数量：改下面的 3 和 5
 */}}
-{{ $posts := (where .Site.RegularPages "Section" "posts").ByDate.Reverse }}
-{{ with $posts }}
-  <section class="container list home-posts">
-    <header>
-      <h1 class="title">
-        <a class="title-link" href="{{ `posts/` | relURL }}">最新文章</a>
-      </h1>
-    </header>
-    <ul>
-      {{ range first 5 . }}
-        <li>
-          <span class="date">{{ .Date | time.Format (.Site.Params.dateFormat | default "2006-01-02") }}</span>
-          <a class="title" href="{{ .Params.externalLink | default .RelPermalink }}">{{ .Title }}</a>
-        </li>
-      {{ end }}
-    </ul>
-    <p class="home-posts-more">
-      <a href="{{ `posts/` | relURL }}">查看全部文章 →</a>
-    </p>
-  </section>
-{{ end }}
+{{- $all := where .Site.RegularPages "Section" "posts" -}}
+{{- $featuredPages := where $all "Params.featured" true -}}
+{{- $latestPages := where $all "Params.featured" "!=" true -}}
+{{- $featured := first 3 ($featuredPages.ByDate.Reverse) -}}
+{{- $latest := first 5 ($latestPages.ByDate.Reverse) -}}
+
+{{- with $featured }}
+<section class="container list home-featured">
+  <header>
+    <h1 class="title">精选文章</h1>
+  </header>
+  <div class="home-featured-grid">
+    {{- range . }}
+    {{- $post := . }}
+    <article class="home-featured-card">
+      {{- with .Params.featuredImage }}
+      <a class="home-featured-image" href="{{ $post.RelPermalink }}" tabindex="-1" aria-hidden="true">
+        <img src="{{ . | relURL }}" alt="" loading="lazy" decoding="async">
+      </a>
+      {{- end }}
+      <div class="home-featured-body">
+        <p class="home-featured-kicker">
+          <i class="fa-solid fa-thumbtack" aria-hidden="true"></i>
+          精选
+        </p>
+        <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+        {{- with .Description | default .Summary | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | htmlUnescape | strings.TrimSpace }}
+        <p class="home-featured-summary">{{ . | truncate 110 }}</p>
+        {{- end }}
+        <p class="home-featured-meta">
+          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format (.Site.Params.dateFormat | default "2006-01-02") }}</time>
+          <span aria-hidden="true">·</span>
+          {{ .ReadingTime }} 分钟
+        </p>
+      </div>
+    </article>
+    {{- end }}
+  </div>
+</section>
+{{- end }}
+
+{{- if or $latest $featured }}
+<section class="container list home-posts">
+  <header>
+    <h1 class="title">
+      <a class="title-link" href="{{ `posts/` | relURL }}">最新文章</a>
+    </h1>
+  </header>
+  {{- with $latest }}
+  <ul class="home-post-list">
+    {{- range . }}
+      {{ partial "posts/list-item.html" . }}
+    {{- end }}
+  </ul>
+  {{- else }}
+  <p class="home-posts-empty">更多文章正在路上。</p>
+  {{- end }}
+  <p class="home-posts-more">
+    <a href="{{ `posts/` | relURL }}">查看全部文章 →</a>
+  </p>
+</section>
+{{- end }}

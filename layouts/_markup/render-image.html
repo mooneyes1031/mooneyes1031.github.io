@@ -1,0 +1,20 @@
+{{- /*
+  正文图片渲染钩子（覆盖主题默认行为）
+
+  - 所有 Markdown 图片自动加 lazy loading / async decoding
+  - 图片下面可以带说明文字：![alt](图片地址 "说明文字")
+  - 点击图片会打开灯箱（脚本：assets/js/post-lightbox.js）
+  - 如果图片本身被链接包住（[![...](...)](...)），交给链接处理，不劫持点击
+  - 用 span 而不是 figure，避免在 Markdown 的 <p> 里嵌套块级元素
+*/ -}}
+{{- $src := .Destination -}}
+{{- with .Page.Resources.GetMatch .Destination -}}
+  {{- $src = .RelPermalink -}}
+{{- end -}}
+{{- $alt := .PlainText | default "" -}}
+<span class="post-figure">
+  <img src="{{ $src | safeURL }}" alt="{{ $alt }}" loading="lazy" decoding="async">
+  {{- with .Title }}
+  <span class="post-caption">{{ . }}</span>
+  {{- end }}
+</span>

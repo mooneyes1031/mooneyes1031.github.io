@@ -10,3 +10,8 @@
   {{ partial "code-copy.html" . }}
   {{ partial "reading-progress.html" . }}
 {{ end }}
+
+{{- /* 正文图片灯箱：普通页面都可能用到 */ -}}
+{{ if .IsPage }}
+  {{ partial "post-lightbox.html" . }}
+{{ end }}
