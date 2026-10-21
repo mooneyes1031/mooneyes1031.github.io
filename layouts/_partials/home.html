@@ -1,7 +1,8 @@
 {{/*
   首页布局（覆盖主题同名文件）
 
-  和主题原版的唯一区别：外面多包了一层 .home-wrapper。
+  和主题原版相比：外面多包了一层 .home-wrapper，并在名字下面加了
+  一行 homeIntro 小字（在 hugo.toml 里配置，留空则不显示）。
   主题的 .content 是横向 flex，加了第二块内容会左右并排；
   包一层纵向 flex 之后，"作者卡片"和"最新文章"就能上下排列。
 */}}
@@ -11,6 +12,10 @@
       {{ partialCached "home/avatar.html" . }}
 
       {{ partialCached "home/author.html" . }}
+
+      {{ with .Site.Params.homeIntro }}
+      <p class="home-intro">{{ . }}</p>
+      {{ end }}
 
       {{ partialCached "home/social.html" . }}
     </div>

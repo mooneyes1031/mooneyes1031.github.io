@@ -49,10 +49,11 @@
 
 {{- if or $latest $featured }}
 <section class="container list home-posts">
-  <header>
+  <header class="home-section-head">
     <h1 class="title">
       <a class="title-link" href="{{ `posts/` | relURL }}">最新文章</a>
     </h1>
+    <a class="home-section-more" href="{{ `posts/` | relURL }}">查看全部 →</a>
   </header>
   {{- with $latest }}
   <ul class="home-post-list">
@@ -63,8 +64,5 @@
   {{- else }}
   <p class="home-posts-empty">更多文章正在路上。</p>
   {{- end }}
-  <p class="home-posts-more">
-    <a href="{{ `posts/` | relURL }}">查看全部文章 →</a>
-  </p>
 </section>
 {{- end }}

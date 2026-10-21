@@ -57,14 +57,23 @@ body {
 }
 
 // 作者卡片和文章列表之间留一点呼吸空间
-.home-posts {
-  margin-top: 3rem;
+.home-posts,
+.home-featured {
+  margin-top: 1.2rem;
 }
 
-// "查看全部文章"链接
-.home-posts-more {
-  margin-top: 2rem;
-  font-size: 1.6rem;
+// 名字下面的第二行小字
+.home-intro {
+  margin: 0.6rem 0 0;
+  color: #777;
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+// 有了小字之后，社交图标和文字之间不用再空那么大
+.about .home-intro + ul {
+  margin-top: 1.8rem;
 }
 
 
@@ -1461,8 +1470,39 @@ body.image-lb-open {
 //  最新文章、/posts/、标签/分类/系列页都使用同一套卡片样式。
 // --------------------------------------------------------------------------
 
-.home-featured {
-  margin-top: 3rem;
+.home-posts header,
+.home-featured header {
+  margin-top: 2.4rem;
+  margin-bottom: 1.2rem;
+}
+
+.home-posts header h1,
+.home-featured header h1 {
+  font-size: 2.8rem;
+  line-height: 3.4rem;
+}
+
+.home-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.home-section-more {
+  color: #1565c0;
+  font-size: 1.4rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.home-section-more:hover,
+.home-section-more:focus {
+  text-decoration: underline;
+}
+
+.home-posts .home-post-list {
+  margin-top: 1.2rem;
 }
 
 .home-posts-empty {
@@ -1483,7 +1523,7 @@ body.image-lb-open {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
   gap: 1.6rem;
-  margin-top: 2rem;
+  margin-top: 1.2rem;
 }
 
 .home-featured-card {
@@ -1791,6 +1831,14 @@ body.colorscheme-dark {
     color: #42a5f5;
   }
 
+  .home-intro {
+    color: #aaa;
+  }
+
+  .home-section-more {
+    color: #42a5f5;
+  }
+
   .home-featured-card h2 a {
     color: #dadada;
   }
@@ -1899,6 +1947,14 @@ body.colorscheme-dark {
     }
 
     .home-featured-kicker {
+      color: #42a5f5;
+    }
+
+    .home-intro {
+      color: #aaa;
+    }
+
+    .home-section-more {
       color: #42a5f5;
     }
 
@@ -2023,6 +2079,20 @@ body.colorscheme-dark {
 
   .home-featured-grid {
     grid-template-columns: 1fr;
+  }
+
+  .home-posts header h1,
+  .home-featured header h1 {
+    font-size: 2.4rem;
+    line-height: 3rem;
+  }
+
+  .home-intro {
+    font-size: 1.3rem;
+  }
+
+  .home-section-more {
+    font-size: 1.3rem;
   }
 
   .home-featured-image img {
