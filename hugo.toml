@@ -85,6 +85,9 @@ pagerSize = 10
   # ★ 站点描述，用于 SEO 和 RSS
   description = "月の眼の個人ブログ。新世界を記録する。"
 
+  # 首页 RSS 只输出 posts 分区，避免「归档」「搜索」「关于」混进订阅
+  mainSections = ["posts"]
+
   # SEO 关键词，逗号分隔
   keywords = "blog,技术,笔记,编程"
 
