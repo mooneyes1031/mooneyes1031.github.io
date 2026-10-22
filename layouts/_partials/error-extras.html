@@ -1,0 +1,33 @@
+{{- $quotes := hugo.Data.quotes.quotes | default (slice) -}}
+{{- $first := "" -}}
+{{- with $quotes -}}
+  {{- $first = index . 0 -}}
+{{- end -}}
+
+<div class="random-quote" data-random-quote>
+  <p class="random-quote__text" data-quote-text>{{ with $first }}{{ .text }}{{ end }}</p>
+  <p class="random-quote__source" data-quote-source{{ if not (and $first $first.source) }} hidden{{ end }}>{{ with $first }}{{ with .source }}—— {{ . }}{{ end }}{{ end }}</p>
+</div>
+
+<div class="random-quote__pool" hidden>
+  {{ range $quotes }}
+    <span data-quote-item data-text="{{ .text }}" data-source="{{ .source }}"></span>
+  {{ end }}
+</div>
+
+<section class="error-game" data-error-game hidden>
+  <h2>在星海里找月亮</h2>
+  <p class="error-game__hint">其中有一个月亮的方向不一样，点它。三局都找到，就算你赢。</p>
+  <div class="error-game__grid" data-error-game-grid role="group" aria-label="找不一样的月亮"></div>
+  <p class="error-game__status" data-error-game-status aria-live="polite"></p>
+  <button type="button" class="error-game__reset" data-error-game-reset>再来一局</button>
+</section>
+
+{{- with resources.Get "js/error-extras.js" }}
+  {{- if hugo.IsServer }}
+<script src="{{ .RelPermalink }}" defer></script>
+  {{- else }}
+    {{- $js := . | resources.Minify | resources.Fingerprint }}
+<script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+  {{- end }}
+{{- end }}

@@ -1,0 +1,49 @@
+{{ define "title" }}{{ .Title }} · {{ .Site.Title }}{{ end }}
+{{ define "content" }}
+  <section class="container page shelf-page">
+    <header>
+      <h1 class="title">
+        <a class="title-link" href="{{ .Permalink | safeURL }}">{{ .Title }}</a>
+      </h1>
+    </header>
+
+    {{ .Content }}
+
+    {{ $groups := hugo.Data.shelf.groups | default (slice) }}
+    {{ if $groups }}
+      <div class="shelf-groups">
+        {{ range $groups }}
+          <section class="shelf-group">
+            <h2>
+              {{ with .icon }}<i class="{{ . }}" aria-hidden="true"></i>{{ end }}
+              {{ .name }}
+            </h2>
+            {{ $items := .items | default (slice) }}
+            {{ if $items }}
+              <ul class="shelf-list">
+                {{ range $items }}
+                  {{ $item := . }}
+                  <li>
+                    <div class="shelf-item__body">
+                      <strong>
+                        {{ with $item.url }}<a href="{{ . }}" target="_blank" rel="noopener">{{ end }}
+                        {{ $item.title }}
+                        {{ with $item.url }}</a>{{ end }}
+                      </strong>
+                      {{ with $item.note }}<small>{{ . }}</small>{{ end }}
+                    </div>
+                    {{ with $item.rating }}<span class="shelf-rating" aria-label="评分">{{ . }}</span>{{ end }}
+                  </li>
+                {{ end }}
+              </ul>
+            {{ else }}
+              <p class="page-empty">这一类还没填，等我想起来再加。</p>
+            {{ end }}
+          </section>
+        {{ end }}
+      </div>
+    {{ else }}
+      <p class="page-empty">还没有记录。等我看完下一本书、下一部电影，再来填。</p>
+    {{ end }}
+  </section>
+{{ end }}

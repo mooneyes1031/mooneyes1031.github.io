@@ -203,26 +203,28 @@ pagerSize = 10
   url = "about/"
 
 # ---------------------------------------------------------------------------
-# 评论系统（默认关闭，想用再取消注释）
+# 评论系统（giscus）
 #
-# giscus 配置步骤：
+# 还差最后一步：GitHub 仓库需要开启 Discussions，并安装 giscus App。
 #   1. 仓库 → Settings → General → Features → 勾选 Discussions
 #   2. https://github.com/apps/giscus 安装并授权你的博客仓库
-#   3. https://giscus.app/zh-CN 填仓库名，把生成的参数抄到下面
+#   3. https://giscus.app/zh-CN 填仓库名，选 General 分类，把生成的 categoryID 填到下面
+#
+# categoryID 为空时，文章底部不会显示评论区，也不会报错。
 # ---------------------------------------------------------------------------
-# [params.giscus]
-#   repo = "mooneyes1031/mooneyes1031.github.io"
-#   repoID = ""
-#   category = "General"
-#   categoryID = ""
-#   mapping = "pathname"
-#   strict = "0"
-#   reactionsEnabled = "1"
-#   emitMetadata = "0"
-#   inputPosition = "bottom"
-#   theme = "preferred_color_scheme"
-#   lang = "zh-CN"
-#   loading = "lazy"
+[params.giscus]
+  repo = "mooneyes1031/mooneyes1031.github.io"
+  repoID = "R_kgDOVPRXyA"
+  category = "General"
+  categoryID = ""
+  mapping = "pathname"
+  strict = "0"
+  reactionsEnabled = "1"
+  emitMetadata = "0"
+  inputPosition = "bottom"
+  theme = "preferred_color_scheme"
+  lang = "zh-CN"
+  loading = "lazy"
 
 # ---------------------------------------------------------------------------
 # 访问统计（默认关闭，全部留空 = 不加载任何脚本）

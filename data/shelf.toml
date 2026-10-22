@@ -1,0 +1,21 @@
+# 书架 / 影单 / 游戏数据。
+# 复制一组，取消注释后改内容即可。每组可以有任意多条 items。
+#
+# [[groups]]
+# name = "书架"
+# icon = "fa-solid fa-book-open"
+#
+# [[groups.items]]
+# title = "书名"
+# note = "一句话感受"
+# rating = "★★★★"
+# url = "https://example.com/"
+#
+# [[groups]]
+# name = "影单"
+# icon = "fa-solid fa-film"
+#
+# [[groups.items]]
+# title = "电影名"
+# note = "一句话感受"
+# rating = "★★★★"

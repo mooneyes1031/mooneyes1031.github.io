@@ -13,6 +13,12 @@
     bar.appendChild(fill);
     document.body.appendChild(bar);
 
+    var moon = document.createElement("div");
+    moon.className = "reading-moon";
+    moon.setAttribute("aria-hidden", "true");
+    moon.innerHTML = '<span class="reading-moon__disc"></span>';
+    document.body.appendChild(moon);
+
     var ticking = false;
 
     function update() {
@@ -21,6 +27,7 @@
 
       if (total <= 0) {
         bar.classList.add("is-hidden");
+        moon.classList.add("is-hidden");
         fill.style.transform = "scaleX(0)";
         return;
       }
@@ -29,6 +36,8 @@
       var progress = (-content.getBoundingClientRect().top) / total;
       progress = Math.max(0, Math.min(1, progress));
       fill.style.transform = "scaleX(" + progress + ")";
+      moon.style.setProperty("--reading-progress", (progress * 100).toFixed(2) + "%");
+      moon.classList.toggle("is-hidden", progress <= 0.005 || progress >= 0.995);
     }
 
     function requestUpdate() {

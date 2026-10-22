@@ -1,0 +1,23 @@
+{{- $page := .page -}}
+{{- $image := .image -}}
+{{- $caption := "" -}}
+{{- with $page.Params.captions -}}
+  {{- $caption = index . $image.Name | default "" -}}
+{{- end -}}
+{{- $alt := or $caption (replaceRE "\\.[^.]+$" "" $image.Name) -}}
+{{- $thumb := $image -}}
+{{- if gt $image.Width 900 -}}
+  {{- $thumb = $image.Resize "900x q85" -}}
+{{- end -}}
+{{- $large := $image -}}
+{{- if gt $image.Width 1800 -}}
+  {{- $large = $image.Resize "1800x q90" -}}
+{{- end -}}
+<figure class="photo-item">
+  <a class="photo-link" href="{{ $large.RelPermalink }}" data-full="{{ $large.RelPermalink }}" data-caption="{{ $caption }}" data-alt="{{ $alt }}">
+    <img src="{{ $thumb.RelPermalink }}" alt="{{ $alt }}" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}" loading="lazy" decoding="async">
+  </a>
+  {{- with $caption }}
+  <figcaption>{{ . }}</figcaption>
+  {{- end }}
+</figure>

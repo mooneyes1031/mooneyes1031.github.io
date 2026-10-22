@@ -4,11 +4,13 @@
 */}}
 {{ partial "music-player.html" . }}
 {{ partial "sw-cleanup.html" . }}
+{{ partial "moon-phase.html" . }}
 
-{{- /* 文章页的小工具：代码复制、阅读进度 */ -}}
+{{- /* 文章页的小工具：代码复制、阅读进度、目录高亮、脚注预览 */ -}}
 {{ if and .IsPage (eq .Section "posts") }}
   {{ partial "code-copy.html" . }}
   {{ partial "reading-progress.html" . }}
+  {{ partial "reading-extras.html" . }}
 {{ end }}
 
 {{- /* 正文图片灯箱：普通页面都可能用到 */ -}}

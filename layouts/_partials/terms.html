@@ -15,14 +15,34 @@
     </h1>
   </header>
   {{ .Content }}
-  {{- if .Data.Terms }}
-  <ul>
+  {{- $terms := slice -}}
+  {{- with .Data.Terms -}}{{- $terms = .Alphabetical -}}{{- end -}}
+  {{- $isTags := eq .Data.Plural "tags" -}}
+  {{- $maxCount := 1 -}}
+  {{- $minCount := 0 -}}
+  {{- if $isTags -}}
+    {{- $minCount = 999999 -}}
+    {{- range $terms -}}
+      {{- if gt .Count $maxCount -}}{{- $maxCount = .Count -}}{{- end -}}
+      {{- if lt .Count $minCount -}}{{- $minCount = .Count -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $terms }}
+  <ul{{ if $isTags }} class="tag-cloud"{{ end }}>
     {{ $type := .Type }}
-    {{ range $key, $value := .Data.Terms.Alphabetical }}
+    {{ range $terms }}
       {{ $name := .Name }}
       {{ $count := .Count }}
       {{ with $.Site.GetPage (printf "/%s/%s" $type $name) }}
-        <li>
+        {{- $size := 1.6 -}}
+        {{- if $isTags -}}
+          {{- $ratio := 0.0 -}}
+          {{- if gt $maxCount $minCount -}}
+            {{- $ratio = div (sub $count $minCount) (sub $maxCount $minCount) -}}
+          {{- end -}}
+          {{- $size = add 1.2 (mul $ratio 1.0) -}}
+        {{- end -}}
+        <li{{ if $isTags }} style="--tag-size: {{ printf "%.2f" $size }}rem"{{ end }}>
           <span class="taxonomy-element">
             <a href="{{ .Permalink }}">{{ .Name }}</a>
             <sup>{{ $count }}</sup>

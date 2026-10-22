@@ -1,0 +1,50 @@
+{{- $posts := where .Site.RegularPages "Section" "posts" -}}
+{{- if $posts -}}
+  {{- $counts := dict -}}
+  {{- range $posts -}}
+    {{- $key := .Date.Format "2006-01-02" -}}
+    {{- $old := index $counts $key | default 0 -}}
+    {{- $counts = merge $counts (dict $key (add $old 1)) -}}
+  {{- end -}}
+
+  {{- $max := 1 -}}
+  {{- range $key, $value := $counts -}}
+    {{- if gt $value $max -}}{{- $max = $value -}}{{- end -}}
+  {{- end -}}
+
+  {{- $end := now -}}
+  {{- $start := $end.AddDate 0 0 -364 -}}
+  {{- $start = $start.AddDate 0 0 (mul -1 (int $start.Weekday)) -}}
+  {{- $days := int (div (sub $end.Unix $start.Unix) 86400) -}}
+
+  <section class="writing-heatmap" aria-label="最近一年写作热力图">
+    <div class="writing-heatmap__head">
+      <h2>写作热力图</h2>
+      <span>最近一年 · {{ len $posts }} 篇</span>
+    </div>
+    <div class="writing-heatmap__scroll">
+      <div class="writing-heatmap__grid" role="img" aria-label="最近一年发文热力图，颜色越深表示发文越多">
+        {{- range seq 0 $days -}}
+          {{- $day := $start.AddDate 0 0 . -}}
+          {{- $key := $day.Format "2006-01-02" -}}
+          {{- $count := index $counts $key | default 0 -}}
+          {{- $level := 0 -}}
+          {{- if gt $count 0 -}}{{- $level = 1 -}}{{- end -}}
+          {{- if gt $count 1 -}}{{- $level = 2 -}}{{- end -}}
+          {{- if gt $count 3 -}}{{- $level = 3 -}}{{- end -}}
+          {{- if gt $count 6 -}}{{- $level = 4 -}}{{- end -}}
+          <span class="heatmap-cell heatmap-cell--{{ $level }}" title="{{ $key }} · {{ $count }} 篇"></span>
+        {{- end -}}
+      </div>
+    </div>
+    <div class="writing-heatmap__legend" aria-hidden="true">
+      <span>少</span>
+      <span class="heatmap-cell heatmap-cell--0"></span>
+      <span class="heatmap-cell heatmap-cell--1"></span>
+      <span class="heatmap-cell heatmap-cell--2"></span>
+      <span class="heatmap-cell heatmap-cell--3"></span>
+      <span class="heatmap-cell heatmap-cell--4"></span>
+      <span>多</span>
+    </div>
+  </section>
+{{- end -}}

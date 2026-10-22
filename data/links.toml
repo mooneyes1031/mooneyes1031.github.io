@@ -1,0 +1,7 @@
+# 友链数据。复制下面三行，取消注释并改成自己的即可。
+#
+# [[links]]
+# name = "朋友的名字"
+# url = "https://example.com/"
+# description = "一句话介绍"
+# avatar = "https://example.com/avatar.jpg"   # 可选

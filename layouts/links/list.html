@@ -1,0 +1,35 @@
+{{ define "title" }}{{ .Title }} · {{ .Site.Title }}{{ end }}
+{{ define "content" }}
+  <section class="container page links-page">
+    <header>
+      <h1 class="title">
+        <a class="title-link" href="{{ .Permalink | safeURL }}">{{ .Title }}</a>
+      </h1>
+    </header>
+
+    {{ .Content }}
+
+    {{ $links := hugo.Data.links.links | default (slice) }}
+    {{ if $links }}
+      <div class="friend-links">
+        {{ range $links }}
+          <a class="friend-link" href="{{ .url }}" target="_blank" rel="noopener">
+            {{ with .avatar }}
+              <img class="friend-link__avatar" src="{{ . }}" alt="" loading="lazy" decoding="async">
+            {{ else }}
+              <span class="friend-link__avatar friend-link__avatar--icon" aria-hidden="true">
+                <i class="fa-solid fa-link"></i>
+              </span>
+            {{ end }}
+            <span class="friend-link__body">
+              <strong>{{ .name }}</strong>
+              {{ with .description }}<small>{{ . }}</small>{{ end }}
+            </span>
+          </a>
+        {{ end }}
+      </div>
+    {{ else }}
+      <p class="page-empty">还没有友链。等我把常看的博客整理出来，这里就会慢慢长起来。</p>
+    {{ end }}
+  </section>
+{{ end }}

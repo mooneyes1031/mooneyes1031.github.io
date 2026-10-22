@@ -1,0 +1,37 @@
+<footer class="footer">
+  <section class="container">
+    <div class="footer-extra">
+      <nav class="footer-links" aria-label="更多页面">
+        <a href="{{ "links/" | relLangURL }}">友链</a>
+        <span aria-hidden="true">·</span>
+        <a href="{{ "now/" | relLangURL }}">Now</a>
+        <span aria-hidden="true">·</span>
+        <a href="{{ "shelf/" | relLangURL }}">书架</a>
+        <span aria-hidden="true">·</span>
+        <a href="{{ "annual/" | relLangURL }}">年度</a>
+      </nav>
+      <span class="moon-phase" data-moon-phase>
+        <span class="moon-phase__icon" aria-hidden="true">🌙</span>
+        <span class="moon-phase__label">月相</span>
+      </span>
+    </div>
+
+    <div class="footer-copy">
+      ©
+      {{ if (and .Site.Params.since (lt .Site.Params.since now.Year)) }}
+        {{ .Site.Params.since }} -
+      {{ end }}
+      {{ now.Year }}
+      {{ with .Site.Params.author }} {{ . }} {{ end }}
+      ·
+      {{ if (and .Site.Params.license) }}
+        {{ i18n "licensed_under" }} {{ .Site.Params.license | safeHTML }}
+      ·
+      {{ end }}
+      {{ i18n "powered_by" }} <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+      {{ if (and .Site.Params.commit .GitInfo) }}
+        [<a href="{{ .Site.Params.commit }}/{{ .GitInfo.Hash }}" target="_blank" rel="noopener">{{ .GitInfo.AbbreviatedHash }}</a>]
+      {{ end }}
+    </div>
+  </section>
+</footer>

@@ -1,0 +1,104 @@
+{{ define "title" }}{{ .Title }} · {{ .Site.Title }}{{ end }}
+{{ define "content" }}
+  <section class="container page annual-page">
+    <article>
+      <header>
+        <h1 class="title">
+          <a class="title-link" href="{{ .Permalink | safeURL }}">{{ .Title }}</a>
+        </h1>
+      </header>
+
+      {{ .Content }}
+
+      {{ $posts := where .Site.RegularPages "Section" "posts" }}
+      {{ $posts = $posts.ByDate.Reverse }}
+
+      {{ if $posts }}
+        {{ $totalWords := 0 }}
+        {{ $totalMinutes := 0 }}
+        {{ range $posts }}
+          {{ $totalWords = add $totalWords .WordCount }}
+          {{ $totalMinutes = add $totalMinutes .ReadingTime }}
+        {{ end }}
+
+        <div class="annual-overview">
+          <div class="annual-stat"><strong>{{ len $posts }}</strong><span>篇文章</span></div>
+          <div class="annual-stat"><strong>{{ $totalWords }}</strong><span>字</span></div>
+          <div class="annual-stat"><strong>{{ $totalMinutes }}</strong><span>分钟阅读</span></div>
+        </div>
+
+        {{ range $posts.GroupByDate "2006" }}
+          {{ $yearPages := .Pages }}
+          {{ $yearWords := 0 }}
+          {{ range $yearPages }}
+            {{ $yearWords = add $yearWords .WordCount }}
+          {{ end }}
+
+          {{ $maxMonth := 1 }}
+          {{ range seq 1 12 }}
+            {{ $month := . }}
+            {{ $monthCount := 0 }}
+            {{ range $yearPages }}
+              {{ if eq (int .Date.Month) $month }}{{ $monthCount = add $monthCount 1 }}{{ end }}
+            {{ end }}
+            {{ if gt $monthCount $maxMonth }}{{ $maxMonth = $monthCount }}{{ end }}
+          {{ end }}
+
+          <section class="annual-year">
+            <div class="annual-year__head">
+              <h2>{{ .Key }}</h2>
+              <span>{{ len $yearPages }} 篇 · {{ $yearWords }} 字</span>
+            </div>
+
+            <div class="annual-bars" aria-label="{{ .Key }} 年每月发文数">
+              {{ range seq 1 12 }}
+                {{ $month := . }}
+                {{ $monthCount := 0 }}
+                {{ range $yearPages }}
+                  {{ if eq (int .Date.Month) $month }}{{ $monthCount = add $monthCount 1 }}{{ end }}
+                {{ end }}
+                {{- $barHeight := "height: 2%" -}}
+                {{- if gt $monthCount 0 -}}
+                  {{- $barHeight = printf "height: %d%%" (div (mul $monthCount 100) $maxMonth) -}}
+                {{- end -}}
+                <div class="annual-bar" title="{{ $month }} 月 · {{ $monthCount }} 篇">
+                  <span style="{{ $barHeight | safeCSS }}"></span>
+                  <small>{{ $month }}</small>
+                </div>
+              {{ end }}
+            </div>
+
+            <ul class="annual-list">
+              {{ range $yearPages }}
+                <li>
+                  <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "01-02" }}</time>
+                  <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                </li>
+              {{ end }}
+            </ul>
+          </section>
+        {{ end }}
+
+        {{ with .Site.Taxonomies.tags.ByCount }}
+          <section class="annual-tags">
+            <h2>常用标签</h2>
+            <ul>
+              {{ range first 8 . }}
+                <li><a href="{{ .Page.RelPermalink }}">{{ .Page.LinkTitle }}</a><span>{{ .Count }}</span></li>
+              {{ end }}
+            </ul>
+          </section>
+        {{ end }}
+
+        {{ $longest := index (sort $posts "WordCount" "desc") 0 }}
+        <p class="annual-longest">
+          最长的一篇：
+          <a href="{{ $longest.RelPermalink }}">{{ $longest.Title }}</a>
+          （{{ $longest.WordCount }} 字）
+        </p>
+      {{ else }}
+        <p class="annual-empty">还没有文章，等第一篇写出来再统计。</p>
+      {{ end }}
+    </article>
+  </section>
+{{ end }}

@@ -16,6 +16,8 @@
       {{ with $posts }}
         <p class="archive-count">共 {{ len . }} 篇文章</p>
 
+        {{ partial "archive-heatmap.html" $ }}
+
         {{ range .GroupByDate "2006" }}
           <section class="archive-year">
             <h2>

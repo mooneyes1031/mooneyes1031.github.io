@@ -1,5 +1,15 @@
 {{/*
   主题的 <head> 扩展点（覆盖主题同名空文件）。
-  目前放结构化数据 JSON-LD。
+  目前放季节主题色和结构化数据 JSON-LD。
 */}}
+<script>
+  (function () {
+    var month = new Date().getMonth() + 1;
+    var season = "winter";
+    if (month >= 3 && month <= 5) season = "spring";
+    else if (month >= 6 && month <= 8) season = "summer";
+    else if (month >= 9 && month <= 11) season = "autumn";
+    document.documentElement.setAttribute("data-season", season);
+  })();
+</script>
 {{ partial "head/json-ld.html" . }}

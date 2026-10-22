@@ -24,6 +24,12 @@
           <span class="post-series-pos">第 {{ $pos }} / {{ len $pages }} 篇</span>
           {{- end }}
         </div>
+        {{- if gt $pos 0 }}
+        {{- $seriesWidth := printf "width: %d%%" (div (mul $pos 100) (len $pages)) }}
+        <div class="post-series-progress" aria-hidden="true">
+          <span style="{{ $seriesWidth | safeCSS }}"></span>
+        </div>
+        {{- end }}
         <ol class="post-series-list">
           {{- range $i, $p := $pages }}
           <li{{ if eq $p.RelPermalink $page.RelPermalink }} class="is-current" aria-current="page"{{ end }}>

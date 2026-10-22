@@ -1,6 +1,7 @@
 {{ define "title" }}404 · {{ .Site.Title }}{{ end }}
 {{ define "content" }}
   <section class="container page error-page">
+    <div class="error-stars" aria-hidden="true"></div>
     <p class="error-code">404</p>
     <h1>迷失在月读里</h1>
     <p class="error-desc">这个页面不存在，可能已经被删掉，或者从来就没有过。</p>
@@ -22,6 +23,8 @@
       <span>·</span>
       <a href="{{ "posts/" | relURL }}" class="random-post-link" data-random-post data-index="{{ "index.json" | relURL }}">随机一篇</a>
     </p>
+
+    {{ partial "error-extras.html" . }}
   </section>
 
   {{ partial "random-post.html" . }}
