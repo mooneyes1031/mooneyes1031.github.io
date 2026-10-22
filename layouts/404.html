@@ -19,6 +19,10 @@
       <a href="{{ "posts/" | relURL }}">浏览文章</a>
       <span>·</span>
       <a href="{{ "tags/" | relURL }}">按标签浏览</a>
+      <span>·</span>
+      <a href="{{ "posts/" | relURL }}" class="random-post-link" data-random-post data-index="{{ "index.json" | relURL }}">随机一篇</a>
     </p>
   </section>
+
+  {{ partial "random-post.html" . }}
 {{ end }}

@@ -6,14 +6,30 @@
   - 点击图片会打开灯箱（脚本：assets/js/post-lightbox.js）
   - 如果图片本身被链接包住（[![...](...)](...)），交给链接处理，不劫持点击
   - 用 span 而不是 figure，避免在 Markdown 的 <p> 里嵌套块级元素
+  - 页面包（page bundle）里的 JPEG/PNG/WebP 会自动补上宽高；
+    宽度超过 1600px 时缩到 1600px，避免手机端加载原图
+  - static/images/ 里的图片不经过 Hugo 处理，保持原样
 */ -}}
 {{- $src := .Destination -}}
+{{- $width := 0 -}}
+{{- $height := 0 -}}
 {{- with .Page.Resources.GetMatch .Destination -}}
-  {{- $src = .RelPermalink -}}
+  {{- $img := . -}}
+  {{- $src = $img.RelPermalink -}}
+  {{- if in (slice "jpeg" "png" "webp") $img.MediaType.SubType -}}
+    {{- $width = $img.Width -}}
+    {{- $height = $img.Height -}}
+    {{- if gt $img.Width 1600 -}}
+      {{- $img = $img.Resize "1600x q85" -}}
+      {{- $src = $img.RelPermalink -}}
+      {{- $width = $img.Width -}}
+      {{- $height = $img.Height -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
 {{- $alt := .PlainText | default "" -}}
 <span class="post-figure">
-  <img src="{{ $src | safeURL }}" alt="{{ $alt }}" loading="lazy" decoding="async">
+  <img src="{{ $src | safeURL }}" alt="{{ $alt }}" loading="lazy" decoding="async"{{ with $width }} width="{{ . }}"{{ end }}{{ with $height }} height="{{ . }}"{{ end }}>
   {{- with .Title }}
   <span class="post-caption">{{ . }}</span>
   {{- end }}

@@ -41,8 +41,11 @@
         <a href="{{ "tags/" | relURL }}">按标签</a> ·
         <a href="{{ "categories/" | relURL }}">按分类</a> ·
         <a href="{{ "series/" | relURL }}">按系列</a> ·
-        <a href="{{ "search/" | relURL }}">搜索</a>。
+        <a href="{{ "search/" | relURL }}">搜索</a> ·
+        <a href="{{ "posts/" | relURL }}" class="random-post-link" data-random-post data-index="{{ "index.json" | relURL }}">随机一篇</a>。
       </p>
     </article>
   </section>
+
+  {{ partial "random-post.html" . }}
 {{ end }}

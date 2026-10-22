@@ -1,0 +1,9 @@
+{{- /* 随机一篇：给带 data-random-post 的链接加载脚本，只在归档页和 404 页用到 */ -}}
+{{- with resources.Get "js/random-post.js" }}
+  {{- if hugo.IsServer }}
+<script src="{{ .RelPermalink }}" defer></script>
+  {{- else }}
+    {{- $js := . | resources.Minify | resources.Fingerprint }}
+<script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+  {{- end }}
+{{- end }}
