@@ -3260,3 +3260,114 @@ body.colorscheme-dark .error-game__status {
     font-size: 1.5rem;
   }
 }
+
+// ==========================================================================
+//  17. 轻量动效 / Motion
+//  只做不挡内容的微动效：首页首屏依次淡入、页面切换淡入、卡片微交互。
+//  系统开启“减少动态效果”时全部关闭；不支持 View Transitions 的浏览器
+//  会退回普通页面加载，不影响阅读。
+// ==========================================================================
+
+// 页面切换：浏览器原生 View Transitions（同源链接生效）
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: page-fade-out 0.16s ease both;
+}
+
+::view-transition-new(root) {
+  animation: page-fade-in 0.22s ease both;
+}
+
+@keyframes page-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  // 首页首屏：头像、站名、副标题、简介、社交图标依次淡入
+  .home-wrapper .about > * {
+    animation: home-rise 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  }
+
+  .home-wrapper .about > :nth-child(1) {
+    animation-delay: 0.02s;
+  }
+
+  .home-wrapper .about > :nth-child(2) {
+    animation-delay: 0.08s;
+  }
+
+  .home-wrapper .about > :nth-child(3) {
+    animation-delay: 0.14s;
+  }
+
+  .home-wrapper .about > :nth-child(4) {
+    animation-delay: 0.2s;
+  }
+
+  .home-wrapper .about > :nth-child(5) {
+    animation-delay: 0.26s;
+  }
+
+  @keyframes home-rise {
+    from {
+      opacity: 0;
+      transform: translateY(0.8rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  // 不支持 View Transitions 的浏览器：正文轻微淡入
+  @supports not (view-transition-name: root) {
+    .content {
+      animation: page-fade-in 0.24s ease both;
+    }
+  }
+
+  @media (hover: hover) {
+    // 文章列表：鼠标悬停时整行轻微右移
+    .list ul li.post-list-item {
+      transition: transform 0.2s ease;
+    }
+
+    .list ul li.post-list-item:hover {
+      transform: translateX(0.3rem);
+    }
+
+    // 标签：悬停时轻微上浮
+    .post-list-tag {
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+
+    .post-list-tag:hover,
+    .post-list-tag:focus-visible {
+      transform: translateY(-0.1rem);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+
+  .home-wrapper .about > *,
+  .content {
+    animation: none !important;
+  }
+}
