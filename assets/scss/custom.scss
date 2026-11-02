@@ -3264,8 +3264,8 @@ body.colorscheme-dark .error-game__status {
 // ==========================================================================
 //  17. 轻量动效 / Motion
 //  只做不挡内容的微动效：首页首屏依次淡入、页面切换淡入、卡片微交互。
-//  系统开启“减少动态效果”时全部关闭；不支持 View Transitions 的浏览器
-//  会退回普通页面加载，不影响阅读。
+//  系统开启“减少动态效果”时全部关闭；不支持跨文档 View Transitions 的
+//  浏览器会退回正文淡入，不影响阅读。
 // ==========================================================================
 
 // 页面切换：浏览器原生 View Transitions（同源链接生效）
@@ -3274,11 +3274,11 @@ body.colorscheme-dark .error-game__status {
 }
 
 ::view-transition-old(root) {
-  animation: page-fade-out 0.16s ease both;
+  animation: page-fade-out 0.3s ease both;
 }
 
 ::view-transition-new(root) {
-  animation: page-fade-in 0.22s ease both;
+  animation: page-fade-in 0.45s ease both;
 }
 
 @keyframes page-fade-out {
@@ -3296,33 +3296,33 @@ body.colorscheme-dark .error-game__status {
 @media (prefers-reduced-motion: no-preference) {
   // 首页首屏：头像、站名、副标题、简介、社交图标依次淡入
   .home-wrapper .about > * {
-    animation: home-rise 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+    animation: home-rise 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) both;
   }
 
   .home-wrapper .about > :nth-child(1) {
-    animation-delay: 0.02s;
+    animation-delay: 0.05s;
   }
 
   .home-wrapper .about > :nth-child(2) {
-    animation-delay: 0.08s;
+    animation-delay: 0.13s;
   }
 
   .home-wrapper .about > :nth-child(3) {
-    animation-delay: 0.14s;
+    animation-delay: 0.21s;
   }
 
   .home-wrapper .about > :nth-child(4) {
-    animation-delay: 0.2s;
+    animation-delay: 0.29s;
   }
 
   .home-wrapper .about > :nth-child(5) {
-    animation-delay: 0.26s;
+    animation-delay: 0.37s;
   }
 
   @keyframes home-rise {
     from {
       opacity: 0;
-      transform: translateY(0.8rem);
+      transform: translateY(1.2rem);
     }
 
     to {
@@ -3331,11 +3331,11 @@ body.colorscheme-dark .error-game__status {
     }
   }
 
-  // 不支持 View Transitions 的浏览器：正文轻微淡入
-  @supports not (view-transition-name: root) {
-    .content {
-      animation: page-fade-in 0.24s ease both;
-    }
+  // 不支持跨文档 View Transitions 的浏览器：正文轻微淡入
+  // （Safari 18.0–18.1 支持同文档转场，但没有 @view-transition，
+  //   所以不能用 @supports (view-transition-name) 判断。）
+  .no-cross-doc-vt .content {
+    animation: page-fade-in 0.4s ease both;
   }
 
   @media (hover: hover) {
@@ -3345,7 +3345,12 @@ body.colorscheme-dark .error-game__status {
     }
 
     .list ul li.post-list-item:hover {
-      transform: translateX(0.3rem);
+      transform: translateX(0.4rem);
+    }
+
+    // 标题： hover 变色时带一点过渡
+    .list ul li .post-list-title {
+      transition: color 0.2s ease;
     }
 
     // 标签：悬停时轻微上浮

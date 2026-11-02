@@ -1,6 +1,6 @@
 {{/*
   主题的 <head> 扩展点（覆盖主题同名空文件）。
-  目前放季节主题色和结构化数据 JSON-LD。
+  目前放季节主题色、页面转场兼容标记和结构化数据 JSON-LD。
 */}}
 <script>
   (function () {
@@ -10,6 +10,12 @@
     else if (month >= 6 && month <= 8) season = "summer";
     else if (month >= 9 && month <= 11) season = "autumn";
     document.documentElement.setAttribute("data-season", season);
+
+    // Safari 18.0–18.1 有同文档转场，但没有跨文档 @view-transition。
+    // 用 CSSViewTransitionRule 判断，给这些浏览器退回正文淡入。
+    if (!("CSSViewTransitionRule" in window)) {
+      document.documentElement.classList.add("no-cross-doc-vt");
+    }
   })();
 </script>
 {{ partial "head/json-ld.html" . }}
