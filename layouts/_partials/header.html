@@ -1,0 +1,65 @@
+{{/*
+  导航栏（覆盖主题同名文件）。
+
+  和主题原版的区别：内容还没准备好的页面先不出现在导航里，
+  等有了内容会自动出现，避免访客点进空页面。
+
+  - 「照片」：content/photos/ 里有图片时才显示
+  - 「系列」：至少有一篇文章写了 series 时才显示
+*/}}
+{{- $hasPhotos := false -}}
+{{- with site.GetPage "/photos" -}}
+  {{- with .Resources.ByType "image" -}}
+    {{- if where . "MediaType.SubType" "!=" "svg" -}}
+      {{- $hasPhotos = true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $hasSeries := gt (len site.Taxonomies.series) 0 -}}
+
+<nav class="navigation">
+  <section class="container">
+    {{ with .Site }}
+    <a class="navigation-title" href="{{ absLangURL "" }}">
+      {{ .Title }}
+    </a>
+    {{ end }}
+    {{ if or .Site.Menus.main hugo.IsMultilingual }}
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa-solid fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list">
+        {{ with .Site.Menus.main}}
+          {{ range sort . }}
+            {{- $hide := false -}}
+            {{- if and (in (slice "series/" "/series/") .URL) (not $hasSeries) -}}{{- $hide = true -}}{{- end -}}
+            {{- if and (in (slice "photos/" "/photos/") .URL) (not $hasPhotos) -}}{{- $hide = true -}}{{- end -}}
+            {{- if not $hide }}
+            <li class="navigation-item">
+              <a class="navigation-link {{ .Params.class }}" href="{{ index (apply (slice .URL) (.Params.urlFunc | default "relLangURL") ".") 0 }}">{{ .Name }}</a>
+            </li>
+            {{- end }}
+          {{ end }}
+        {{ end }}
+        {{ if hugo.IsMultilingual }}
+          {{ $node := . }}
+          {{ .Scratch.Set "separator" true }}
+          {{ range (default .Site.Home.AllTranslations .Translations) }}
+            {{ if ne $.Site.Language .Language }}
+              {{ if $node.Scratch.Get "separator" }}
+                <li class="navigation-item menu-separator">
+                  <span>|</span>
+                </li>
+                {{ $node.Scratch.Set "separator" false }}
+              {{ end }}
+              <li class="navigation-item">
+                <a href="{{ .RelPermalink }}">{{ .Language.LanguageName | emojify }}</a>
+              </li>
+            {{ end }}
+          {{ end }}
+        {{ end }}
+      </ul>
+    {{ end }}
+  </section>
+</nav>

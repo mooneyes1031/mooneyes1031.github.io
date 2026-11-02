@@ -1,14 +1,29 @@
+{{/*
+  页脚（覆盖主题同名文件）。
+
+  友链和书架只在 data/ 里真的有条目时才显示入口，
+  避免访客点进去只看到空页面。Now 和年度始终显示。
+*/}}
+{{- $footerLinks := slice -}}
+{{- with hugo.Data.links -}}
+  {{- $footerLinks = $footerLinks | append (dict "url" ("links/" | relLangURL) "label" "友链") -}}
+{{- end -}}
+{{- $footerLinks = $footerLinks | append (dict "url" ("now/" | relLangURL) "label" "Now") -}}
+{{- with hugo.Data.shelf -}}
+  {{- with .groups -}}
+    {{- $footerLinks = $footerLinks | append (dict "url" ("shelf/" | relLangURL) "label" "书架") -}}
+  {{- end -}}
+{{- end -}}
+{{- $footerLinks = $footerLinks | append (dict "url" ("annual/" | relLangURL) "label" "年度") -}}
+
 <footer class="footer">
   <section class="container">
     <div class="footer-extra">
       <nav class="footer-links" aria-label="更多页面">
-        <a href="{{ "links/" | relLangURL }}">友链</a>
-        <span aria-hidden="true">·</span>
-        <a href="{{ "now/" | relLangURL }}">Now</a>
-        <span aria-hidden="true">·</span>
-        <a href="{{ "shelf/" | relLangURL }}">书架</a>
-        <span aria-hidden="true">·</span>
-        <a href="{{ "annual/" | relLangURL }}">年度</a>
+        {{- range $i, $link := $footerLinks }}
+          {{- if $i }}<span aria-hidden="true">·</span>{{ end }}
+          <a href="{{ $link.url }}">{{ $link.label }}</a>
+        {{- end }}
       </nav>
       <span class="moon-phase" data-moon-phase>
         <span class="moon-phase__icon" aria-hidden="true">🌙</span>
