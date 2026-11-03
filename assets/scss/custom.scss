@@ -3376,3 +3376,93 @@ body.colorscheme-dark .error-game__status {
     animation: none !important;
   }
 }
+
+// ==========================================================================
+//  18. 季节粒子 / Seasonal particles
+//  只出现在首页，颜色跟随季节强调色，低密度、不挡内容。
+//  手机只保留前 8 颗；系统开启“减少动态效果”时整层隐藏。
+// ==========================================================================
+
+// 让粒子层可以待在正文后面，同时不挡住导航和页脚
+.wrapper {
+  position: relative;
+  isolation: isolate;
+}
+
+.ambient-particles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ambient-particle {
+  position: absolute;
+  top: 0;
+  left: var(--x);
+  width: var(--size);
+  height: var(--size);
+  background: var(--accent-current);
+  border-radius: 50%;
+  opacity: 0;
+  animation: ambient-fall var(--duration) linear infinite;
+  animation-delay: var(--delay);
+  will-change: transform, opacity;
+
+  // 春夏的瓣、秋天的叶：稍微压扁一点，转起来更像飘落
+  html[data-season="spring"] & {
+    height: calc(var(--size) * 0.75);
+    border-radius: 65% 0 65% 0;
+  }
+
+  html[data-season="autumn"] & {
+    height: calc(var(--size) * 0.8);
+    border-radius: 70% 15% 70% 15%;
+  }
+}
+
+@keyframes ambient-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -12vh, 0) rotate(0deg);
+  }
+
+  8% {
+    opacity: var(--opacity);
+  }
+
+  25% {
+    transform: translate3d(var(--sway), 22vh, 0) rotate(90deg);
+  }
+
+  50% {
+    opacity: var(--opacity);
+    transform: translate3d(calc(var(--sway) * -0.7), 50vh, 0) rotate(180deg);
+  }
+
+  75% {
+    transform: translate3d(var(--sway), 76vh, 0) rotate(270deg);
+  }
+
+  92% {
+    opacity: var(--opacity);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 108vh, 0) rotate(360deg);
+  }
+}
+
+@media (max-width: 600px) {
+  .ambient-particle:nth-child(n + 9) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-particles {
+    display: none;
+  }
+}
