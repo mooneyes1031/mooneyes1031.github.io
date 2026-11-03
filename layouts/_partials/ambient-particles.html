@@ -6,7 +6,7 @@
   - 系统开启“减少动态效果”时整层隐藏
 */}}
 <div class="ambient-particles" aria-hidden="true">
-  {{- range $i := seq 1 16 -}}
+  {{- range $i := seq 1 22 -}}
     {{- $x := add 2 (mod (mul $i 41) 92) -}}
     {{- $delay := add 1 (mod (mul $i 17) 28) -}}
     {{- $duration := add 16 (mod (mul $i 13) 14) -}}
