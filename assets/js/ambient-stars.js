@@ -10,8 +10,8 @@
   var motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   var darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
   var TAU = Math.PI * 2;
-  var LINK_DISTANCE = 118;
-  var POINTER_DISTANCE = 190;
+  var LINK_DISTANCE = 115;
+  var POINTER_DISTANCE = 200;
 
   var width = 0;
   var height = 0;
@@ -41,8 +41,8 @@
   }
 
   function makeStars() {
-    var count = Math.round((width * height) / 16000);
-    count = Math.max(28, Math.min(90, count));
+    var count = Math.round((width * height) / 11000);
+    count = Math.max(30, Math.min(110, count));
     stars = [];
 
     for (var i = 0; i < count; i += 1) {
@@ -51,10 +51,10 @@
         y: Math.random() * height,
         vx: (Math.random() - 0.5) * 0.28,
         vy: (Math.random() - 0.5) * 0.28,
-        r: 0.9 + Math.random() * 1.3,
-        alpha: 0.32 + Math.random() * 0.5,
+        r: 1 + Math.random() * 1.5,
+        alpha: 0.36 + Math.random() * 0.5,
         phase: Math.random() * TAU,
-        twinkle: 0.04 + Math.random() * 0.08
+        twinkle: 0.05 + Math.random() * 0.08
       });
     }
   }
@@ -106,7 +106,7 @@
     var near;
 
     // 星点之间很淡的连线，像星座的底稿
-    ctx.lineWidth = 0.6;
+    ctx.lineWidth = 0.65;
     for (i = 0; i < stars.length; i += 1) {
       p = stars[i];
       for (j = i + 1; j < stars.length; j += 1) {
@@ -121,7 +121,7 @@
         distance = Math.sqrt(dx * dx + dy * dy);
         if (distance >= LINK_DISTANCE) continue;
 
-        alpha = (1 - distance / LINK_DISTANCE) * 0.12;
+        alpha = (1 - distance / LINK_DISTANCE) * 0.14;
         ctx.globalAlpha = alpha;
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
@@ -132,7 +132,7 @@
 
     // 鼠标附近的星点被连起来，形成更明显的星座
     if (pointer.active) {
-      ctx.lineWidth = 0.9;
+      ctx.lineWidth = 1.1;
       for (i = 0; i < stars.length; i += 1) {
         p = stars[i];
         dx = p.x - pointer.x;
@@ -145,7 +145,7 @@
         distance = Math.sqrt(dx * dx + dy * dy);
         if (distance >= POINTER_DISTANCE) continue;
 
-        alpha = (1 - distance / POINTER_DISTANCE) * 0.42;
+        alpha = (1 - distance / POINTER_DISTANCE) * 0.58;
         ctx.globalAlpha = alpha;
         ctx.beginPath();
         ctx.moveTo(pointer.x, pointer.y);
@@ -171,21 +171,21 @@
       alpha = p.alpha + Math.sin(time * 0.0012 + p.phase) * p.twinkle + near * 0.35;
       ctx.globalAlpha = Math.max(0.2, Math.min(1, alpha));
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r + near * 0.7, 0, TAU);
+      ctx.arc(p.x, p.y, p.r + near * 1, 0, TAU);
       ctx.fill();
     }
 
     // 鼠标位置本身是一个小节点
     if (pointer.active) {
-      ctx.globalAlpha = 0.7;
+      ctx.globalAlpha = 0.85;
       ctx.beginPath();
-      ctx.arc(pointer.x, pointer.y, 2.2, 0, TAU);
+      ctx.arc(pointer.x, pointer.y, 2.6, 0, TAU);
       ctx.fill();
 
-      ctx.globalAlpha = 0.22;
-      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.32;
+      ctx.lineWidth = 1.1;
       ctx.beginPath();
-      ctx.arc(pointer.x, pointer.y, 6, 0, TAU);
+      ctx.arc(pointer.x, pointer.y, 7, 0, TAU);
       ctx.stroke();
     }
 
