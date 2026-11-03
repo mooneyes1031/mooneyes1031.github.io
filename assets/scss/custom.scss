@@ -3378,18 +3378,20 @@ body.colorscheme-dark .error-game__status {
 }
 
 // ==========================================================================
-//  18. 首页月光晕染 / Ambient moonlight
-//  一大一小两团季节色柔光，缓慢呼吸、漂移；只在首页，正文后面。
-//  系统开启“减少动态效果”时隐藏。
+//  18. 首页墨色晕染 / Ambient ink
+//  四团大而柔的季节色块，像宣纸上的水色慢慢化开、收缩。
+//  只在首页，正文后面；系统开启“减少动态效果”时隐藏。
 // ==========================================================================
 
-// 让柔光层可以待在正文后面，同时不挡住导航和页脚
+// 让墨色层可以待在正文后面，同时不挡住导航和页脚
 .wrapper {
   position: relative;
   isolation: isolate;
 }
 
-.ambient-glow {
+.ambient-ink {
+  --ink-strength: 1;
+  --ink-mobile: 1;
   position: fixed;
   inset: 0;
   z-index: -1;
@@ -3397,86 +3399,176 @@ body.colorscheme-dark .error-game__status {
   pointer-events: none;
 }
 
-.ambient-glow::before,
-.ambient-glow::after {
-  content: "";
+.ink-blob {
   position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  will-change: transform, opacity;
+  border-radius: 54% 46% 58% 42% / 46% 58% 42% 54%;
+  background:
+    radial-gradient(
+      ellipse 58% 56% at 38% 42%,
+      var(--accent-current) 0%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 54% 58% at 64% 60%,
+      var(--accent-current) 0%,
+      transparent 64%
+    );
+  filter: blur(28px) saturate(1.05);
+  opacity: calc(var(--o) * var(--ink-strength) * var(--ink-mobile));
+  transform-origin: center;
+  animation: ink-drift var(--duration) ease-in-out infinite alternate;
+  animation-delay: var(--delay);
+  will-change: transform;
 }
 
-// 主光：落在首屏头像附近，像一层很淡的月光
-.ambient-glow::before {
+// 左上：最大的一团，压在头像左后方
+.ink-blob--1 {
+  top: -14vmax;
+  left: -19vmax;
+  width: 58vmax;
+  height: 50vmax;
+  --o: 0.18;
+  --rot: -9deg;
+  --dx: 4vmax;
+  --dy: 3vmax;
+  --duration: 38s;
+  --delay: -6s;
+}
+
+// 右上：靠近导航右侧，形成第二层水色
+.ink-blob--2 {
   top: 18vh;
-  left: 50%;
-  width: 64vmax;
-  height: 64vmax;
-  margin-left: -32vmax;
-  margin-top: -32vmax;
-  background: radial-gradient(
-    circle at 50% 50%,
-    var(--accent-current) 0%,
-    transparent 62%
-  );
-  opacity: 0.13;
-  animation: moon-breathe 18s ease-in-out infinite alternate;
+  right: -15vmax;
+  width: 48vmax;
+  height: 44vmax;
+  border-radius: 46% 54% 42% 58% / 56% 44% 58% 42%;
+  --o: 0.14;
+  --rot: 16deg;
+  --dx: -3vmax;
+  --dy: 4vmax;
+  --duration: 44s;
+  --delay: -21s;
 }
 
-// 副光：右下角，慢一点，增加层次
-.ambient-glow::after {
-  right: -20vmax;
-  bottom: -24vmax;
+// 左下：靠近页脚，颜色稍淡
+.ink-blob--3 {
+  bottom: -18vmax;
+  left: -16vmax;
   width: 52vmax;
-  height: 52vmax;
-  background: radial-gradient(
-    circle at 50% 50%,
-    var(--accent-current) 0%,
-    transparent 66%
-  );
-  opacity: 0.07;
-  animation: moon-drift 28s ease-in-out infinite alternate;
+  height: 46vmax;
+  border-radius: 58% 42% 50% 50% / 44% 60% 40% 56%;
+  --o: 0.12;
+  --rot: 7deg;
+  --dx: 5vmax;
+  --dy: -3vmax;
+  --duration: 40s;
+  --delay: -27s;
 }
 
-@keyframes moon-breathe {
+// 右下：只留一点点，给页面收个尾
+.ink-blob--4 {
+  right: -12vmax;
+  bottom: -14vmax;
+  width: 40vmax;
+  height: 36vmax;
+  border-radius: 50% 50% 44% 56% / 60% 42% 58% 40%;
+  --o: 0.09;
+  --rot: -14deg;
+  --dx: -2vmax;
+  --dy: -2vmax;
+  --duration: 48s;
+  --delay: -11s;
+}
+
+// 两团小一点的浓墨，叠在大块上，让水色有深有浅
+.ink-blob--5 {
+  top: 10vh;
+  left: 4vw;
+  width: 30vmax;
+  height: 28vmax;
+  border-radius: 48% 52% 60% 40% / 52% 46% 54% 48%;
+  --o: 0.08;
+  --rot: 22deg;
+  --dx: -2vmax;
+  --dy: 3vmax;
+  --duration: 34s;
+  --delay: -16s;
+}
+
+.ink-blob--6 {
+  top: 46vh;
+  right: 3vw;
+  width: 28vmax;
+  height: 26vmax;
+  border-radius: 58% 42% 46% 54% / 50% 58% 42% 50%;
+  --o: 0.07;
+  --rot: -18deg;
+  --dx: 3vmax;
+  --dy: -2vmax;
+  --duration: 42s;
+  --delay: -31s;
+}
+
+@keyframes ink-drift {
   from {
-    opacity: 0.1;
-    transform: translate3d(0, 0, 0) scale(0.98);
+    transform: translate3d(0, 0, 0) rotate(var(--rot)) scale(0.95);
   }
 
   to {
-    opacity: 0.17;
-    transform: translate3d(0, 1.5vmax, 0) scale(1.06);
+    transform: translate3d(var(--dx), var(--dy), 0)
+      rotate(calc(var(--rot) + 4deg)) scale(1.06);
   }
 }
 
-@keyframes moon-drift {
-  from {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
+// 深色模式下墨色换成更亮的季节色，否则会看不见
+body.colorscheme-dark .ambient-ink {
+  --ink-strength: 0.7;
+}
 
-  to {
-    transform: translate3d(-4vmax, -3vmax, 0) scale(1.08);
+@media (prefers-color-scheme: dark) {
+  body.colorscheme-auto .ambient-ink {
+    --ink-strength: 0.7;
   }
 }
 
 @media (max-width: 600px) {
-  .ambient-glow::before {
-    top: 30vh;
-    width: 78vmax;
-    height: 78vmax;
-    margin-left: -39vmax;
-    margin-top: -39vmax;
-    opacity: 0.1;
+  .ambient-ink {
+    --ink-mobile: 0.7;
   }
 
-  .ambient-glow::after {
-    opacity: 0.05;
+  .ink-blob {
+    filter: blur(22px) saturate(1.03);
+  }
+
+  .ink-blob--1 {
+    top: -18vmax;
+    left: -30vmax;
+    width: 86vmax;
+    height: 74vmax;
+  }
+
+  .ink-blob--2 {
+    top: 24vh;
+    right: -24vmax;
+    width: 70vmax;
+    height: 64vmax;
+  }
+
+  .ink-blob--3 {
+    bottom: -20vmax;
+    left: -24vmax;
+    width: 76vmax;
+    height: 66vmax;
+  }
+
+  .ink-blob--4,
+  .ink-blob--6 {
+    display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ambient-glow {
+  .ambient-ink {
     display: none;
   }
 }
