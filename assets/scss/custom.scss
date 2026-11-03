@@ -3378,18 +3378,18 @@ body.colorscheme-dark .error-game__status {
 }
 
 // ==========================================================================
-//  18. 季节粒子 / Seasonal particles
-//  只出现在首页，颜色跟随季节强调色，低密度、不挡内容。
-//  手机只保留前 8 颗；系统开启“减少动态效果”时整层隐藏。
+//  18. 首页月光晕染 / Ambient moonlight
+//  一大一小两团季节色柔光，缓慢呼吸、漂移；只在首页，正文后面。
+//  系统开启“减少动态效果”时隐藏。
 // ==========================================================================
 
-// 让粒子层可以待在正文后面，同时不挡住导航和页脚
+// 让柔光层可以待在正文后面，同时不挡住导航和页脚
 .wrapper {
   position: relative;
   isolation: isolate;
 }
 
-.ambient-particles {
+.ambient-glow {
   position: fixed;
   inset: 0;
   z-index: -1;
@@ -3397,72 +3397,86 @@ body.colorscheme-dark .error-game__status {
   pointer-events: none;
 }
 
-.ambient-particle {
+.ambient-glow::before,
+.ambient-glow::after {
+  content: "";
   position: absolute;
-  top: 0;
-  left: var(--x);
-  width: var(--size);
-  height: var(--size);
-  background: var(--accent-current);
   border-radius: 50%;
-  opacity: 0;
-  animation: ambient-fall var(--duration) linear infinite;
-  animation-delay: var(--delay);
+  pointer-events: none;
   will-change: transform, opacity;
+}
 
-  // 春夏的瓣、秋天的叶：稍微压扁一点，转起来更像飘落
-  html[data-season="spring"] & {
-    height: calc(var(--size) * 0.75);
-    border-radius: 65% 0 65% 0;
+// 主光：落在首屏头像附近，像一层很淡的月光
+.ambient-glow::before {
+  top: 18vh;
+  left: 50%;
+  width: 64vmax;
+  height: 64vmax;
+  margin-left: -32vmax;
+  margin-top: -32vmax;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--accent-current) 0%,
+    transparent 62%
+  );
+  opacity: 0.13;
+  animation: moon-breathe 18s ease-in-out infinite alternate;
+}
+
+// 副光：右下角，慢一点，增加层次
+.ambient-glow::after {
+  right: -20vmax;
+  bottom: -24vmax;
+  width: 52vmax;
+  height: 52vmax;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--accent-current) 0%,
+    transparent 66%
+  );
+  opacity: 0.07;
+  animation: moon-drift 28s ease-in-out infinite alternate;
+}
+
+@keyframes moon-breathe {
+  from {
+    opacity: 0.1;
+    transform: translate3d(0, 0, 0) scale(0.98);
   }
 
-  html[data-season="autumn"] & {
-    height: calc(var(--size) * 0.8);
-    border-radius: 70% 15% 70% 15%;
+  to {
+    opacity: 0.17;
+    transform: translate3d(0, 1.5vmax, 0) scale(1.06);
   }
 }
 
-@keyframes ambient-fall {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, -12vh, 0) rotate(0deg);
+@keyframes moon-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
   }
 
-  8% {
-    opacity: var(--opacity);
-  }
-
-  25% {
-    transform: translate3d(var(--sway), 22vh, 0) rotate(90deg);
-  }
-
-  50% {
-    opacity: var(--opacity);
-    transform: translate3d(calc(var(--sway) * -0.7), 50vh, 0) rotate(180deg);
-  }
-
-  75% {
-    transform: translate3d(var(--sway), 76vh, 0) rotate(270deg);
-  }
-
-  92% {
-    opacity: var(--opacity);
-  }
-
-  100% {
-    opacity: 0;
-    transform: translate3d(0, 108vh, 0) rotate(360deg);
+  to {
+    transform: translate3d(-4vmax, -3vmax, 0) scale(1.08);
   }
 }
 
 @media (max-width: 600px) {
-  .ambient-particle:nth-child(n + 9) {
-    display: none;
+  .ambient-glow::before {
+    top: 30vh;
+    width: 78vmax;
+    height: 78vmax;
+    margin-left: -39vmax;
+    margin-top: -39vmax;
+    opacity: 0.1;
+  }
+
+  .ambient-glow::after {
+    opacity: 0.05;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ambient-particles {
+  .ambient-glow {
     display: none;
   }
 }
