@@ -6,22 +6,30 @@
   主题的 .content 是横向 flex，加了第二块内容会左右并排；
   包一层纵向 flex 之后，"作者卡片"和"最新文章"就能上下排列。
 */}}
+{{/*
+  首页顶部是一块夜空：星点、星座连线都放在这块深色背景里。
+  下面的文章列表仍然使用浅色纸面，避免白底撒点显得杂乱。
+*/}}
 <div class="home-wrapper">
-  <section class="container centered">
-    <div class="about">
-      {{ partialCached "home/avatar.html" . }}
+  <div class="home-sky">
+    {{ partial "ambient-stars.html" . }}
 
-      {{ partialCached "home/author.html" . }}
+    <section class="container centered">
+      <div class="about">
+        {{ partialCached "home/avatar.html" . }}
 
-      {{ with .Site.Params.homeIntro }}
-      <p class="home-intro">{{ . }}</p>
-      {{ end }}
+        {{ partialCached "home/author.html" . }}
 
-      {{ partialCached "home/social.html" . }}
-    </div>
+        {{ with .Site.Params.homeIntro }}
+        <p class="home-intro">{{ . }}</p>
+        {{ end }}
 
-    {{ partialCached "home/extensions.html" . }}
-  </section>
+        {{ partialCached "home/social.html" . }}
+      </div>
+
+      {{ partialCached "home/extensions.html" . }}
+    </section>
+  </div>
 
   {{ partial "home/sections.html" . }}
 </div>

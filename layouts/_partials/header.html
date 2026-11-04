@@ -17,10 +17,6 @@
 {{- end -}}
 {{- $hasSeries := gt (len site.Taxonomies.series) 0 -}}
 
-{{- if .IsHome }}
-  {{ partial "ambient-stars.html" . }}
-{{- end }}
-
 <nav class="navigation">
   <section class="container">
     {{ with .Site }}

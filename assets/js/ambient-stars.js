@@ -23,17 +23,10 @@
   var lastTime = 0;
   var running = false;
   var observer = null;
+  var resizeObserver = null;
 
   function readAccent() {
-    var probe = document.createElement("span");
-    probe.style.position = "absolute";
-    probe.style.left = "-9999px";
-    probe.style.top = "0";
-    probe.style.color = "var(--accent-current)";
-    document.body.appendChild(probe);
-
-    var color = window.getComputedStyle(probe).color;
-    probe.parentNode.removeChild(probe);
+    var color = window.getComputedStyle(canvas).color;
 
     if (color && color !== "rgba(0, 0, 0, 0)") {
       accent = color;
@@ -41,8 +34,8 @@
   }
 
   function makeStars() {
-    var count = Math.round((width * height) / 11000);
-    count = Math.max(30, Math.min(110, count));
+    var count = Math.round((width * height) / 7000);
+    count = Math.max(42, Math.min(120, count));
     stars = [];
 
     for (var i = 0; i < count; i += 1) {
@@ -60,14 +53,13 @@
   }
 
   function resize() {
-    width = window.innerWidth;
-    height = window.innerHeight;
+    var rect = canvas.getBoundingClientRect();
+    width = Math.max(1, Math.round(rect.width));
+    height = Math.max(1, Math.round(rect.height));
     dpr = Math.min(window.devicePixelRatio || 1, 2);
 
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
-    canvas.style.width = width + "px";
-    canvas.style.height = height + "px";
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     makeStars();
@@ -236,10 +228,27 @@
   function bindEvents() {
     window.addEventListener("resize", resize, { passive: true });
     window.addEventListener("pointermove", function (event) {
-      pointer.x = event.clientX;
-      pointer.y = event.clientY;
+      var rect = canvas.getBoundingClientRect();
+      var x = event.clientX - rect.left;
+      var y = event.clientY - rect.top;
+
+      if (x < 0 || y < 0 || x > rect.width || y > rect.height) {
+        pointer.active = false;
+        return;
+      }
+
+      pointer.x = x;
+      pointer.y = y;
       pointer.active = true;
     }, { passive: true });
+
+    window.addEventListener(
+      "scroll",
+      function () {
+        pointer.active = false;
+      },
+      { passive: true }
+    );
 
     window.addEventListener("pointerleave", function () {
       pointer.active = false;
@@ -248,6 +257,13 @@
     window.addEventListener("blur", function () {
       pointer.active = false;
     });
+
+    if (window.ResizeObserver) {
+      resizeObserver = new ResizeObserver(function () {
+        resize();
+      });
+      resizeObserver.observe(canvas.parentElement);
+    }
 
     document.addEventListener("visibilitychange", function () {
       if (document.hidden) {

@@ -3378,25 +3378,103 @@ body.colorscheme-dark .error-game__status {
 }
 
 // ==========================================================================
-//  18. 首页星空粒子网络 / Ambient stars
-//  星点缓慢漂移；鼠标靠近时和星点连线，勾出星座。
-//  只在首页，正文后面；系统开启“减少动态效果”时隐藏。
+//  18. 首页夜空 / Home night sky
+//  首页顶部是一块深色夜空，星点缓慢漂移；鼠标靠近时和星点连线。
+//  下面的文章列表仍留在浅色纸面上。减少动态效果时隐藏星点。
 // ==========================================================================
 
-// 让星空层可以待在正文后面，同时不挡住导航和页脚
-.wrapper {
+.home-sky {
+  --star-color: var(--accent-dark);
   position: relative;
   isolation: isolate;
+  overflow: hidden;
+  width: calc(100% - 3.2rem);
+  max-width: 84rem;
+  margin: 0 auto;
+  padding: 5.6rem 2rem 4.8rem;
+  border-radius: 2.4rem;
+  background:
+    radial-gradient(
+      ellipse 70% 60% at 20% 8%,
+      rgba(110, 140, 255, 0.18),
+      transparent 62%
+    ),
+    radial-gradient(
+      ellipse 60% 55% at 82% 88%,
+      rgba(150, 90, 200, 0.14),
+      transparent 64%
+    ),
+    linear-gradient(180deg, #080d1c 0%, #0b1328 52%, #0e1934 100%);
+  box-shadow:
+    inset 0 0 9rem rgba(0, 0, 0, 0.45),
+    0 2.4rem 5rem rgba(30, 45, 80, 0.16);
 }
 
-.ambient-stars {
-  position: fixed;
+// 一层随季节变色的星云，让深色背景不只是纯黑
+.home-sky::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 26% 22%, var(--accent-dark) 0%, transparent 46%),
+    radial-gradient(circle at 78% 70%, #5b7cff 0%, transparent 52%);
+  opacity: 0.13;
+  filter: blur(4rem);
+  pointer-events: none;
+}
+
+.home-sky .ambient-stars {
+  position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
+  color: var(--star-color);
   pointer-events: none;
+}
+
+.home-sky .container {
+  position: relative;
+  z-index: 2;
+  margin: 0 auto;
+}
+
+.home-sky .about h1 {
+  color: #f7f2e8;
+  text-shadow: 0 0 2.4rem rgba(255, 240, 210, 0.22);
+}
+
+.home-sky .about h2 {
+  color: #d5d9e8;
+}
+
+.home-sky .home-intro {
+  color: #9aa6c4;
+}
+
+.home-sky .about ul li a {
+  color: #e8e4db;
+}
+
+.home-sky .about ul li a:hover,
+.home-sky .about ul li a:focus {
+  color: var(--accent-dark);
+}
+
+.home-sky .avatar img {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.16),
+    0 0 4rem rgba(120, 150, 255, 0.22);
+}
+
+@media (max-width: 768px) {
+  .home-sky {
+    width: calc(100% - 2.4rem);
+    padding: 4.2rem 1.6rem 3.6rem;
+    border-radius: 2rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
