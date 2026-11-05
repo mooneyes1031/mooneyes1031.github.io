@@ -1,0 +1,23 @@
+{{/*
+  整页背景图（预留口子，默认关闭）
+
+  开启方式（二选一）：
+  1. 全站：hugo.toml 的 [params.pageBackground] 里填 image
+  2. 单页：在文章 front matter 里写 backgroundImage = "images/xxx.jpg"
+
+  图片建议放在 static/images/ 下。默认会模糊 18px、盖一层 90% 的纸色，
+  只留一点照片的影子；文字仍然可读。想更明显就把 scrim 调小（例如 0.82）。
+*/}}
+{{- $image := "" -}}
+{{- $settings := site.Params.pageBackground | default dict -}}
+{{- with .Params.backgroundImage -}}
+  {{- $image = . -}}
+{{- else -}}
+  {{- with $settings.image -}}
+    {{- $image = . -}}
+  {{- end -}}
+{{- end -}}
+{{- with $image -}}
+<div class="page-background" aria-hidden="true"
+  style="--page-background-image: url('{{ . | relURL }}'); --page-background-blur: {{ $settings.blur | default 18 }}px; --page-background-scrim: {{ $settings.scrim | default 0.9 }};"></div>
+{{- end -}}

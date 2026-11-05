@@ -1,0 +1,43 @@
+{{/*
+  首页夜空卡片的主视觉图（可选）
+
+  - 在 hugo.toml 里写 params.homeHeroImage = "images/hero-night.jpg"
+  - 图片放在 assets/images/ 下：构建时会自动生成 960 / 1440 / 1920 三种宽度
+  - 图片放在 static/images/ 下也可以，但不会生成多尺寸，直接用原图
+  - 留空或文件不存在时，保持原来的纯夜空
+*/}}
+{{- $src := .Site.Params.homeHeroImage -}}
+{{- with $src -}}
+  {{- $image := resources.Get . -}}
+  {{- if $image -}}
+    {{- $widths := slice 960 1440 1920 -}}
+    {{- $srcset := slice -}}
+    {{- $fallback := $image -}}
+    {{- range $widths -}}
+      {{- if le . $image.Width -}}
+        {{- $resized := $image.Resize (printf "%dx q82" .) -}}
+        {{- $srcset = $srcset | append (printf "%s %dw" $resized.RelPermalink $resized.Width) -}}
+        {{- $fallback = $resized -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if not $srcset -}}
+      {{- $srcset = slice (printf "%s %dw" $image.RelPermalink $image.Width) -}}
+      {{- $fallback = $image -}}
+    {{- end -}}
+    <div class="home-sky__media" aria-hidden="true">
+      <img
+        src="{{ $fallback.RelPermalink }}"
+        srcset="{{ delimit $srcset ", " }}"
+        sizes="(max-width: 768px) calc(100vw - 2.4rem), 84rem"
+        alt=""
+        width="{{ $fallback.Width }}"
+        height="{{ $fallback.Height }}"
+        fetchpriority="high"
+        decoding="async">
+    </div>
+  {{- else -}}
+    <div class="home-sky__media" aria-hidden="true">
+      <img src="{{ . | relURL }}" alt="" fetchpriority="high" decoding="async">
+    </div>
+  {{- end -}}
+{{- end -}}

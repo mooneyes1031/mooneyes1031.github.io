@@ -3424,6 +3424,44 @@ body.colorscheme-dark .error-game__status {
   pointer-events: none;
 }
 
+// 可选主视觉图：照片在底层，上面压深蓝渐变；星点和文字仍在最上层
+.home-sky--image {
+  background: #080d1c;
+}
+
+.home-sky__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.home-sky__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.home-sky__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(8, 13, 28, 0.46) 0%,
+      rgba(8, 13, 28, 0.62) 45%,
+      rgba(8, 13, 28, 0.9) 100%
+    ),
+    radial-gradient(
+      ellipse 78% 68% at 50% 55%,
+      rgba(8, 13, 28, 0.34) 0%,
+      transparent 78%
+    );
+}
+
 .home-sky .ambient-stars {
   position: absolute;
   inset: 0;
@@ -3441,17 +3479,38 @@ body.colorscheme-dark .error-game__status {
   margin: 0 auto;
 }
 
+// 有主视觉图时，把星云、星点、正文整体抬高一层
+.home-sky--image::before {
+  z-index: 1;
+}
+
+.home-sky--image .ambient-stars {
+  z-index: 2;
+}
+
+.home-sky--image .container {
+  z-index: 3;
+}
+
 .home-sky .about h1 {
   color: #f7f2e8;
-  text-shadow: 0 0 2.4rem rgba(255, 240, 210, 0.22);
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 0 2.4rem rgba(255, 240, 210, 0.22);
 }
 
 .home-sky .about h2 {
   color: #d5d9e8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .home-sky .home-intro {
-  color: #9aa6c4;
+  color: #b7c0d8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.home-sky .about ul {
+  filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.4));
 }
 
 .home-sky .about ul li a {
@@ -3481,4 +3540,208 @@ body.colorscheme-dark .error-game__status {
   .ambient-stars {
     display: none;
   }
+}
+
+// ==========================================================================
+//  19. 首页拾光墙 / Home photo strip
+//  从 /photos/ 取 3-4 张照片，接在「最新文章」下面；没有照片时整段不输出。
+//  样式沿用照片页的拍立得，但排成整齐的网格，不抢文章。
+// ==========================================================================
+
+.home-photos {
+  margin-top: 3.6rem;
+}
+
+.home-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.6rem;
+}
+
+.home-photo {
+  margin: 0;
+  padding: 0.55rem 0.55rem 0;
+  border-radius: 0.2rem;
+  background: #fff;
+  box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.08);
+  transform: rotate(-0.35deg);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.home-photo:nth-child(even) {
+  transform: rotate(0.35deg);
+}
+
+.home-photo:hover {
+  transform: translateY(-0.25rem) rotate(0);
+  box-shadow: 0 0.8rem 1.8rem rgba(0, 0, 0, 0.12);
+}
+
+.home-photo__link {
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 0.1rem;
+  background: #ececec;
+}
+
+.home-photo__link img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.home-photo:hover .home-photo__link img {
+  transform: scale(1.025);
+}
+
+.home-photo figcaption {
+  padding: 0.55rem 0.2rem 0.7rem;
+  color: #666;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+body.colorscheme-dark .home-photo {
+  background: #2b2b2b;
+  box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.35);
+}
+
+body.colorscheme-dark .home-photo figcaption {
+  color: #bbb;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.colorscheme-auto .home-photo {
+    background: #2b2b2b;
+    box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.35);
+  }
+
+  body.colorscheme-auto .home-photo figcaption {
+    color: #bbb;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .home-photos {
+    margin-top: 2.8rem;
+  }
+
+  .home-photo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
+    margin-top: 1.2rem;
+  }
+
+  .home-photo {
+    padding: 0.4rem 0.4rem 0;
+  }
+
+  .home-photo figcaption {
+    padding: 0.4rem 0.1rem 0.55rem;
+    font-size: 1.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-photo,
+  .home-photo__link img {
+    transition: none;
+  }
+
+  .home-photo:hover {
+    transform: none;
+  }
+
+  .home-photo:hover .home-photo__link img {
+    transform: none;
+  }
+}
+
+// ==========================================================================
+//  20. 文章封面 / Post cover
+//  在 front matter 写 featuredImage = "images/xxx.jpg"，标题上方会出现一条
+//  横幅；标题仍然留在纸面上，不把字压在图上。
+// ==========================================================================
+
+.post-cover {
+  margin: 0 0 2.8rem;
+  border-radius: 0.8rem;
+  overflow: hidden;
+  background: #ececec;
+  box-shadow: 0 1rem 2.8rem rgba(0, 0, 0, 0.08);
+  aspect-ratio: 2.4 / 1;
+}
+
+.post-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+body.colorscheme-dark .post-cover {
+  background: #2a2a2a;
+  box-shadow: 0 1rem 2.8rem rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  body.colorscheme-auto .post-cover {
+    background: #2a2a2a;
+    box-shadow: 0 1rem 2.8rem rgba(0, 0, 0, 0.35);
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .post-cover {
+    margin-bottom: 2rem;
+    border-radius: 0.5rem;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+// ==========================================================================
+//  21. 整页背景（预留） / Page background
+//  默认关闭。开启后是一层固定、模糊、盖了纸色遮罩的照片底片；
+//  正文仍在上层，阅读对比度由 --page-background-scrim 控制。
+// ==========================================================================
+
+:root {
+  --page-background-scrim-color: 250, 250, 250;
+}
+
+body.colorscheme-dark {
+  --page-background-scrim-color: 33, 33, 33;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.colorscheme-auto {
+    --page-background-scrim-color: 33, 33, 33;
+  }
+}
+
+.page-background {
+  position: fixed;
+  inset: -2rem;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      rgba(var(--page-background-scrim-color), var(--page-background-scrim, 0.9)),
+      rgba(var(--page-background-scrim-color), var(--page-background-scrim, 0.9))
+    ),
+    var(--page-background-image);
+  background-position: center;
+  background-size: cover;
+  filter: blur(var(--page-background-blur, 18px));
+  transform: scale(1.04);
+}
+
+.wrapper {
+  position: relative;
+  z-index: 1;
 }

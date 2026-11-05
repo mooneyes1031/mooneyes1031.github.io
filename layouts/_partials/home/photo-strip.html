@@ -1,0 +1,57 @@
+{{/*
+  首页「拾光」：从 /photos/ 里拿几张照片，做成一条精选照片墙。
+
+  - 数量：hugo.toml 的 params.homePhotoCount（默认 4）
+  - 顺序：content/photos/index.md 里的 featured 列表；没写就按文件名取前 N 张
+  - 没有任何照片时，整段不输出，不会留下空框
+*/}}
+{{- $photosPage := site.GetPage "/photos" -}}
+{{- if $photosPage -}}
+  {{- $images := sort (where ($photosPage.Resources.ByType "image") "MediaType.SubType" "!=" "svg") "Name" -}}
+  {{- $count := site.Params.homePhotoCount | default 4 -}}
+  {{- with $photosPage.Params.featured -}}
+    {{- $selected := slice -}}
+    {{- range . -}}
+      {{- $match := where $images "Name" . -}}
+      {{- with index $match 0 -}}
+        {{- $selected = $selected | append . -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if $selected -}}
+      {{- $images = $selected -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $images = first $count $images -}}
+  {{- with $images -}}
+  <section class="container list home-photos">
+    <header class="home-section-head">
+      <h1 class="title">
+        <a class="title-link" href="{{ `photos/` | relURL }}">拾光</a>
+      </h1>
+      <a class="home-section-more" href="{{ `photos/` | relURL }}">查看全部 →</a>
+    </header>
+    <div class="home-photo-grid">
+      {{- range . -}}
+        {{- $image := . -}}
+        {{- $caption := "" -}}
+        {{- with $photosPage.Params.captions -}}
+          {{- $caption = index . $image.Name | default "" -}}
+        {{- end -}}
+        {{- $alt := or $caption (replaceRE "\\.[^.]+$" "" $image.Name) -}}
+        {{- $thumb := $image -}}
+        {{- if gt $image.Width 720 -}}
+          {{- $thumb = $image.Resize "720x q82" -}}
+        {{- end -}}
+        <figure class="home-photo">
+          <a class="home-photo__link" href="{{ `photos/` | relURL }}" aria-label="查看照片{{ with $caption }}：{{ . }}{{ end }}">
+            <img src="{{ $thumb.RelPermalink }}" alt="{{ $alt }}" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}" loading="lazy" decoding="async">
+          </a>
+          {{- with $caption }}
+          <figcaption>{{ . }}</figcaption>
+          {{- end }}
+        </figure>
+      {{- end -}}
+    </div>
+  </section>
+  {{- end -}}
+{{- end -}}

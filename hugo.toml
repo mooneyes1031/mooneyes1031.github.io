@@ -93,6 +93,15 @@ pagerSize = 10
   #   留空则不显示头像。换头像时直接覆盖 static/images/avatar.jpg 即可
   avatarURL = "images/avatar.jpg"
 
+  # 首页夜空卡片的主视觉图（可选）
+  #   留空 = 保持现在的纯夜空
+  #   图片放在 assets/images/ 下会自动生成 960 / 1440 / 1920 三种宽度
+  #   例：homeHeroImage = "images/hero-night.jpg"
+  homeHeroImage = ""
+
+  # 首页「拾光」照片墙显示几张（从 /photos/ 里取）
+  homePhotoCount = 4
+
   # 日期显示格式（Go 的时间格式，2006-01-02 就是 年-月-日）
   dateFormat = "2006-01-02"
 
@@ -116,6 +125,19 @@ pagerSize = 10
   [params.entry]
     toc = true
     tocOpen = false
+
+# ---------------------------------------------------------------------------
+# 整页背景图（预留口子，默认关闭）
+#
+# 想让全站文字后面有一层模糊的照片底片，把 image 填成：
+#   image = "images/page-background.jpg"
+# 图片放在 static/images/ 下。默认模糊 18px、盖 90% 纸色，只留一点影子。
+# 单篇文章也可以在自己的 front matter 里写 backgroundImage 覆盖全站设置。
+# ---------------------------------------------------------------------------
+[params.pageBackground]
+  image = ""
+  blur = 18
+  scrim = 0.9
 
 # ---------------------------------------------------------------------------
 # 网易云音乐播放器（左下角悬浮）

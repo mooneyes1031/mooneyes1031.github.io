@@ -2,6 +2,10 @@
 title = "照片"
 date = 2026-10-20T12:00:00+08:00
 description = "一些照片。"
+# 可选：首页「拾光」固定展示哪几张，按顺序写完整文件名。
+# 留空则按文件名取前 4 张（数量在 hugo.toml 的 homePhotoCount）。
+# featured = ["2026-10-01-tokyo.jpg", "2026-10-02-kyoto.jpg"]
+#
 # 可选：按年份或地点分组。填 "year" 或 "place"。
 # groupBy = "year"
 #
