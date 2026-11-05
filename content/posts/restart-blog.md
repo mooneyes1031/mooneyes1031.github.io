@@ -4,6 +4,7 @@ date = 2026-11-02T15:00:00+08:00
 description = "旧博客停了很久，这次换个地方，重新开始写。"
 tags = ["博客", "杂谈"]
 categories = ["随笔"]
+featuredImage = "images/post-cover.jpg"
 +++
 
 前一阵把旧博客从 Jekyll 搬到了 Hugo。

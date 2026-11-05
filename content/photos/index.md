@@ -21,4 +21,17 @@ description = "一些照片。"
 # 可选：给图片加说明，key 是完整文件名。
 # [captions]
 # "2026-10-01-tokyo.jpg" = "东京的傍晚"
+
+featured = [
+  "01-kyoto-dusk.jpg",
+  "02-lantern-alley.jpg",
+  "03-sea-sunset.jpg",
+  "04-forest-stream.jpg",
+]
+
+[captions]
+"01-kyoto-dusk.jpg" = "京都 · 黄昏"
+"02-lantern-alley.jpg" = "巷子里的灯"
+"03-sea-sunset.jpg" = "海边的光"
+"04-forest-stream.jpg" = "林间溪谷"
 +++

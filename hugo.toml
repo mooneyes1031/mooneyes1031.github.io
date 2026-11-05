@@ -97,7 +97,7 @@ pagerSize = 10
   #   留空 = 保持现在的纯夜空
   #   图片放在 assets/images/ 下会自动生成 960 / 1440 / 1920 三种宽度
   #   例：homeHeroImage = "images/hero-night.jpg"
-  homeHeroImage = ""
+  homeHeroImage = "images/hero-night.jpg"
 
   # 首页「拾光」照片墙显示几张（从 /photos/ 里取）
   homePhotoCount = 4
