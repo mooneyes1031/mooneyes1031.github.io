@@ -4,11 +4,7 @@
 {{ define "content" }}
   <section class="container post">
     <article>
-      {{- with .Params.featuredImage }}
-      <figure class="post-cover">
-        <img src="{{ . | relURL }}" alt="{{ $.Title }}" loading="eager" decoding="async" fetchpriority="high">
-      </figure>
-      {{- end }}
+      {{ partial "posts/cover.html" . }}
       <header>
         <div class="post-title">
           <h1 class="title">

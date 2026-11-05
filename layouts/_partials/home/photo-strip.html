@@ -38,13 +38,31 @@
           {{- $caption = index . $image.Name | default "" -}}
         {{- end -}}
         {{- $alt := or $caption (replaceRE "\\.[^.]+$" "" $image.Name) -}}
+        {{- $widths := slice 360 540 720 -}}
+        {{- $srcset := slice -}}
         {{- $thumb := $image -}}
-        {{- if gt $image.Width 720 -}}
-          {{- $thumb = $image.Resize "720x q82" -}}
+        {{- range $widths -}}
+          {{- if le . $image.Width -}}
+            {{- $resized := $image.Resize (printf "%dx webp q78" .) -}}
+            {{- $srcset = $srcset | append (printf "%s %dw" $resized.RelPermalink $resized.Width) -}}
+            {{- $thumb = $resized -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if not $srcset -}}
+          {{- $resized := $image.Resize (printf "%dx webp q78" $image.Width) -}}
+          {{- $srcset = slice (printf "%s %dw" $resized.RelPermalink $resized.Width) -}}
+          {{- $thumb = $resized -}}
         {{- end -}}
         <figure class="home-photo">
           <a class="home-photo__link" href="{{ `photos/` | relURL }}" aria-label="查看照片{{ with $caption }}：{{ . }}{{ end }}">
-            <img src="{{ $thumb.RelPermalink }}" alt="{{ $alt }}" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}" loading="lazy" decoding="async">
+            <img src="{{ $thumb.RelPermalink }}"
+              srcset="{{ delimit $srcset ", " }}"
+              sizes="(max-width: 768px) 45vw, 190px"
+              alt="{{ $alt }}"
+              width="{{ $thumb.Width }}"
+              height="{{ $thumb.Height }}"
+              loading="lazy"
+              decoding="async">
           </a>
           {{- with $caption }}
           <figcaption>{{ . }}</figcaption>

@@ -307,44 +307,55 @@ body.colorscheme-dark {
 // --------------------------------------------------------------------------
 
 .photo-wall {
-  column-count: 3;
-  column-gap: 1.2rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.2rem;
   margin: 2rem 0 3rem;
 }
 
 .photo-item {
-  break-inside: avoid;
-  margin: 0 0 1.2rem;
-  border-radius: 0.6rem;
+  margin: 0;
   overflow: hidden;
-  background: #ececec;
+  border-radius: 0.8rem;
+  background: #fff;
+  box-shadow: 0 0.4rem 1.4rem rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.photo-item:hover {
+  transform: translateY(-0.2rem);
+  box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.12);
 }
 
 .photo-link {
   display: block;
-  line-height: 0;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
+  line-height: 0;
+  background: #ececec;
 }
 
 .photo-link img {
   display: block;
   width: 100%;
-  height: auto;
-  transition: transform 0.4s ease, opacity 0.3s ease;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease, opacity 0.3s ease;
 }
 
 .photo-link:hover img,
 .photo-link:focus img {
   transform: scale(1.03);
-  opacity: 0.9;
+  opacity: 1;
 }
 
 .photo-item figcaption {
   padding: 0.8rem 1rem;
-  background: #f5f5f5;
-  color: #555;
-  font-size: 1.4rem;
+  background: transparent;
+  color: #666;
+  font-size: 1.3rem;
   line-height: 1.5;
+  text-align: center;
 }
 
 .photo-wall-empty {
@@ -462,11 +473,15 @@ body.photo-lb-open {
 // 深色模式：手动切换
 body.colorscheme-dark {
   .photo-item {
+    background: #2b2b2b;
+    box-shadow: 0 0.4rem 1.4rem rgba(0, 0, 0, 0.35);
+  }
+
+  .photo-link {
     background: #2a2a2a;
   }
 
   .photo-item figcaption {
-    background: #2a2a2a;
     color: #bbb;
   }
 
@@ -480,11 +495,15 @@ body.colorscheme-dark {
 @media (prefers-color-scheme: dark) {
   body.colorscheme-auto {
     .photo-item {
+      background: #2b2b2b;
+      box-shadow: 0 0.4rem 1.4rem rgba(0, 0, 0, 0.35);
+    }
+
+    .photo-link {
       background: #2a2a2a;
     }
 
     .photo-item figcaption {
-      background: #2a2a2a;
       color: #bbb;
     }
 
@@ -498,13 +517,12 @@ body.colorscheme-dark {
 // 窄屏两列
 @media only screen and (max-width: 768px) {
   .photo-wall {
-    column-count: 2;
-    column-gap: 0.8rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
   }
 
   .photo-item {
-    margin-bottom: 0.8rem;
-    border-radius: 0.4rem;
+    border-radius: 0.5rem;
   }
 
   .photo-item figcaption {
@@ -2710,39 +2728,23 @@ body.colorscheme-dark .footnote-popover {
   }
 }
 
-// 照片墙：拍立得
-.photo-item {
-  padding: 0.7rem 0.7rem 0;
-  border-radius: 0.2rem;
-  background: #fff;
-  box-shadow: 0 0.5rem 1.6rem rgba(0, 0, 0, 0.1);
-  transform: rotate(-0.35deg);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+@media (prefers-reduced-motion: reduce) {
+  .photo-item,
+  .photo-link img {
+    transition: none;
+  }
+
+  .photo-item:hover {
+    transform: none;
+  }
+
+  .photo-link:hover img,
+  .photo-link:focus img {
+    transform: none;
+  }
 }
 
-.photo-item:nth-child(3n) {
-  transform: rotate(0.5deg);
-}
-
-.photo-item:hover {
-  transform: translateY(-0.3rem) rotate(0);
-  box-shadow: 0 0.9rem 2.2rem rgba(0, 0, 0, 0.14);
-}
-
-.photo-item figcaption {
-  padding: 0.7rem 0.2rem 0.9rem;
-  background: transparent;
-  color: #666;
-  text-align: center;
-  font-size: 1.3rem;
-}
-
-.photo-link:hover img,
-.photo-link:focus img {
-  transform: scale(1.02);
-  opacity: 1;
-}
-
+// 照片墙：分组标题
 .photo-groups {
   margin: 2rem 0 3rem;
 }
@@ -2756,26 +2758,6 @@ body.colorscheme-dark .footnote-popover {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid rgba(128, 128, 128, 0.18);
   font-size: 1.8rem;
-}
-
-body.colorscheme-dark .photo-item {
-  background: #2b2b2b;
-  box-shadow: 0 0.5rem 1.6rem rgba(0, 0, 0, 0.35);
-}
-
-body.colorscheme-dark .photo-item figcaption {
-  color: #bbb;
-}
-
-@media (prefers-color-scheme: dark) {
-  body.colorscheme-auto .photo-item {
-    background: #2b2b2b;
-    box-shadow: 0 0.5rem 1.6rem rgba(0, 0, 0, 0.35);
-  }
-
-  body.colorscheme-auto .photo-item figcaption {
-    color: #bbb;
-  }
 }
 
 // 404：星海、随机一句、找月亮
@@ -3547,7 +3529,7 @@ body.colorscheme-dark .error-game__status {
 // ==========================================================================
 //  19. 首页拾光墙 / Home photo strip
 //  从 /photos/ 取 3-4 张照片，接在「最新文章」下面；没有照片时整段不输出。
-//  样式沿用照片页的拍立得，但排成整齐的网格，不抢文章。
+//  样式延续照片页的干净照片卡，排成整齐的网格，不抢文章。
 // ==========================================================================
 
 .home-photos {
@@ -3563,20 +3545,15 @@ body.colorscheme-dark .error-game__status {
 
 .home-photo {
   margin: 0;
-  padding: 0.55rem 0.55rem 0;
-  border-radius: 0.2rem;
+  padding: 0.5rem 0.5rem 0;
+  border-radius: 0.7rem;
   background: #fff;
   box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.08);
-  transform: rotate(-0.35deg);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.home-photo:nth-child(even) {
-  transform: rotate(0.35deg);
-}
-
 .home-photo:hover {
-  transform: translateY(-0.25rem) rotate(0);
+  transform: translateY(-0.25rem);
   box-shadow: 0 0.8rem 1.8rem rgba(0, 0, 0, 0.12);
 }
 
@@ -3584,7 +3561,7 @@ body.colorscheme-dark .error-game__status {
   display: block;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  border-radius: 0.1rem;
+  border-radius: 0.35rem;
   background: #ececec;
 }
 

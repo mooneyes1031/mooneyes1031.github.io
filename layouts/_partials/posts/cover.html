@@ -1,0 +1,44 @@
+{{/*
+  文章封面：读取 front matter 的 featuredImage，标题上方显示一条横幅。
+
+  - 图片优先放 assets/images/：构建时自动生成 800 / 1200 / 1600 三种 WebP
+  - 放 static/images/ 也能用：直接输出原图，不压缩
+  - 没写 featuredImage 或文件不存在时，不输出封面
+*/}}
+{{- with .Params.featuredImage -}}
+  {{- $src := . -}}
+  {{- $lookup := strings.TrimPrefix "/" $src -}}
+  {{- $image := resources.Get $lookup -}}
+  {{- if $image -}}
+    {{- $widths := slice 800 1200 1600 -}}
+    {{- $srcset := slice -}}
+    {{- $fallback := $image -}}
+    {{- range $widths -}}
+      {{- if le . $image.Width -}}
+        {{- $resized := $image.Resize (printf "%dx webp q80" .) -}}
+        {{- $srcset = $srcset | append (printf "%s %dw" $resized.RelPermalink $resized.Width) -}}
+        {{- $fallback = $resized -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if not $srcset -}}
+      {{- $resized := $image.Resize (printf "%dx webp q80" $image.Width) -}}
+      {{- $srcset = slice (printf "%s %dw" $resized.RelPermalink $resized.Width) -}}
+      {{- $fallback = $resized -}}
+    {{- end -}}
+    <figure class="post-cover">
+      <img src="{{ $fallback.RelPermalink }}"
+        srcset="{{ delimit $srcset ", " }}"
+        sizes="(max-width: 768px) calc(100vw - 3.2rem), 800px"
+        alt="{{ $.Title }}"
+        width="{{ $fallback.Width }}"
+        height="{{ $fallback.Height }}"
+        loading="eager"
+        decoding="async"
+        fetchpriority="high">
+    </figure>
+  {{- else -}}
+    <figure class="post-cover">
+      <img src="{{ $src | relURL }}" alt="{{ $.Title }}" loading="eager" decoding="async" fetchpriority="high">
+    </figure>
+  {{- end -}}
+{{- end -}}

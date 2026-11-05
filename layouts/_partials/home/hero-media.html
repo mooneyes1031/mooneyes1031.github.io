@@ -15,20 +15,21 @@
     {{- $fallback := $image -}}
     {{- range $widths -}}
       {{- if le . $image.Width -}}
-        {{- $resized := $image.Resize (printf "%dx q82" .) -}}
+        {{- $resized := $image.Resize (printf "%dx webp q78" .) -}}
         {{- $srcset = $srcset | append (printf "%s %dw" $resized.RelPermalink $resized.Width) -}}
         {{- $fallback = $resized -}}
       {{- end -}}
     {{- end -}}
     {{- if not $srcset -}}
-      {{- $srcset = slice (printf "%s %dw" $image.RelPermalink $image.Width) -}}
-      {{- $fallback = $image -}}
+      {{- $resized := $image.Resize (printf "%dx webp q78" $image.Width) -}}
+      {{- $srcset = slice (printf "%s %dw" $resized.RelPermalink $resized.Width) -}}
+      {{- $fallback = $resized -}}
     {{- end -}}
     <div class="home-sky__media" aria-hidden="true">
       <img
         src="{{ $fallback.RelPermalink }}"
         srcset="{{ delimit $srcset ", " }}"
-        sizes="(max-width: 768px) calc(100vw - 2.4rem), 84rem"
+        sizes="(max-width: 768px) calc(100vw - 3.2rem), 840px"
         alt=""
         width="{{ $fallback.Width }}"
         height="{{ $fallback.Height }}"

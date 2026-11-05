@@ -22,8 +22,17 @@
     {{- $post := . }}
     <article class="home-featured-card">
       {{- with .Params.featuredImage }}
+      {{- $lookup := strings.TrimPrefix "/" . }}
+      {{- $img := resources.Get $lookup }}
       <a class="home-featured-image" href="{{ $post.RelPermalink }}" tabindex="-1" aria-hidden="true">
+        {{- if $img }}
+          {{- $width := 800 }}
+          {{- if lt $img.Width $width }}{{ $width = $img.Width }}{{ end }}
+          {{- $thumb := $img.Resize (printf "%dx webp q80" $width) }}
+        <img src="{{ $thumb.RelPermalink }}" alt="" width="{{ $thumb.Width }}" height="{{ $thumb.Height }}" loading="lazy" decoding="async">
+        {{- else }}
         <img src="{{ . | relURL }}" alt="" loading="lazy" decoding="async">
+        {{- end }}
       </a>
       {{- end }}
       <div class="home-featured-body">
