@@ -34,4 +34,6 @@ featured = [
 "02-lantern-alley.jpg" = "巷子里的灯"
 "03-sea-sunset.jpg" = "海边的光"
 "04-forest-stream.jpg" = "林间溪谷"
+"05-moon.jpg" = "月"
+"06-forest-light.jpg" = "林间的光"
 +++
