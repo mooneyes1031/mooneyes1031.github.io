@@ -1,0 +1,42 @@
+{{/*
+  首页头像：优先从 assets/ 读图，构建时生成 240 / 480 两种 WebP。
+  找不到资源（例如外链头像）时退回原图，不影响显示。
+*/}}
+{{ if and (isset .Site.Params "avatarurl") (not (isset .Site.Params "gravatar")) }}
+  {{ with .Site.Params.avatarURL }}
+    {{- $src := . -}}
+    {{- $image := resources.Get (strings.TrimPrefix "/" $src) -}}
+    {{- if $image -}}
+      {{- $widths := slice 240 480 -}}
+      {{- $srcset := slice -}}
+      {{- $fallback := $image -}}
+      {{- range $widths -}}
+        {{- if le . $image.Width -}}
+          {{- $resized := $image.Resize (printf "%dx webp q82" .) -}}
+          {{- $srcset = $srcset | append (printf "%s %dw" $resized.RelPermalink $resized.Width) -}}
+          {{- $fallback = $resized -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if not $srcset -}}
+        {{- $resized := $image.Resize (printf "%dx webp q82" $image.Width) -}}
+        {{- $srcset = slice (printf "%s %dw" $resized.RelPermalink $resized.Width) -}}
+        {{- $fallback = $resized -}}
+      {{- end -}}
+    <div class="avatar">
+      <img src="{{ $fallback.RelPermalink }}"
+        srcset="{{ delimit $srcset ", " }}"
+        sizes="(max-width: 768px) 17rem, 20rem"
+        alt="avatar"
+        width="{{ $fallback.Width }}"
+        height="{{ $fallback.Height }}"
+        loading="eager"
+        decoding="async">
+    </div>
+    {{- else -}}
+    <div class="avatar"><img src="{{ $src | relURL }}" alt="avatar" width="240" height="240" loading="eager" decoding="async"></div>
+    {{- end -}}
+  {{ end }}
+{{ end }}
+{{ with .Site.Params.gravatar }}
+  <div class="avatar"><img src="https://www.gravatar.com/avatar/{{md5 .}}?s=240&d=mp" width="240" height="240" alt="gravatar"></div>
+{{ end }}

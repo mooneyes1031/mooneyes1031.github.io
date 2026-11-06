@@ -39,13 +39,7 @@
   {{- $categories := .Params.categories | default (slice) -}}
   {{- if not (reflect.IsSlice $categories) -}}{{- $categories = slice $categories -}}{{- end -}}
   {{- $image := "" -}}
-  {{- with .Params.images -}}
-    {{- if reflect.IsSlice . -}}
-      {{- $image = index . 0 | absURL -}}
-    {{- else -}}
-      {{- $image = . | absURL -}}
-    {{- end -}}
-  {{- end -}}
+  {{- with partial "head/og-image.html" . -}}{{- $image = .url -}}{{- end -}}
   {{- $author := dict "@type" "Person" "name" $authorName "url" $siteURL -}}
   {{- with $avatar -}}{{- $author = merge $author (dict "image" .) -}}{{- end -}}
   {{- $post := dict

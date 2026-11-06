@@ -1,10 +1,11 @@
-{{- $posts := (where .Site.RegularPages "Section" "posts").ByDate.Reverse -}}
+{{- $pages := where .Site.RegularPages "Section" "in" (slice "posts" "notes") -}}
 {{- $items := slice -}}
-{{- range $posts -}}
+{{- range $pages.ByDate.Reverse -}}
   {{- $items = $items | append (dict
     "title" .Title
-    "permalink" .Permalink
+    "permalink" .RelPermalink
     "date" (.Date.Format "2006-01-02")
+    "section" .Section
     "tags" (.Params.tags | default (slice))
     "categories" (.Params.categories | default (slice))
     "summary" ((.Description | default .Summary) | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | htmlUnescape | strings.TrimSpace | truncate 200)

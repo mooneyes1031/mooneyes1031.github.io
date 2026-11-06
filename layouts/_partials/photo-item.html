@@ -31,8 +31,36 @@
 {{- end -}}
 {{- $large = $image.Resize (printf "%dx webp q78" $largeWidth) -}}
 
+{{- /* 灯箱信息：有 EXIF 就显示相机参数，没有则至少显示尺寸。 */ -}}
+{{- $exifParts := slice -}}
+{{- if reflect.IsImageResourceWithMeta $image -}}
+  {{- with $image.Meta -}}
+    {{- with .Exif -}}
+      {{- $tags := . -}}
+      {{- $labels := dict
+        "Model" "相机"
+        "LensModel" "镜头"
+        "FocalLength" "焦距"
+        "FNumber" "光圈"
+        "ExposureTime" "快门"
+        "ISO" "ISO"
+        "ISOSpeedRatings" "ISO"
+        "DateTimeOriginal" "拍摄于"
+      -}}
+      {{- range $key := slice "Model" "LensModel" "FocalLength" "FNumber" "ExposureTime" "ISO" "ISOSpeedRatings" "DateTimeOriginal" -}}
+        {{- with index $tags $key -}}
+          {{- $label := index $labels $key | default $key -}}
+          {{- $exifParts = $exifParts | append (printf "%s %v" $label .) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $exifParts = $exifParts | append (printf "%d × %d" $image.Width $image.Height) -}}
+{{- $exif := delimit $exifParts " · " -}}
+
 <figure class="photo-item">
-  <a class="photo-link" href="{{ $large.RelPermalink }}" data-full="{{ $large.RelPermalink }}" data-caption="{{ $caption }}" data-alt="{{ $alt }}">
+  <a class="photo-link" href="{{ $large.RelPermalink }}" data-full="{{ $large.RelPermalink }}" data-caption="{{ $caption }}" data-alt="{{ $alt }}" data-exif="{{ $exif }}">
     <img src="{{ $thumb.RelPermalink }}"
       srcset="{{ delimit $srcset ", " }}"
       sizes="(max-width: 768px) 45vw, 272px"

@@ -1,0 +1,60 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+{{ if .Site.Params.csp }}
+{{ partial "csp.html" . }}
+{{ end }}
+
+{{- $description := .Description -}}
+{{- if not $description -}}
+  {{- $description = .Summary | plainify | replaceRE "\\s+" " " | htmlUnescape | strings.TrimSpace | truncate 200 -}}
+{{- end -}}
+{{- if not $description -}}
+  {{- $description = .Site.Params.description -}}
+{{- end -}}
+{{- $og := partial "head/og-image.html" . -}}
+{{- $ogType := cond .IsPage "article" "website" -}}
+{{ with .Site.Params.author }}
+<meta name="author" content="{{ . }}">{{ end }}
+<meta name="description" content="{{ $description }}">
+<meta name="keywords" content="{{ (delimit .Keywords ", ") | default .Site.Params.keywords }}">
+{{ if or .Params.fediverseCreator .Site.Params.fediverseCreator }}<meta name="fediverse:creator" content="{{ .Params.fediverseCreator | default .Site.Params.fediverseCreator }}" />{{end }}
+
+<meta property="og:title" content="{{ .Title | default .Site.Title }}">
+<meta property="og:description" content="{{ $description }}">
+<meta property="og:type" content="{{ $ogType }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:site_name" content="{{ .Site.Title }}">
+<meta property="og:locale" content="zh_CN">
+{{- with $og.url }}
+<meta property="og:image" content="{{ . }}">
+<meta property="og:image:alt" content="{{ $og.alt }}">
+{{- with $og.width }}
+<meta property="og:image:width" content="{{ . }}">
+{{- end }}
+{{- with $og.height }}
+<meta property="og:image:height" content="{{ . }}">
+{{- end }}
+{{- with $og.type }}
+<meta property="og:image:type" content="{{ . }}">
+{{- end }}
+{{- end }}
+{{- if and .IsPage (eq .Section "posts") }}
+<meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+<meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}">
+{{- with .Params.categories }}
+<meta property="article:section" content="{{ index . 0 }}">
+{{- end }}
+{{- range .GetTerms "tags" }}
+<meta property="article:tag" content="{{ .LinkTitle }}">
+{{- end }}
+{{- end }}
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ .Title | default .Site.Title }}">
+<meta name="twitter:description" content="{{ $description }}">
+{{- with $og.url }}
+<meta name="twitter:image" content="{{ . }}">
+<meta name="twitter:image:alt" content="{{ $og.alt }}">
+{{- end }}

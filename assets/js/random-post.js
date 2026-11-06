@@ -33,7 +33,11 @@
         })
         .then(function (items) {
           if (!Array.isArray(items) || !items.length) throw new Error("empty");
-          var item = items[Math.floor(Math.random() * items.length)];
+          var posts = items.filter(function (item) {
+            return !item.section || item.section === "posts";
+          });
+          var pool = posts.length ? posts : items;
+          var item = pool[Math.floor(Math.random() * pool.length)];
           window.location.assign(targetFor(item, fallback));
         })
         .catch(function () {

@@ -43,6 +43,11 @@ pagerSize = 10
       # 允许在 Markdown 里直接写 HTML
       unsafe = true
 
+# XML 不做压缩：RSS 里的 content:encoded 是 CDATA，
+# 压缩器会把它转义，导致部分阅读器拿不到全文。
+[minify]
+  disableXML = true
+
 # 分类法：文章里写 categories / tags / series 会自动生成归档页
 [taxonomies]
   category = "categories"
@@ -99,8 +104,15 @@ pagerSize = 10
   #   例：homeHeroImage = "images/hero-night.jpg"
   homeHeroImage = "images/hero-night.jpg"
 
+  # 默认分享封面（1200 × 630）。文章没写 images / featuredImage 时使用。
+  # 图片放在 assets/images/ 下，构建时会自动裁切；写外链也可以。
+  ogImage = "images/og-default.jpg"
+
   # 首页「拾光」照片墙显示几张（从 /photos/ 里取）
   homePhotoCount = 4
+
+  # 首页「碎碎念」显示几条（从 /notes/ 里取）
+  homeNoteCount = 3
 
   # 日期显示格式（Go 的时间格式，2006-01-02 就是 年-月-日）
   dateFormat = "2006-01-02"
@@ -190,38 +202,43 @@ pagerSize = 10
   url = "posts/"
 
 [[menu.main]]
-  name = "归档"
+  name = "碎碎念"
   weight = 2
+  url = "notes/"
+
+[[menu.main]]
+  name = "归档"
+  weight = 3
   url = "archives/"
 
 [[menu.main]]
   name = "标签"
-  weight = 3
+  weight = 4
   url = "tags/"
 
 [[menu.main]]
   name = "分类"
-  weight = 4
+  weight = 5
   url = "categories/"
 
 [[menu.main]]
   name = "系列"
-  weight = 5
+  weight = 6
   url = "series/"
 
 [[menu.main]]
   name = "搜索"
-  weight = 6
+  weight = 7
   url = "search/"
 
 [[menu.main]]
   name = "照片"
-  weight = 7
+  weight = 8
   url = "photos/"
 
 [[menu.main]]
   name = "关于"
-  weight = 8
+  weight = 9
   url = "about/"
 
 # ---------------------------------------------------------------------------
@@ -252,4 +269,20 @@ pagerSize = 10
 # 访问统计（默认关闭，全部留空 = 不加载任何脚本）
 # 支持：fathom / plausible / goatcounter / cloudflare / counterdev / matomo
 #        googleTagManager / umami / pirsch / microAnalytics
+#
+# 推荐先用 GoatCounter（免费、无 Cookie、无广告）：
+#   1. 到 https://www.goatcounter.com/ 注册，得到一个站点代码（比如 moonblog）
+#   2. 把代码填到下面的 code，提交推送即可
+#
+# 或者用 Umami（可自建，也可以使用托管服务）：
+#   1. 在 Umami 后台新建网站，复制 Website ID 和脚本地址
+#   2. 填到下面 siteID / scriptURL
+#
+# 两个都留空时，页面不会加载任何统计脚本。
 # ---------------------------------------------------------------------------
+[params.goatCounter]
+  code = ""
+
+[params.umami]
+  siteID = ""
+  scriptURL = ""

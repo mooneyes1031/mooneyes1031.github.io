@@ -1,0 +1,24 @@
+{{ define "title" }}{{ .Title }} · {{ .Site.Title }}{{ end }}
+{{ define "content" }}
+  <section class="container page guestbook-page">
+    <article>
+      <header>
+        <h1 class="title">
+          <a class="title-link" href="{{ .Permalink | safeURL }}">{{ .Title }}</a>
+        </h1>
+      </header>
+
+      {{ .Content }}
+
+      {{ if and site.Params.giscus site.Params.giscus.categoryID }}
+        {{ partial "posts/giscus.html" . }}
+      {{ else }}
+        {{/* categoryID 还没填时，页脚不会显示「留言板」入口；直接访问也能看到这句说明。 */}}
+        <p class="page-empty">
+          留言板还在准备中。想找我的话，可以先发邮件到
+          <a href="mailto:atonce1031@proton.me">atonce1031@proton.me</a>。
+        </p>
+      {{ end }}
+    </article>
+  </section>
+{{ end }}

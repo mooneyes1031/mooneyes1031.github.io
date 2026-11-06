@@ -1,0 +1,43 @@
+{{/*
+  分享封面：统一返回一个 1200 × 630 的图片信息。
+  优先级：front matter images > featuredImage > 站点 ogImage > 内置默认图。
+  - assets/ 里的图片会在构建时裁成 1200×630
+  - 外链原样使用；static/ 里找不到的路径也原样转成绝对地址
+  返回值：dict "url" "width" "height" "type" "alt"
+*/}}
+{{- $page := . -}}
+{{- $candidate := "" -}}
+{{- $alt := $page.Title | default $page.Site.Title -}}
+
+{{- with $page.Params.images -}}
+  {{- if reflect.IsSlice . -}}
+    {{- with index . 0 -}}{{- $candidate = . -}}{{- end -}}
+  {{- else -}}
+    {{- $candidate = . -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $candidate -}}
+  {{- with $page.Params.featuredImage -}}{{- $candidate = . -}}{{- end -}}
+{{- end -}}
+{{- if not $candidate -}}
+  {{- with $page.Site.Params.ogImage -}}{{- $candidate = . -}}{{- end -}}
+{{- end -}}
+{{- if not $candidate -}}
+  {{- $candidate = "images/og-default.jpg" -}}
+{{- end -}}
+
+{{- if or (hasPrefix $candidate "http://") (hasPrefix $candidate "https://") -}}
+  {{- return (dict "url" $candidate "width" "" "height" "" "type" "" "alt" $alt) -}}
+{{- end -}}
+
+{{- $lookup := strings.TrimPrefix "/" $candidate -}}
+{{- $image := resources.Get $lookup -}}
+{{- if $image -}}
+  {{- $og := $image -}}
+  {{- if or (ne $image.Width 1200) (ne $image.Height 630) -}}
+    {{- $og = $image.Fill "1200x630 Center jpg q82" -}}
+  {{- end -}}
+  {{- return (dict "url" $og.Permalink "width" $og.Width "height" $og.Height "type" $og.MediaType.Type "alt" $alt) -}}
+{{- end -}}
+
+{{- return (dict "url" ($candidate | absURL) "width" "" "height" "" "type" "" "alt" $alt) -}}

@@ -1,0 +1,53 @@
+{{ define "title" }}{{ .Title }} · {{ .Site.Title }}{{ end }}
+{{ define "content" }}
+  <section class="container page notes-page">
+    <article>
+      <header>
+        <h1 class="title">
+          <a class="title-link" href="{{ .Permalink | safeURL }}">{{ .Title }}</a>
+        </h1>
+      </header>
+
+      {{ .Content }}
+
+      {{ $notes := .Pages.ByDate.Reverse }}
+      {{ with $notes }}
+        <p class="notes-count">共 {{ len . }} 条</p>
+
+        {{ range .GroupByDate "2006" }}
+          <section class="notes-year">
+            <h2>{{ .Key }}</h2>
+            <ol class="notes-timeline">
+              {{ range .Pages }}
+                <li>
+                  <article class="note-card">
+                    <div class="note-card__meta">
+                      <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+                        {{ .Date | time.Format "01-02 15:04" }}
+                      </time>
+                      {{ with .GetTerms "tags" }}
+                        <span class="note-card__tags">
+                          {{- range . }}
+                          <a href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a>
+                          {{- end }}
+                        </span>
+                      {{ end }}
+                    </div>
+                    <h3 class="note-card__title">
+                      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                    </h3>
+                    <div class="note-card__body">
+                      {{ .Content }}
+                    </div>
+                  </article>
+                </li>
+              {{ end }}
+            </ol>
+          </section>
+        {{ end }}
+      {{ else }}
+        <p class="page-empty">还没有碎碎念，等想起来再写。</p>
+      {{ end }}
+    </article>
+  </section>
+{{ end }}

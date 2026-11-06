@@ -1,0 +1,65 @@
+{{/*
+  首页「碎碎念 + 近况」：
+  - 左边取 /notes/ 最近 3 条（数量在 hugo.toml 的 homeNoteCount）
+  - 右边是 /now/ 的摘要，指向完整近况页
+  - 两边都没有内容时整段不输出
+*/}}
+{{- $notesPage := site.GetPage "/notes" -}}
+{{- $notes := slice -}}
+{{- with $notesPage -}}
+  {{- $count := site.Params.homeNoteCount | default 3 -}}
+  {{- $notes = first $count .RegularPages.ByDate.Reverse -}}
+{{- end -}}
+{{- $now := site.GetPage "/now" -}}
+{{- $hasNotes := gt (len $notes) 0 -}}
+{{- $hasNow := false -}}
+{{- with $now -}}{{- $hasNow = true -}}{{- end -}}
+
+{{- if or $hasNotes $hasNow }}
+<section class="container home-life{{ if not (and $hasNotes $hasNow) }} home-life--single{{ end }}">
+  {{- if $hasNotes }}
+  <div class="home-life__notes">
+    <header class="home-section-head">
+      <h2 class="home-life__title">
+        <a href="{{ $notesPage.RelPermalink }}">碎碎念</a>
+      </h2>
+      <a class="home-section-more" href="{{ $notesPage.RelPermalink }}">全部 →</a>
+    </header>
+    <ul class="home-note-list">
+      {{- range $notes }}
+      {{- $summary := .Summary | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | htmlUnescape | strings.TrimSpace }}
+      <li class="home-note">
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "01-02" }}</time>
+        <div class="home-note__body">
+          <a class="home-note__title" href="{{ .RelPermalink }}">{{ .Title }}</a>
+          {{- with $summary }}
+          <p class="home-note__summary">{{ . | truncate 90 }}</p>
+          {{- end }}
+        </div>
+      </li>
+      {{- end }}
+    </ul>
+  </div>
+  {{- end }}
+
+  {{- with $now }}
+  {{- $summary := .Summary | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | htmlUnescape | strings.TrimSpace }}
+  <aside class="home-now">
+    <p class="home-now__kicker">
+      <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+      Now
+    </p>
+    <h2 class="home-now__title">
+      <a href="{{ .RelPermalink }}">最近在做什么</a>
+    </h2>
+    {{- with $summary }}
+    <p class="home-now__summary">{{ . | truncate 120 }}</p>
+    {{- end }}
+    <p class="home-now__meta">
+      更新于 {{ .Lastmod | time.Format (.Site.Params.dateFormat | default "2006-01-02") }}
+    </p>
+    <a class="home-now__more" href="{{ .RelPermalink }}">看看近况 →</a>
+  </aside>
+  {{- end }}
+</section>
+{{- end }}

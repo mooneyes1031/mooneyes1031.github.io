@@ -1,0 +1,52 @@
+{{ define "title" }}{{ .Title }} · {{ .Site.Title }}{{ end }}
+{{ define "content" }}
+  <section class="container post note-single">
+    <article>
+      <header>
+        <p class="note-single__kicker">
+          <i class="fa-solid fa-feather-pointed" aria-hidden="true"></i>
+          碎碎念
+        </p>
+        <h1 class="title">
+          <a class="title-link" href="{{ .Permalink | safeURL }}">{{ .Title }}</a>
+        </h1>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa-solid fa-calendar" aria-hidden="true"></i>
+              <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+                {{ .Date | time.Format "2006-01-02 15:04" }}
+              </time>
+            </span>
+          </div>
+          {{ with .GetTerms "tags" }}{{ partial "taxonomy/tags.html" . }}{{ end }}
+        </div>
+      </header>
+
+      <div class="post-content note-content">
+        {{ .Content }}
+      </div>
+
+      <nav class="note-single__nav" aria-label="碎碎念导航">
+        <a class="note-single__back" href="{{ `notes/` | relURL }}">
+          <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+          返回时间线
+        </a>
+        <div class="note-single__step">
+          {{ with .PrevInSection }}
+            <a href="{{ .RelPermalink }}">
+              <span>上一条</span>
+              <strong>{{ .Title }}</strong>
+            </a>
+          {{ end }}
+          {{ with .NextInSection }}
+            <a class="note-single__next" href="{{ .RelPermalink }}">
+              <span>下一条</span>
+              <strong>{{ .Title }}</strong>
+            </a>
+          {{ end }}
+        </div>
+      </nav>
+    </article>
+  </section>
+{{ end }}

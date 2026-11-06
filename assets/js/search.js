@@ -40,8 +40,8 @@
           items = Array.isArray(data) ? data : [];
           loaded = true;
           setStatus(items.length
-            ? "共 " + items.length + " 篇文章，输入关键词开始搜索。"
-            : "还没有文章。");
+            ? "共 " + items.length + " 条内容，输入关键词开始搜索。"
+            : "还没有内容。");
           run();
         })
         .catch(function () {
@@ -128,8 +128,8 @@
       if (!raw) {
         list.innerHTML = "";
         setStatus(items.length
-          ? "共 " + items.length + " 篇文章，输入关键词开始搜索。"
-          : "还没有文章。");
+          ? "共 " + items.length + " 条内容，输入关键词开始搜索。"
+          : "还没有内容。");
         return;
       }
 
@@ -149,11 +149,11 @@
       list.innerHTML = "";
 
       if (!results.length) {
-        setStatus("没有找到「" + raw + "」相关的文章。");
+        setStatus("没有找到「" + raw + "」相关的内容。");
         return;
       }
 
-      setStatus("找到 " + results.length + " 篇文章：");
+      setStatus("找到 " + results.length + " 条内容：");
       var frag = document.createDocumentFragment();
       results.forEach(function (result) {
         frag.appendChild(makeResult(result.item));

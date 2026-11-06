@@ -6,13 +6,18 @@
 */}}
 {{- $footerLinks := slice -}}
 {{- with hugo.Data.links -}}
-  {{- $footerLinks = $footerLinks | append (dict "url" ("links/" | relLangURL) "label" "友链") -}}
+  {{- with .links -}}
+    {{- $footerLinks = $footerLinks | append (dict "url" ("links/" | relLangURL) "label" "友链") -}}
+  {{- end -}}
 {{- end -}}
 {{- $footerLinks = $footerLinks | append (dict "url" ("now/" | relLangURL) "label" "Now") -}}
 {{- with hugo.Data.shelf -}}
   {{- with .groups -}}
     {{- $footerLinks = $footerLinks | append (dict "url" ("shelf/" | relLangURL) "label" "书架") -}}
   {{- end -}}
+{{- end -}}
+{{- if and site.Params.giscus site.Params.giscus.categoryID -}}
+  {{- $footerLinks = $footerLinks | append (dict "url" ("guestbook/" | relLangURL) "label" "留言板") -}}
 {{- end -}}
 {{- $footerLinks = $footerLinks | append (dict "url" ("annual/" | relLangURL) "label" "年度") -}}
 

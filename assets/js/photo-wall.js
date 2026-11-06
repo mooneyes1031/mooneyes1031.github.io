@@ -11,6 +11,7 @@
 
     var img = document.getElementById("photo-lb-img");
     var caption = document.getElementById("photo-lb-caption");
+    var exif = document.getElementById("photo-lb-exif");
     var closeBtn = box.querySelector('[data-action="close"]');
     var prevBtn = box.querySelector('[data-action="prev"]');
     var nextBtn = box.querySelector('[data-action="next"]');
@@ -26,6 +27,11 @@
       var text = link.getAttribute("data-caption") || "";
       caption.textContent = text;
       caption.hidden = !text;
+      var exifText = link.getAttribute("data-exif") || "";
+      if (exif) {
+        exif.textContent = exifText;
+        exif.hidden = !exifText;
+      }
     }
 
     function open(i) {

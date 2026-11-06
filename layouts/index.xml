@@ -1,13 +1,16 @@
-{{- $posts := (where .Site.RegularPages "Section" "posts").ByDate.Reverse -}}
+{{- $pages := where .Site.RegularPages "Section" "in" (slice "posts" "notes") -}}
+{{- $pages = $pages.ByDate.Reverse -}}
+{{- $base := .Site.BaseURL -}}
 {{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>{{ .Site.Title }}</title>
     <link>{{ .Permalink }}</link>
     <description>Recent content on {{ .Site.Title }}</description>
     <generator>Hugo</generator>
     <language>{{ .Site.Language.Locale }}</language>
-    {{ with $posts }}
+    <copyright>© {{ now.Year }} {{ .Site.Params.author }}</copyright>
+    {{ with $pages }}
       {{ with index . 0 }}
         <lastBuildDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</lastBuildDate>
       {{ end }}
@@ -15,13 +18,24 @@
     {{ with .OutputFormats.Get "rss" }}
       <atom:link href="{{ .Permalink }}" rel="self" type="application/rss+xml" />
     {{ end }}
-    {{ range $posts }}
+    {{ range $pages }}
+      {{- $summary := (.Description | default .Summary) | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | strings.TrimSpace -}}
+      {{- $content := .Content -}}
+      {{- $content = replaceRE `\s+srcset="[^"]*"` "" $content -}}
+      {{- $content = replaceRE `\s+sizes="[^"]*"` "" $content -}}
+      {{- $content = replaceRE `src="/` (printf `src="%s` $base) $content -}}
+      {{- $content = replaceRE `href="/` (printf `href="%s` $base) $content -}}
+      {{- $content = replaceRE `\]\]>` `]]]]><![CDATA[>` $content -}}
       <item>
         <title>{{ .Title }}</title>
         <link>{{ .Permalink }}</link>
         <pubDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
-        <guid>{{ .Permalink }}</guid>
-        <description>{{ (.Description | default .Summary) | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | strings.TrimSpace | transform.XMLEscape | safeHTML }}</description>
+        <guid isPermaLink="true">{{ .Permalink }}</guid>
+        <description>{{ $summary | transform.XMLEscape | safeHTML }}</description>
+        {{- range .GetTerms "tags" }}
+        <category>{{ .LinkTitle }}</category>
+        {{- end }}
+        <content:encoded>{{ "<![CDATA[" | safeHTML }}{{ $content | safeHTML }}{{ "]]>" | safeHTML }}</content:encoded>
       </item>
     {{ end }}
   </channel>

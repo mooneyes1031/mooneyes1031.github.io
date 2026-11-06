@@ -1,5 +1,6 @@
 {{- $page := . -}}
-{{- $related := first 4 (.Site.RegularPages.Related .) -}}
+{{- $pool := where .Site.RegularPages "Section" "posts" -}}
+{{- $related := first 4 ($pool.Related .) -}}
 {{- $items := slice -}}
 {{- range $related -}}
   {{- if ne .Permalink $page.Permalink -}}
