@@ -42,7 +42,7 @@
 
 ### 留言板
 
-`/guestbook/` 复用 giscus，评论数据存在 GitHub Discussions。`hugo.toml` 的 `[params.giscus]` 里填好 `categoryID` 后，文章评论和页脚「留言板」入口才会出现；没填时页面会显示邮件联系方式，不会报错。
+`/guestbook/` 复用 giscus，评论数据存在 GitHub Discussions。现在已经启用（分类 `General`），文章评论和页脚「留言板」入口都会出现；如果以后把 `categoryID` 清空，页面会显示邮件联系方式，不会报错。
 
 ### 全文 RSS
 
