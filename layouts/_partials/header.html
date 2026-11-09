@@ -16,7 +16,9 @@
   {{- end -}}
 {{- end -}}
 {{- $hasSeries := gt (len site.Taxonomies.series) 0 -}}
+{{- $current := .RelPermalink -}}
 
+<a class="skip-link" href="#main-content">跳到正文</a>
 <nav class="navigation">
   <section class="container">
     {{ with .Site }}
@@ -25,19 +27,22 @@
     </a>
     {{ end }}
     {{ if or .Site.Menus.main hugo.IsMultilingual }}
-      <input type="checkbox" id="menu-toggle" />
-      <label class="menu-button float-right" for="menu-toggle">
+      <input type="checkbox" id="menu-toggle" aria-label="打开菜单" aria-controls="site-menu" />
+      <label class="menu-button float-right" for="menu-toggle" aria-label="打开菜单" aria-expanded="false">
         <i class="fa-solid fa-bars fa-fw" aria-hidden="true"></i>
       </label>
-      <ul class="navigation-list">
+      <ul class="navigation-list" id="site-menu">
         {{ with .Site.Menus.main}}
           {{ range sort . }}
             {{- $hide := false -}}
             {{- if and (in (slice "series/" "/series/") .URL) (not $hasSeries) -}}{{- $hide = true -}}{{- end -}}
             {{- if and (in (slice "photos/" "/photos/") .URL) (not $hasPhotos) -}}{{- $hide = true -}}{{- end -}}
+            {{- $url := index (apply (slice .URL) (.Params.urlFunc | default "relLangURL") ".") 0 -}}
+            {{- $isActive := or ($.IsMenuCurrent "main" .) ($.HasMenuCurrent "main" .) -}}
+            {{- if and (not $isActive) (ne $url "/") -}}{{- $isActive = hasPrefix $current $url -}}{{- end -}}
             {{- if not $hide }}
             <li class="navigation-item">
-              <a class="navigation-link {{ .Params.class }}" href="{{ index (apply (slice .URL) (.Params.urlFunc | default "relLangURL") ".") 0 }}">{{ .Name }}</a>
+              <a class="navigation-link {{ .Params.class }}{{ if $isActive }} is-active{{ end }}" href="{{ $url }}"{{ if $isActive }} aria-current="page"{{ end }}>{{ .Name }}</a>
             </li>
             {{- end }}
           {{ end }}
@@ -63,3 +68,4 @@
     {{ end }}
   </section>
 </nav>
+<span id="main-content" class="skip-target" tabindex="-1"></span>

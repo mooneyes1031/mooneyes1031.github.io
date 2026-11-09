@@ -1,6 +1,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" id="theme-color-meta" content="#fafafa">
+{{- if or (eq .Kind "404") (eq .RelPermalink "/search/") }}
+<meta name="robots" content="noindex, follow">
+{{- end }}
 
 {{ if .Site.Params.csp }}
 {{ partial "csp.html" . }}

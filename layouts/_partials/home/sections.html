@@ -15,7 +15,7 @@
 {{- with $featured }}
 <section class="container list home-featured">
   <header>
-    <h1 class="title">精选文章</h1>
+    <h2 class="title">精选文章</h2>
   </header>
   <div class="home-featured-grid">
     {{- range . }}
@@ -59,9 +59,9 @@
 {{- if or $latest $featured }}
 <section class="container list home-posts">
   <header class="home-section-head">
-    <h1 class="title">
+    <h2 class="title">
       <a class="title-link" href="{{ `posts/` | relURL }}">最新文章</a>
-    </h1>
+    </h2>
     <a class="home-section-more" href="{{ `posts/` | relURL }}">查看全部 →</a>
   </header>
   {{- with $latest }}

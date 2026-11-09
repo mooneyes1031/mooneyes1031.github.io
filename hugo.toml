@@ -133,6 +133,10 @@ pagerSize = 10
   #   排版微调（行宽、行高、导航间距）都写在这个文件里，改完保存即可
   customSCSS = ["scss/custom.scss"]
 
+  # ★ 全局 UI 脚本：移动端菜单、状态栏主题色、悬浮按钮自动收起
+  #   代码在 assets/js/ui.js，由主题在 </body> 前加载
+  customJS = ["js/ui.js"]
+
   # 文章目录：默认开启，默认收起；单篇文章可在 front matter 写 toc = false 关掉
   [params.entry]
     toc = true
@@ -244,10 +248,12 @@ pagerSize = 10
 # ---------------------------------------------------------------------------
 # 评论系统（giscus）
 #
-# 还差最后一步：GitHub 仓库需要开启 Discussions，并安装 giscus App。
+# 已启用：GitHub Discussions 已开启，giscus App 已授权，分类使用 General。
+# 文章评论和「留言板」共用同一个 Discussion 分类，访客需要登录 GitHub 才能发言。
+# 如果以后换仓库或分类，按下面步骤重新生成：
 #   1. 仓库 → Settings → General → Features → 勾选 Discussions
 #   2. https://github.com/apps/giscus 安装并授权你的博客仓库
-#   3. https://giscus.app/zh-CN 填仓库名，选 General 分类，把生成的 categoryID 填到下面
+#   3. https://giscus.app/zh-CN 填仓库名，选分类，把生成的 categoryID 填到下面
 #
 # categoryID 为空时，文章底部不会显示评论区，也不会报错。
 # ---------------------------------------------------------------------------

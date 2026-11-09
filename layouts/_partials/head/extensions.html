@@ -4,6 +4,19 @@
 */}}
 <script>
   (function () {
+    // 让手机浏览器的状态栏颜色跟随当前主题，避免深色页面顶部还是浅色。
+    try {
+      var savedTheme = window.localStorage.getItem("colorscheme");
+      var configured = "{{ .Site.Params.colorScheme | default "auto" }}";
+      var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      var isDark = savedTheme === "dark" ||
+        (savedTheme !== "light" && (configured === "dark" || (configured !== "light" && prefersDark)));
+      var meta = document.getElementById("theme-color-meta");
+      if (meta) meta.setAttribute("content", isDark ? "#212121" : "#fafafa");
+    } catch (error) {
+      // 隐私模式下 localStorage 可能不可用，保持默认浅色即可
+    }
+
     var month = new Date().getMonth() + 1;
     var season = "winter";
     if (month >= 3 && month <= 5) season = "spring";

@@ -8,11 +8,14 @@
     var input = document.getElementById("search-input");
     var status = document.getElementById("search-status");
     var list = document.getElementById("search-results");
+    var suggestions = document.getElementById("search-suggestions");
+    var filters = Array.prototype.slice.call(document.querySelectorAll("[data-search-section]"));
     var indexURL = box.getAttribute("data-index");
     var items = [];
     var loaded = false;
     var loadError = false;
     var timer = null;
+    var sectionFilter = "";
 
     if (!input || !status || !list || !indexURL) return;
 
@@ -30,6 +33,48 @@
       status.textContent = text;
     }
 
+    function inFilter(item) {
+      return !sectionFilter || item.section === sectionFilter;
+    }
+
+    function filteredItems() {
+      return items.filter(inFilter);
+    }
+
+    function sectionLabel(section) {
+      if (section === "notes") return "碎碎念";
+      return "文章";
+    }
+
+    function filterLabel() {
+      if (sectionFilter === "notes") return "条碎碎念";
+      if (sectionFilter === "posts") return "篇文章";
+      return "条内容";
+    }
+
+    function baseStatus() {
+      var count = filteredItems().length;
+      if (!count) return "这个分类下还没有内容。";
+      return "共 " + count + " " + filterLabel() + "，输入关键词开始搜索。";
+    }
+
+    function syncFilterUI() {
+      filters.forEach(function (button) {
+        var active = button.getAttribute("data-search-section") === sectionFilter;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+    }
+
+    function setSectionFilter(value) {
+      sectionFilter = value === "posts" || value === "notes" ? value : "";
+      syncFilterUI();
+      updateURL();
+      if (loaded) {
+        run();
+      }
+    }
+
     function load() {
       fetch(indexURL, { cache: "no-cache" })
         .then(function (res) {
@@ -39,9 +84,7 @@
         .then(function (data) {
           items = Array.isArray(data) ? data : [];
           loaded = true;
-          setStatus(items.length
-            ? "共 " + items.length + " 条内容，输入关键词开始搜索。"
-            : "还没有内容。");
+          setStatus(items.length ? baseStatus() : "还没有内容。");
           run();
         })
         .catch(function () {
@@ -99,6 +142,7 @@
       li.appendChild(link);
 
       var bits = [];
+      if (item.section) bits.push(sectionLabel(item.section));
       if (item.date) bits.push(item.date);
       var tags = toList(item.tags);
       if (tags.length) bits.push(tags.join(" / "));
@@ -125,20 +169,21 @@
       if (!loaded || loadError) return;
 
       var raw = input.value.trim();
+      if (suggestions) suggestions.hidden = !!raw;
+
       if (!raw) {
         list.innerHTML = "";
-        setStatus(items.length
-          ? "共 " + items.length + " 条内容，输入关键词开始搜索。"
-          : "还没有内容。");
+        setStatus(items.length ? baseStatus() : "还没有内容。");
         return;
       }
 
       var query = normalize(raw);
       var results = [];
+      var pool = filteredItems();
 
-      for (var i = 0; i < items.length; i++) {
-        var s = score(items[i], query);
-        if (s >= 0) results.push({ item: items[i], score: s });
+      for (var i = 0; i < pool.length; i++) {
+        var s = score(pool[i], query);
+        if (s >= 0) results.push({ item: pool[i], score: s });
       }
 
       results.sort(function (a, b) {
@@ -149,7 +194,9 @@
       list.innerHTML = "";
 
       if (!results.length) {
-        setStatus("没有找到「" + raw + "」相关的内容。");
+        setStatus(sectionFilter
+          ? "在「" + (sectionFilter === "notes" ? "碎碎念" : "文章") + "」里没有找到「" + raw + "」，可以试试切换到「全部」。"
+          : "没有找到「" + raw + "」相关的内容。");
         return;
       }
 
@@ -169,6 +216,11 @@
       } else {
         url.searchParams.delete("q");
       }
+      if (sectionFilter) {
+        url.searchParams.set("type", sectionFilter);
+      } else {
+        url.searchParams.delete("type");
+      }
       try {
         history.replaceState(null, "", url);
       } catch (error) {
@@ -184,6 +236,21 @@
 
     input.addEventListener("input", onInput);
 
+    filters.forEach(function (button) {
+      button.addEventListener("click", function () {
+        setSectionFilter(button.getAttribute("data-search-section") || "");
+      });
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll("[data-search-query]"), function (button) {
+      button.addEventListener("click", function () {
+        input.value = button.getAttribute("data-search-query") || "";
+        updateURL();
+        input.focus();
+        run();
+      });
+    });
+
     document.addEventListener("keydown", function (event) {
       if (event.key === "/" && document.activeElement !== input) {
         event.preventDefault();
@@ -196,11 +263,21 @@
       }
     });
 
-    var initial = new URLSearchParams(window.location.search).get("q") || "";
+    var params = new URLSearchParams(window.location.search);
+    var initial = params.get("q") || "";
+    var initialType = params.get("type") || "";
     if (initial) input.value = initial;
+    if (initialType === "posts" || initialType === "notes") {
+      sectionFilter = initialType;
+    }
+    syncFilterUI();
 
     window.addEventListener("popstate", function () {
-      input.value = new URLSearchParams(window.location.search).get("q") || "";
+      var next = new URLSearchParams(window.location.search);
+      input.value = next.get("q") || "";
+      var nextType = next.get("type") || "";
+      sectionFilter = nextType === "posts" || nextType === "notes" ? nextType : "";
+      syncFilterUI();
       run();
     });
 

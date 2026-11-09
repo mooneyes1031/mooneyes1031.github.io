@@ -10,10 +10,33 @@
 
       {{ .Content }}
 
+      {{- $postCount := len (where site.RegularPages "Section" "posts") -}}
+      {{- $noteCount := len (where site.RegularPages "Section" "notes") -}}
       <div class="search-box" data-index="{{ "index.json" | relURL }}?v={{ now.Unix }}">
         <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
         <input id="search-input" type="search" placeholder="搜索标题、标签、正文…" autocomplete="off" aria-label="搜索文章">
       </div>
+
+      <div class="search-filters" role="group" aria-label="按内容类型筛选">
+        <button type="button" class="search-filter is-active" data-search-section="" aria-pressed="true">
+          全部<span class="search-filter__count">{{ add $postCount $noteCount }}</span>
+        </button>
+        <button type="button" class="search-filter" data-search-section="posts" aria-pressed="false">
+          文章<span class="search-filter__count">{{ $postCount }}</span>
+        </button>
+        <button type="button" class="search-filter" data-search-section="notes" aria-pressed="false">
+          碎碎念<span class="search-filter__count">{{ $noteCount }}</span>
+        </button>
+      </div>
+
+      {{- with site.Taxonomies.tags.ByCount }}
+      <div class="search-suggestions" id="search-suggestions">
+        <span class="search-suggestions__label">试试搜索</span>
+        {{- range first 8 . }}
+        <button type="button" class="search-suggestion" data-search-query="{{ .Term }}">#{{ .Term }}</button>
+        {{- end }}
+      </div>
+      {{- end }}
 
       <p class="search-status" id="search-status" aria-live="polite">正在加载索引…</p>
       <ul class="search-results" id="search-results"></ul>

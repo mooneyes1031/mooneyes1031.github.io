@@ -20,6 +20,7 @@
   {{- $footerLinks = $footerLinks | append (dict "url" ("guestbook/" | relLangURL) "label" "留言板") -}}
 {{- end -}}
 {{- $footerLinks = $footerLinks | append (dict "url" ("annual/" | relLangURL) "label" "年度") -}}
+{{- $footerLinks = $footerLinks | append (dict "url" "#" "label" "回到顶部" "class" "back-to-top") -}}
 
 <footer class="footer">
   <section class="container">
@@ -27,7 +28,7 @@
       <nav class="footer-links" aria-label="更多页面">
         {{- range $i, $link := $footerLinks }}
           {{- if $i }}<span aria-hidden="true">·</span>{{ end }}
-          <a href="{{ $link.url }}">{{ $link.label }}</a>
+          <a href="{{ $link.url }}"{{ with $link.class }} class="{{ . }}"{{ end }}>{{ $link.label }}</a>
         {{- end }}
       </nav>
       <span class="moon-phase" data-moon-phase>
