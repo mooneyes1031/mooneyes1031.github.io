@@ -1,7 +1,7 @@
 +++
 title = "把 Coder 改成自己的样子"
 date = 2026-11-04T21:00:00+08:00
-lastmod = 2026-11-04T21:00:00+08:00
+lastmod = 2026-11-10T00:00:00+08:00
 description = "主题只是起点。记录首页夜空、照片墙、碎碎念和搜索这些地方是怎么一点点改出来的。"
 tags = ["Hugo", "设计", "博客"]
 categories = ["折腾"]
@@ -33,7 +33,7 @@ layouts/_partials/home.html
 <img src="{{ $resized.RelPermalink }}" width="{{ $resized.Width }}" height="{{ $resized.Height }}">
 ```
 
-首屏图还加了一个 `preload`，让浏览器在解析到 `<body>` 之前就开始下载。它通常是首页最大的那张图，早一点开始会明显一些。
+首屏图一开始还用了 `<link rel="preload">`，想让它更早开始下载。但 Hugo 的 HTML 压缩器会把 `imagesrcset` 里的空格转成 `%20`，浏览器反而去请求一个不存在的地址。后来干脆去掉 preload，改用 `<img fetchpriority="high">`，让首屏图自己以高优先级加载。
 
 ## 照片墙
 
