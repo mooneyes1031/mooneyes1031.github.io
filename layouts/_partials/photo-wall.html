@@ -1,51 +1,141 @@
-{{- /* 照片墙：把图片放进 content/photos/，和 index.md 平级，构建时自动出现 */ -}}
+{{- /* 照片墙：图片放在 content/photos/ 下。
+       推荐按主题建子文件夹，例如 city-night/、forest/；
+       模板会自动按文件夹分组，并用 index.md 的 [albums] 映射显示名。 */ -}}
+{{- $page := . -}}
 {{- $images := sort (where (.Resources.ByType "image") "MediaType.SubType" "!=" "svg") "Name" -}}
 {{- if $images -}}
   {{- $groupBy := .Params.groupBy | default "" -}}
-  {{- $map := dict -}}
-  {{- if eq $groupBy "year" -}}
-    {{- $map = .Params.years | default dict -}}
-  {{- else if eq $groupBy "place" -}}
-    {{- $map = .Params.places | default dict -}}
-  {{- end -}}
+  {{- $grouped := dict -}}
+  {{- $groupKeys := slice -}}
+  {{- $labels := dict -}}
+  {{- $descriptions := dict -}}
 
-  {{- if and $groupBy $map -}}
-    {{- $grouped := dict -}}
-    {{- $groupKeys := slice -}}
+  {{- if eq $groupBy "folder" -}}
+    {{- range $images -}}
+      {{- $key := path.Dir .Name -}}
+      {{- if eq $key "." -}}{{- $key = "" -}}{{- end -}}
+      {{- $items := index $grouped $key | default (slice) -}}
+      {{- $grouped = merge $grouped (dict $key ($items | append .)) -}}
+      {{- if not (in $groupKeys $key) -}}{{- $groupKeys = $groupKeys | append $key -}}{{- end -}}
+    {{- end -}}
+    {{- range $groupKeys -}}
+      {{- $key := . -}}
+      {{- $label := $key -}}
+      {{- with index ($page.Params.albums | default (dict)) $key -}}{{- $label = . -}}{{- end -}}
+      {{- if not $label -}}{{- $label = "未分类" -}}{{- end -}}
+      {{- $labels = merge $labels (dict $key $label) -}}
+      {{- with index ($page.Params.albumDescriptions | default (dict)) $key -}}
+        {{- $descriptions = merge $descriptions (dict $key .) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- else if or (eq $groupBy "year") (eq $groupBy "place") -}}
+    {{- $map := dict -}}
+    {{- if eq $groupBy "year" -}}{{- $map = .Params.years | default (dict) -}}{{- end -}}
+    {{- if eq $groupBy "place" -}}{{- $map = .Params.places | default (dict) -}}{{- end -}}
     {{- range $images -}}
       {{- $key := index $map .Name | default "未分类" -}}
       {{- $items := index $grouped $key | default (slice) -}}
       {{- $grouped = merge $grouped (dict $key ($items | append .)) -}}
       {{- if not (in $groupKeys $key) -}}{{- $groupKeys = $groupKeys | append $key -}}{{- end -}}
     {{- end -}}
+    {{- range $groupKeys -}}
+      {{- $labels = merge $labels (dict . .) -}}
+    {{- end -}}
+  {{- end -}}
 
+  {{- $ordered := slice -}}
+  {{- if eq $groupBy "folder" -}}
+    {{- with $page.Params.albumOrder -}}
+      {{- range . -}}
+        {{- if and (in $groupKeys .) (not (in $ordered .)) -}}{{- $ordered = $ordered | append . -}}{{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- range sort $groupKeys -}}
+      {{- if not (in $ordered .) -}}{{- $ordered = $ordered | append . -}}{{- end -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $ordered = sort $groupKeys -}}
+  {{- end -}}
+
+  {{- $hasGroups := gt (len $ordered) 0 -}}
+  {{- $showFilters := gt (len $ordered) 1 -}}
+  {{- $singleUncategorized := false -}}
+  {{- if eq (len $ordered) 1 -}}
+    {{- if eq (index $ordered 0) "" -}}{{- $singleUncategorized = true -}}{{- end -}}
+  {{- end -}}
+
+  <div class="photo-summary">
+    <span>{{ len $images }} 张照片</span>
+    {{- if and $hasGroups (not $singleUncategorized) -}}
+      <span class="photo-summary__dot" aria-hidden="true">·</span>
+      <span>{{ len $ordered }} 个主题</span>
+    {{- end }}
+  </div>
+
+  {{- if $showFilters }}
+  <div class="photo-filters" role="group" aria-label="按主题筛选照片">
+    <button type="button" class="photo-filter is-active" data-photo-filter="all" data-photo-label="全部" aria-pressed="true">
+      全部 <span class="photo-filter__count">{{ len $images }}</span>
+    </button>
+    {{- range $ordered }}
+      {{- $key := . -}}
+      {{- $id := $key | urlize -}}
+      {{- if not $id }}{{ $id = "uncategorized" }}{{ end -}}
+      {{- $label := index $labels $key -}}
+      <button type="button" class="photo-filter" data-photo-filter="{{ $id }}" data-photo-label="{{ $label }}" aria-pressed="false">
+        {{ $label }} <span class="photo-filter__count">{{ len (index $grouped $key) }}</span>
+      </button>
+    {{- end }}
+  </div>
+  <p class="photo-filter-status sr-only" id="photo-filter-status" aria-live="polite"></p>
+  {{- end }}
+
+  {{- if and $hasGroups (not $singleUncategorized) }}
     <div class="photo-groups" id="photo-wall">
-      {{- range sort $groupKeys -}}
-        <section class="photo-group">
-          <h2>{{ . }}</h2>
-          <div class="photo-wall">
-            {{- range index $grouped . -}}
-              {{- partial "photo-item.html" (dict "page" $ "image" .) -}}
-            {{- end -}}
+      {{- range $ordered }}
+        {{- $key := . -}}
+        {{- $id := $key | urlize -}}
+        {{- if not $id }}{{ $id = "uncategorized" }}{{ end -}}
+        {{- $label := index $labels $key -}}
+        <section class="photo-group" data-photo-album="{{ $id }}" id="album-{{ $id }}">
+          <header class="photo-group__head">
+            <h2>
+              {{ $label }}
+              <span class="photo-group__count">{{ len (index $grouped $key) }} 张</span>
+            </h2>
+            {{- with index $descriptions $key }}
+            <p class="photo-group__desc">{{ . }}</p>
+            {{- end }}
+          </header>
+          <div class="photo-wall photo-wall--{{ len (index $grouped $key) }}">
+            {{- range index $grouped $key }}
+              {{- partial "photo-item.html" (dict "page" $page "image" . "album" $label) }}
+            {{- end }}
           </div>
         </section>
-      {{- end -}}
+      {{- end }}
     </div>
-  {{- else -}}
+  {{- else }}
     <div class="photo-wall" id="photo-wall">
-      {{- range $images -}}
-        {{- partial "photo-item.html" (dict "page" $ "image" .) -}}
-      {{- end -}}
+      {{- range $images }}
+        {{- partial "photo-item.html" (dict "page" $page "image" . "album" "") }}
+      {{- end }}
     </div>
-  {{- end -}}
+  {{- end }}
 
   <div class="photo-lightbox" id="photo-lightbox" hidden role="dialog" aria-modal="true" aria-label="照片预览">
     <button type="button" class="photo-lb-btn photo-lb-close" data-action="close" aria-label="关闭">&times;</button>
     <button type="button" class="photo-lb-btn photo-lb-prev" data-action="prev" aria-label="上一张">&lsaquo;</button>
     <figure class="photo-lb-figure">
       <img id="photo-lb-img" alt="">
-      <figcaption id="photo-lb-caption" hidden></figcaption>
-      <p class="photo-lb-exif" id="photo-lb-exif" hidden></p>
+      <div class="photo-lb-info">
+        <p class="photo-lb-caption" id="photo-lb-caption" hidden></p>
+        <p class="photo-lb-exif" id="photo-lb-exif" hidden></p>
+        <p class="photo-lb-meta">
+          <span class="photo-lb-album" id="photo-lb-album"></span>
+          <span class="photo-lb-counter" id="photo-lb-counter"></span>
+        </p>
+      </div>
     </figure>
     <button type="button" class="photo-lb-btn photo-lb-next" data-action="next" aria-label="下一张">&rsaquo;</button>
   </div>

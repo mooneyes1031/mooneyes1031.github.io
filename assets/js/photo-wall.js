@@ -6,12 +6,18 @@
     var box = document.getElementById("photo-lightbox");
     if (!wall || !box) return;
 
-    var links = Array.prototype.slice.call(wall.querySelectorAll(".photo-link"));
-    if (!links.length) return;
+    var allLinks = Array.prototype.slice.call(wall.querySelectorAll(".photo-link"));
+    if (!allLinks.length) return;
 
+    var activeLinks = allLinks.slice();
     var img = document.getElementById("photo-lb-img");
     var caption = document.getElementById("photo-lb-caption");
     var exif = document.getElementById("photo-lb-exif");
+    var album = document.getElementById("photo-lb-album");
+    var counter = document.getElementById("photo-lb-counter");
+    var status = document.getElementById("photo-filter-status");
+    var filters = Array.prototype.slice.call(document.querySelectorAll("[data-photo-filter]"));
+    var groups = Array.prototype.slice.call(document.querySelectorAll("[data-photo-album]"));
     var closeBtn = box.querySelector('[data-action="close"]');
     var prevBtn = box.querySelector('[data-action="prev"]');
     var nextBtn = box.querySelector('[data-action="next"]');
@@ -19,9 +25,28 @@
     var lastFocus = null;
     var touchStartX = 0;
 
+    function closestGroup(link) {
+      var node = link.parentNode;
+      while (node && node !== wall) {
+        if (node.hasAttribute && node.hasAttribute("data-photo-album")) {
+          return node;
+        }
+        node = node.parentNode;
+      }
+      return null;
+    }
+
+    function visibleLinks() {
+      return allLinks.filter(function (link) {
+        var group = closestGroup(link);
+        return !group || !group.hidden;
+      });
+    }
+
     function render(i) {
-      index = (i + links.length) % links.length;
-      var link = links[index];
+      if (!activeLinks.length) return;
+      index = (i + activeLinks.length) % activeLinks.length;
+      var link = activeLinks[index];
       img.src = link.getAttribute("data-full");
       img.alt = link.getAttribute("data-alt") || "";
       var text = link.getAttribute("data-caption") || "";
@@ -31,6 +56,14 @@
       if (exif) {
         exif.textContent = exifText;
         exif.hidden = !exifText;
+      }
+      if (album) {
+        var albumText = link.getAttribute("data-album") || "";
+        album.textContent = albumText;
+        album.hidden = !albumText;
+      }
+      if (counter) {
+        counter.textContent = (index + 1) + " / " + activeLinks.length;
       }
     }
 
@@ -57,11 +90,17 @@
       render(index + delta);
     }
 
-    links.forEach(function (link, i) {
+    allLinks.forEach(function (link) {
       link.addEventListener("click", function (e) {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
         e.preventDefault();
-        open(i);
+        activeLinks = visibleLinks();
+        var target = activeLinks.indexOf(link);
+        if (target < 0) {
+          activeLinks = allLinks.slice();
+          target = allLinks.indexOf(link);
+        }
+        open(target);
       });
     });
 
@@ -106,6 +145,73 @@
       var dx = e.changedTouches[0].clientX - touchStartX;
       if (Math.abs(dx) > 50) step(dx > 0 ? -1 : 1);
     }, { passive: true });
+
+    function filterLabel(id) {
+      for (var i = 0; i < filters.length; i++) {
+        if (filters[i].getAttribute("data-photo-filter") === id) {
+          return filters[i].getAttribute("data-photo-label") || id;
+        }
+      }
+      return id;
+    }
+
+    function applyFilter(id, updateURL) {
+      var valid = id === "all";
+      if (!valid) {
+        valid = filters.some(function (button) {
+          return button.getAttribute("data-photo-filter") === id;
+        });
+      }
+      if (!valid) id = "all";
+
+      if (!box.hidden) close();
+
+      groups.forEach(function (group) {
+        group.hidden = id !== "all" && group.getAttribute("data-photo-album") !== id;
+      });
+
+      filters.forEach(function (button) {
+        var active = button.getAttribute("data-photo-filter") === id;
+        if (active) {
+          button.classList.add("is-active");
+        } else {
+          button.classList.remove("is-active");
+        }
+        button.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+
+      if (status) {
+        var count = visibleLinks().length;
+        var label = id === "all" ? "全部" : filterLabel(id);
+        status.textContent = "正在显示" + label + "的 " + count + " 张照片";
+      }
+
+      if (updateURL && window.history && window.history.replaceState) {
+        var url = new URL(window.location.href);
+        if (id === "all") {
+          url.searchParams.delete("album");
+        } else {
+          url.searchParams.set("album", id);
+        }
+        window.history.replaceState(null, "", url.pathname + url.search + url.hash);
+      }
+    }
+
+    filters.forEach(function (button) {
+      button.addEventListener("click", function () {
+        applyFilter(button.getAttribute("data-photo-filter"), true);
+      });
+    });
+
+    if (filters.length) {
+      var initial = "all";
+      try {
+        initial = new URLSearchParams(window.location.search).get("album") || "all";
+      } catch (error) {
+        initial = "all";
+      }
+      applyFilter(initial, false);
+    }
   }
 
   if (document.readyState === "loading") {

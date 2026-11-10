@@ -16,7 +16,7 @@
 | `content/about.md` | 「关于」页面 |
 | `content/now.md` | Now 近况 |
 | `content/guestbook.md` | 留言板 |
-| `content/photos/` | 照片墙 |
+| `content/photos/` | 照片墙（按主题子文件夹） |
 | `content/archives/`、`content/search/` | 归档页、搜索页 |
 | `data/` | 友链、书架数据 |
 | `hugo.toml` | 站点配置（标题、菜单、分享图、评论、统计…） |
@@ -39,6 +39,10 @@
 ### Now
 
 `content/now.md` 是近况页。首页右侧会取它的摘要，和碎碎念并排展示；更新时记得同时改 `lastmod`。
+
+### 照片墙
+
+照片按主题放在 `content/photos/` 的子文件夹里（如 `city-night/`、`forest/`），图片直接拖进去即可。`index.md` 里的 `groupBy = "folder"` 会按文件夹自动分组，`[albums]` 映射中文名，`albumOrder` 控制顺序；页面顶部会出现主题筛选，选中后会写进 `?album=`，可以直接分享某个主题。首页「拾光」从 `featured` 取图，路径写 `文件夹/文件名`，点缩略图会进入对应主题相册。
 
 ### 留言板
 

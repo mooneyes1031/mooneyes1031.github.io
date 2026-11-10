@@ -38,6 +38,20 @@
           {{- $caption = index . $image.Name | default "" -}}
         {{- end -}}
         {{- $alt := or $caption (replaceRE "\\.[^.]+$" "" $image.Name) -}}
+        {{- /* 照片在主题文件夹里时，首页缩略图直接点进对应相册 */ -}}
+        {{- $albumDir := path.Dir $image.Name -}}
+        {{- $albumID := "" -}}
+        {{- $albumLabel := "" -}}
+        {{- if ne $albumDir "." -}}
+          {{- $albumID = $albumDir | urlize -}}
+          {{- with index ($photosPage.Params.albums | default (dict)) $albumDir -}}
+            {{- $albumLabel = . -}}
+          {{- end -}}
+        {{- end -}}
+        {{- $photoURL := `photos/` | relURL -}}
+        {{- if $albumID -}}
+          {{- $photoURL = printf "photos/?album=%s" $albumID | relURL -}}
+        {{- end -}}
         {{- $widths := slice 360 540 720 -}}
         {{- $srcset := slice -}}
         {{- $thumb := $image -}}
@@ -54,7 +68,7 @@
           {{- $thumb = $resized -}}
         {{- end -}}
         <figure class="home-photo">
-          <a class="home-photo__link" href="{{ `photos/` | relURL }}" aria-label="查看照片{{ with $caption }}：{{ . }}{{ end }}">
+          <a class="home-photo__link" href="{{ $photoURL }}" aria-label="查看{{ with $albumLabel }}{{ . }}相册{{ else }}照片{{ end }}{{ with $caption }}：{{ . }}{{ end }}">
             <img src="{{ $thumb.RelPermalink }}"
               srcset="{{ delimit $srcset ", " }}"
               sizes="(max-width: 768px) 45vw, 190px"

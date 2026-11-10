@@ -1,5 +1,6 @@
 {{- $page := .page -}}
 {{- $image := .image -}}
+{{- $album := .album | default "" -}}
 {{- $caption := "" -}}
 {{- with $page.Params.captions -}}
   {{- $caption = index . $image.Name | default "" -}}
@@ -60,7 +61,7 @@
 {{- $exif := delimit $exifParts " · " -}}
 
 <figure class="photo-item">
-  <a class="photo-link" href="{{ $large.RelPermalink }}" data-full="{{ $large.RelPermalink }}" data-caption="{{ $caption }}" data-alt="{{ $alt }}" data-exif="{{ $exif }}">
+  <a class="photo-link" href="{{ $large.RelPermalink }}" data-full="{{ $large.RelPermalink }}" data-caption="{{ $caption }}" data-alt="{{ $alt }}" data-exif="{{ $exif }}" data-album="{{ $album }}">
     <img src="{{ $thumb.RelPermalink }}"
       srcset="{{ delimit $srcset ", " }}"
       sizes="(max-width: 768px) 45vw, 272px"

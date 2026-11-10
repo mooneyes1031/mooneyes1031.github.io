@@ -39,12 +39,14 @@ layouts/_partials/home.html
 
 照片页最初用的是原图缩略图，六张加起来七百多 KB。后来改成 WebP 多尺寸：缩略图生成 360、540、720 三种宽度，灯箱图最长边 1600，浏览器根据屏幕自己挑。
 
-照片放在 `content/photos/`，和 `index.md` 平级。Hugo 会把它们当成这个页面的资源，模板里用 `.Resources.ByType "image"` 就能取到。说明文字写在 front matter 里：
+照片按主题放在 `content/photos/` 的子文件夹里，例如 `city-night/`、`forest/`。Hugo 会把整棵目录当成这个页面的资源，模板里用 `.Resources.ByType "image"` 就能取到，文件夹名还可以直接拿来分组。说明文字写在 front matter 里：
 
 ```toml
 [captions]
-"01-kyoto-dusk.jpg" = "京都 · 黄昏"
+"city-night/01-kyoto-dusk.jpg" = "京都 · 黄昏"
 ```
+
+页面顶部的主题筛选也来自这些文件夹，选中后会写进地址（如 `?album=city-night`），可以直接把某个主题的链接发给别人。
 
 照片墙用统一的 4:3 网格，手机上两列，桌面上三列。之前试过拍立得式的旋转和错位，单看很活泼，六张排在一起反而乱。最后还是整齐一点更耐看。
 

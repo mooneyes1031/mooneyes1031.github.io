@@ -306,11 +306,95 @@ body.colorscheme-dark {
 //  8. 照片墙 / Photo wall
 // --------------------------------------------------------------------------
 
+.photo-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 2rem 0 0.8rem;
+  color: var(--ui-muted);
+  font-size: 1.3rem;
+}
+
+.photo-summary__dot {
+  opacity: 0.45;
+}
+
+.photo-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1rem 0 1.6rem;
+}
+
+.photo-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--ui-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ui-muted);
+  font-size: 1.3rem;
+  font-family: inherit;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.photo-filter:hover,
+.photo-filter:focus {
+  border-color: var(--accent-current);
+  color: var(--accent-current);
+}
+
+.photo-filter.is-active {
+  border-color: var(--accent-current);
+  background: var(--accent-soft);
+  color: var(--accent-current);
+  font-weight: 600;
+}
+
+.photo-filter__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--ui-chip-bg);
+  color: inherit;
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.photo-filter.is-active .photo-filter__count {
+  background: var(--accent-current);
+  color: var(--on-accent);
+}
+
+.photo-group[hidden] {
+  display: none;
+}
+
 .photo-wall {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.2rem;
   margin: 2rem 0 3rem;
+}
+
+// 单张 / 两张的相册不用硬凑三列，避免大片留白
+.photo-wall--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.photo-wall--1 {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 42rem;
 }
 
 .photo-item {
@@ -417,11 +501,37 @@ body.colorscheme-dark {
   box-shadow: 0 1rem 4rem rgba(0, 0, 0, 0.5);
 }
 
-.photo-lb-figure figcaption {
-  margin-top: 1.2rem;
+.photo-lb-info {
+  width: 100%;
+  text-align: center;
+}
+
+.photo-lb-caption {
+  margin: 1.2rem 0 0;
   color: #ddd;
   font-size: 1.4rem;
-  text-align: center;
+}
+
+.photo-lb-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  margin: 0.5rem 0 0;
+  color: #aaa;
+  font-size: 1.2rem;
+}
+
+.photo-lb-album {
+  color: #ddd;
+}
+
+.photo-lb-album[hidden] {
+  display: none;
+}
+
+.photo-lb-counter {
+  margin-left: auto;
 }
 
 .photo-lb-btn {
@@ -521,6 +631,11 @@ body.colorscheme-dark {
     gap: 0.8rem;
   }
 
+  .photo-wall--1 {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: none;
+  }
+
   .photo-item {
     border-radius: 0.5rem;
   }
@@ -530,8 +645,30 @@ body.colorscheme-dark {
     font-size: 1.2rem;
   }
 
+  .photo-summary {
+    margin-top: 1.6rem;
+    font-size: 1.2rem;
+  }
+
+  .photo-filters {
+    gap: 0.4rem;
+  }
+
+  .photo-filter {
+    padding: 0.4rem 0.8rem;
+    font-size: 1.2rem;
+  }
+
   .photo-lightbox {
     padding: 1.2rem;
+  }
+
+  .photo-lb-caption {
+    font-size: 1.3rem;
+  }
+
+  .photo-lb-meta {
+    font-size: 1.1rem;
   }
 
   .photo-lb-figure img {
@@ -2732,7 +2869,8 @@ body.colorscheme-dark .footnote-popover {
 
 @media (prefers-reduced-motion: reduce) {
   .photo-item,
-  .photo-link img {
+  .photo-link img,
+  .photo-filter {
     transition: none;
   }
 
@@ -2746,20 +2884,42 @@ body.colorscheme-dark .footnote-popover {
   }
 }
 
-// 照片墙：分组标题
+// 照片墙：主题相册
 .photo-groups {
   margin: 2rem 0 3rem;
 }
 
 .photo-group + .photo-group {
-  margin-top: 2.5rem;
+  margin-top: 2.8rem;
 }
 
-.photo-group > h2 {
-  margin: 0 0 1.2rem;
-  padding-bottom: 0.5rem;
+.photo-group__head {
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.6rem;
   border-bottom: 1px solid rgba(128, 128, 128, 0.18);
+}
+
+.photo-group__head h2 {
+  margin: 0;
   font-size: 1.8rem;
+}
+
+.photo-group__count {
+  margin-left: 0.6rem;
+  color: var(--ui-muted);
+  font-size: 1.2rem;
+  font-weight: 400;
+}
+
+.photo-group__desc {
+  margin: 0.4rem 0 0;
+  color: var(--ui-muted);
+  font-size: 1.3rem;
+  line-height: 1.7;
+}
+
+.photo-group .photo-wall {
+  margin: 0;
 }
 
 // 404：星海、随机一句、找月亮
@@ -4498,6 +4658,9 @@ body.ui-hidden .music-player {
   .home-photos,
   .search-filters,
   .search-suggestions,
+  .photo-summary,
+  .photo-filters,
+  .photo-filter-status,
   .photo-lightbox,
   .sr-only,
   .heading-link,
