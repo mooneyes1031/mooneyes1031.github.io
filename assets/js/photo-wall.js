@@ -3,6 +3,7 @@
 
   function init() {
     var wall = document.getElementById("photo-wall");
+    var overview = document.getElementById("photo-albums");
     var box = document.getElementById("photo-lightbox");
     if (!wall || !box) return;
 
@@ -156,15 +157,20 @@
     }
 
     function applyFilter(id, updateURL) {
-      var valid = id === "all";
+      var valid = id === "all" || id === "overview";
       if (!valid) {
         valid = filters.some(function (button) {
           return button.getAttribute("data-photo-filter") === id;
         });
       }
-      if (!valid) id = "all";
+      if (!valid) id = overview ? "overview" : "all";
 
       if (!box.hidden) close();
+
+      if (overview) {
+        overview.hidden = id !== "overview";
+      }
+      wall.hidden = id === "overview";
 
       groups.forEach(function (group) {
         group.hidden = id !== "all" && group.getAttribute("data-photo-album") !== id;
@@ -181,16 +187,25 @@
       });
 
       if (status) {
-        var count = visibleLinks().length;
-        var label = id === "all" ? "全部" : filterLabel(id);
-        status.textContent = "正在显示" + label + "的 " + count + " 张照片";
+        if (id === "overview") {
+          status.textContent = "显示 " + groups.length + " 个相册，选择相册查看照片";
+        } else if (id === "all") {
+          status.textContent = "正在显示全部 " + visibleLinks().length + " 张照片";
+        } else {
+          status.textContent = "正在显示" + filterLabel(id) + "的 " + visibleLinks().length + " 张照片";
+        }
       }
 
       if (updateURL && window.history && window.history.replaceState) {
         var url = new URL(window.location.href);
-        if (id === "all") {
+        if (id === "overview") {
           url.searchParams.delete("album");
+          url.searchParams.delete("view");
+        } else if (id === "all") {
+          url.searchParams.delete("album");
+          url.searchParams.set("view", "all");
         } else {
+          url.searchParams.delete("view");
           url.searchParams.set("album", id);
         }
         window.history.replaceState(null, "", url.pathname + url.search + url.hash);
@@ -204,11 +219,17 @@
     });
 
     if (filters.length) {
-      var initial = "all";
+      var initial = overview ? "overview" : "all";
       try {
-        initial = new URLSearchParams(window.location.search).get("album") || "all";
+        var params = new URLSearchParams(window.location.search);
+        var albumParam = params.get("album");
+        if (albumParam) {
+          initial = albumParam;
+        } else if (params.get("view") === "all") {
+          initial = "all";
+        }
       } catch (error) {
-        initial = "all";
+        initial = overview ? "overview" : "all";
       }
       applyFilter(initial, false);
     }

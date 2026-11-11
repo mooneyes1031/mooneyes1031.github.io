@@ -42,7 +42,7 @@
 
 ### 照片墙
 
-照片按主题放在 `content/photos/` 的子文件夹里（如 `city-night/`、`forest/`），图片直接拖进去即可。`index.md` 里的 `groupBy = "folder"` 会按文件夹自动分组，`[albums]` 映射中文名，`albumOrder` 控制顺序；页面顶部会出现主题筛选，选中后会写进 `?album=`，可以直接分享某个主题。首页「拾光」从 `featured` 取图，路径写 `文件夹/文件名`，点缩略图会进入对应主题相册。
+照片按主题放在 `content/photos/` 的子文件夹里（如 `city-night/`、`forest/`），图片直接拖进去即可。`index.md` 里的 `groupBy = "folder"` 会按文件夹自动分组，`[albums]` 映射中文名，`albumOrder` 控制顺序。`/photos/` 默认只显示相册总览（封面 + 名称 + 张数），点封面进入相册，网址写进 `?album=`；点「全部照片」会写 `?view=all`。首页「拾光」从 `featured` 取图，路径写 `文件夹/文件名`，点缩略图会进入对应主题相册。
 
 ### 留言板
 

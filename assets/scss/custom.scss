@@ -397,6 +397,101 @@ body.colorscheme-dark {
   max-width: 42rem;
 }
 
+// 相册总览：默认只显示四张封面，点进相册再看照片
+.photo-albums {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+  margin: 2rem 0 3rem;
+}
+
+.photo-albums[hidden],
+.photo-groups[hidden] {
+  display: none;
+}
+
+.photo-album-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 0.8rem;
+  background: #fff;
+  color: #212121;
+  text-decoration: none;
+  box-shadow: 0 0.4rem 1.4rem rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.photo-album-card:hover,
+.photo-album-card:focus {
+  transform: translateY(-0.2rem);
+  box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.12);
+  text-decoration: none;
+}
+
+.photo-album-card__media {
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #ececec;
+  line-height: 0;
+}
+
+.photo-album-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.photo-album-card:hover .photo-album-card__media img,
+.photo-album-card:focus .photo-album-card__media img {
+  transform: scale(1.03);
+}
+
+.photo-album-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1rem 1.2rem 1.2rem;
+}
+
+.photo-album-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.photo-album-card__title {
+  font-size: 1.7rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.photo-album-card__count {
+  flex: none;
+  color: var(--ui-muted);
+  font-size: 1.2rem;
+}
+
+.photo-album-card__desc {
+  display: block;
+  margin-top: 0.4rem;
+  color: var(--ui-muted);
+  font-size: 1.3rem;
+  line-height: 1.65;
+}
+
+.photo-album-card__more {
+  display: block;
+  margin-top: auto;
+  padding-top: 0.8rem;
+  color: var(--accent-current);
+  font-size: 1.2rem;
+}
+
 .photo-item {
   margin: 0;
   overflow: hidden;
@@ -587,7 +682,14 @@ body.colorscheme-dark {
     box-shadow: 0 0.4rem 1.4rem rgba(0, 0, 0, 0.35);
   }
 
-  .photo-link {
+  .photo-album-card {
+    background: #2b2b2b;
+    color: #dadada;
+    box-shadow: 0 0.4rem 1.4rem rgba(0, 0, 0, 0.35);
+  }
+
+  .photo-link,
+  .photo-album-card__media {
     background: #2a2a2a;
   }
 
@@ -609,7 +711,14 @@ body.colorscheme-dark {
       box-shadow: 0 0.4rem 1.4rem rgba(0, 0, 0, 0.35);
     }
 
-    .photo-link {
+    .photo-album-card {
+      background: #2b2b2b;
+      color: #dadada;
+      box-shadow: 0 0.4rem 1.4rem rgba(0, 0, 0, 0.35);
+    }
+
+    .photo-link,
+    .photo-album-card__media {
       background: #2a2a2a;
     }
 
@@ -634,6 +743,37 @@ body.colorscheme-dark {
   .photo-wall--1 {
     grid-template-columns: minmax(0, 1fr);
     max-width: none;
+  }
+
+  .photo-albums {
+    gap: 0.8rem;
+  }
+
+  .photo-album-card {
+    border-radius: 0.5rem;
+  }
+
+  .photo-album-card__body {
+    padding: 0.7rem 0.8rem 0.9rem;
+  }
+
+  .photo-album-card__title {
+    font-size: 1.4rem;
+  }
+
+  .photo-album-card__count {
+    font-size: 1.1rem;
+  }
+
+  .photo-album-card__desc {
+    margin-top: 0.2rem;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .photo-album-card__more {
+    padding-top: 0.6rem;
+    font-size: 1.1rem;
   }
 
   .photo-item {
@@ -2870,16 +3010,22 @@ body.colorscheme-dark .footnote-popover {
 @media (prefers-reduced-motion: reduce) {
   .photo-item,
   .photo-link img,
+  .photo-album-card,
+  .photo-album-card__media img,
   .photo-filter {
     transition: none;
   }
 
-  .photo-item:hover {
+  .photo-item:hover,
+  .photo-album-card:hover,
+  .photo-album-card:focus {
     transform: none;
   }
 
   .photo-link:hover img,
-  .photo-link:focus img {
+  .photo-link:focus img,
+  .photo-album-card:hover .photo-album-card__media img,
+  .photo-album-card:focus .photo-album-card__media img {
     transform: none;
   }
 }

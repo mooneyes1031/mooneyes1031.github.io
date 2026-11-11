@@ -73,9 +73,12 @@
   </div>
 
   {{- if $showFilters }}
-  <div class="photo-filters" role="group" aria-label="按主题筛选照片">
-    <button type="button" class="photo-filter is-active" data-photo-filter="all" data-photo-label="全部" aria-pressed="true">
-      全部 <span class="photo-filter__count">{{ len $images }}</span>
+  <div class="photo-filters" role="group" aria-label="切换相册或查看全部照片">
+    <button type="button" class="photo-filter is-active" data-photo-filter="overview" data-photo-label="相册" aria-pressed="true">
+      相册 <span class="photo-filter__count">{{ len $ordered }}</span>
+    </button>
+    <button type="button" class="photo-filter" data-photo-filter="all" data-photo-label="全部" aria-pressed="false">
+      全部照片 <span class="photo-filter__count">{{ len $images }}</span>
     </button>
     {{- range $ordered }}
       {{- $key := . -}}
@@ -91,7 +94,29 @@
   {{- end }}
 
   {{- if and $hasGroups (not $singleUncategorized) }}
-    <div class="photo-groups" id="photo-wall">
+    {{- if $showFilters }}
+    <div class="photo-albums" id="photo-albums">
+      {{- range $ordered }}
+        {{- $key := . -}}
+        {{- $id := $key | urlize -}}
+        {{- if not $id }}{{ $id = "uncategorized" }}{{ end -}}
+        {{- partial "photo-album-card.html" (dict
+          "page" $page
+          "id" $id
+          "label" (index $labels $key)
+          "description" (index $descriptions $key)
+          "images" (index $grouped $key)
+        ) }}
+      {{- end }}
+    </div>
+    <noscript>
+      <style>
+        .photo-albums, .photo-filters { display: none; }
+        #photo-wall { display: block !important; }
+      </style>
+    </noscript>
+    {{- end }}
+    <div class="photo-groups" id="photo-wall"{{ if $showFilters }} hidden{{ end }}>
       {{- range $ordered }}
         {{- $key := . -}}
         {{- $id := $key | urlize -}}

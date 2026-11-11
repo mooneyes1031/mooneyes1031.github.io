@@ -1,0 +1,46 @@
+{{- $page := .page -}}
+{{- $images := .images -}}
+{{- $cover := index $images 0 -}}
+{{- $label := .label -}}
+{{- $description := .description -}}
+{{- $id := .id -}}
+
+{{- /* 封面缩略图复用照片墙的 360 / 540 / 720 三档 WebP */ -}}
+{{- $widths := slice 360 540 720 -}}
+{{- $srcset := slice -}}
+{{- $thumb := $cover -}}
+{{- range $widths -}}
+  {{- if le . $cover.Width -}}
+    {{- $resized := $cover.Resize (printf "%dx webp q78" .) -}}
+    {{- $srcset = $srcset | append (printf "%s %dw" $resized.RelPermalink $resized.Width) -}}
+    {{- $thumb = $resized -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $srcset -}}
+  {{- $resized := $cover.Resize (printf "%dx webp q78" $cover.Width) -}}
+  {{- $srcset = slice (printf "%s %dw" $resized.RelPermalink $resized.Width) -}}
+  {{- $thumb = $resized -}}
+{{- end -}}
+
+<a class="photo-album-card" href="{{ $page.RelPermalink }}?album={{ $id | urlquery }}">
+  <span class="photo-album-card__media">
+    <img src="{{ $thumb.RelPermalink }}"
+      srcset="{{ delimit $srcset ", " }}"
+      sizes="(max-width: 768px) 45vw, 300px"
+      alt="{{ $label }}相册封面"
+      width="{{ $thumb.Width }}"
+      height="{{ $thumb.Height }}"
+      loading="lazy"
+      decoding="async">
+  </span>
+  <span class="photo-album-card__body">
+    <span class="photo-album-card__head">
+      <span class="photo-album-card__title">{{ $label }}</span>
+      <span class="photo-album-card__count">{{ len $images }} 张</span>
+    </span>
+    {{- with $description }}
+    <span class="photo-album-card__desc">{{ . }}</span>
+    {{- end }}
+    <span class="photo-album-card__more">查看相册 <span aria-hidden="true">→</span></span>
+  </span>
+</a>
