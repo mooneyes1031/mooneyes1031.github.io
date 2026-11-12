@@ -1,7 +1,7 @@
 +++
 title = "照片"
 date = 2026-10-20T12:00:00+08:00
-description = "一些照片。"
+description = "一些喜欢的画面，分成城市、海、森林和夜空四个相册。"
 
 # 照片按主题文件夹归档。groupBy = "folder" 会自动按文件夹分组，
 # 文件夹名是相册 ID，页面上的中文名在下面 [albums] 里改。
@@ -14,9 +14,9 @@ albumOrder = ["city-night", "sea", "forest", "moon"]
 # 留空则按文件名取前 4 张（数量在 hugo.toml 的 homePhotoCount）。
 featured = [
   "city-night/01-kyoto-dusk.jpg",
-  "city-night/02-lantern-alley.jpg",
   "sea/03-sea-sunset.jpg",
   "forest/04-forest-stream.jpg",
+  "moon/05-moon.jpg",
 ]
 
 # 相册显示名：文件夹名 -> 页面上的中文名
