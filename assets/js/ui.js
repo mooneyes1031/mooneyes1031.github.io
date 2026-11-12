@@ -95,7 +95,7 @@
 
       if (y <= 80 || (menuToggle && menuToggle.checked) || (musicPanel && !musicPanel.hidden)) {
         showControls();
-      } else if (delta > 6 && y > 360) {
+      } else if (delta > 6 && y > 120) {
         hideControls();
       } else if (delta < -6) {
         showControls();

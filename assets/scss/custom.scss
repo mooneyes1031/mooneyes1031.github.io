@@ -1330,6 +1330,13 @@ body.colorscheme-dark {
   color: var(--accent);
 }
 
+// 日期、更新时间和阅读时间不在词中间断行
+.post-meta .posted-on,
+.post-meta .updated-on,
+.post-meta .reading-time {
+  white-space: nowrap;
+}
+
 .post-meta .updated-on {
   margin-right: 1.5rem;
 }
@@ -1859,9 +1866,42 @@ body.image-lb-open {
 
 .home-featured-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.6rem;
   margin-top: 1.2rem;
+}
+
+// 只有一张精选时做成横向卡片，避免整行大图显得空
+.home-featured-grid--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.home-featured-grid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.home-featured-grid--single .home-featured-card {
+  flex-direction: row;
+}
+
+.home-featured-grid--single .home-featured-image {
+  flex: 0 0 46%;
+}
+
+.home-featured-grid--single .home-featured-image img {
+  height: 100%;
+}
+
+.home-featured-grid--single .home-featured-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media only screen and (max-width: 900px) {
+  .home-featured-grid:not(.home-featured-grid--single) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .home-featured-card {
@@ -2415,8 +2455,21 @@ body.colorscheme-dark {
     right: 0.6rem;
   }
 
-  .home-featured-grid {
+  .home-featured-grid,
+  .home-featured-grid--single {
     grid-template-columns: 1fr;
+  }
+
+  .home-featured-grid--single .home-featured-card {
+    flex-direction: column;
+  }
+
+  .home-featured-grid--single .home-featured-image {
+    flex: none;
+  }
+
+  .home-featured-grid--single .home-featured-image img {
+    height: 16rem;
   }
 
   .home-posts header .title,
@@ -2769,6 +2822,13 @@ html {
   line-height: 1;
 }
 
+// 手机上给左下/右下悬浮按钮留出空间，页脚链接和版权不被盖住
+@media only screen and (max-width: 900px) {
+  .footer {
+    padding-bottom: calc(4.6rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 // 目录当前标题
 .entry__toc a {
   transition: color 0.2s ease;
@@ -2950,6 +3010,38 @@ body.colorscheme-dark .footnote-popover {
 .writing-heatmap__legend .heatmap-cell {
   width: 9px;
   height: 9px;
+}
+
+// 手机上把一整年缩放进卡片，去掉原生横向滚动条
+@media only screen and (max-width: 600px) {
+  .writing-heatmap {
+    padding: 1.2rem;
+  }
+
+  .writing-heatmap__scroll {
+    padding-bottom: 0;
+  }
+
+  // 老浏览器不支持容器查询时保留横向滚动，避免网格溢出卡片
+  @supports (container-type: inline-size) {
+    .writing-heatmap__scroll {
+      container-type: inline-size;
+      overflow: visible;
+    }
+
+    .writing-heatmap__grid {
+      grid-auto-columns: calc((100cqw - 52px) / 53);
+      grid-template-rows: repeat(7, calc((100cqw - 52px) / 53));
+      gap: 1px;
+      width: 100%;
+    }
+
+    .writing-heatmap__grid .heatmap-cell {
+      width: 100%;
+      height: 100%;
+      border-radius: 1px;
+    }
+  }
 }
 
 // 系列阅读进度
@@ -4545,6 +4637,16 @@ summary:focus-visible,
 // 移动端菜单：展开后汉堡图标变成叉，点叉即可收起
 #menu-toggle:checked + .menu-button i::before {
   content: "\f00d";
+}
+
+// 菜单按钮和展开后的关闭图标都用强调色，避免浅灰叉号看不清
+body .navigation .menu-button:hover i,
+body .navigation .menu-button:focus i {
+  color: var(--accent-current);
+}
+
+body .navigation #menu-toggle:checked + label.menu-button > i {
+  color: var(--accent-current);
 }
 
 #menu-toggle:focus-visible + .menu-button {

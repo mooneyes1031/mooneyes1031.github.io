@@ -17,7 +17,7 @@
   <header>
     <h2 class="title">精选文章</h2>
   </header>
-  <div class="home-featured-grid">
+  <div class="home-featured-grid{{ if eq (len $featured) 1 }} home-featured-grid--single{{ else if eq (len $featured) 2 }} home-featured-grid--two{{ end }}">
     {{- range . }}
     {{- $post := . }}
     <article class="home-featured-card">
