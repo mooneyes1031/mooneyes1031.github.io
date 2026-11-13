@@ -17,8 +17,11 @@
   var height = 0;
   var dpr = 1;
   var stars = [];
+  var meteors = [];
   var accent = "#a65a1f";
   var pointer = { x: 0, y: 0, active: false };
+  var nextMeteorAt = 0;
+  var speedBoostUntil = 0;
   var rafId = 0;
   var lastTime = 0;
   var running = false;
@@ -52,6 +55,23 @@
     }
   }
 
+  function spawnMeteor() {
+    var angle = Math.PI * (0.14 + Math.random() * 0.1);
+    var speed = 3.2 + Math.random() * 1.8;
+    var life = 850 + Math.random() * 550;
+
+    meteors.push({
+      x: Math.random() * width,
+      y: -20 - Math.random() * height * 0.25,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: life,
+      maxLife: life,
+      length: 75 + Math.random() * 95,
+      width: 1 + Math.random() * 0.8
+    });
+  }
+
   function resize() {
     var rect = canvas.getBoundingClientRect();
     width = Math.max(1, Math.round(rect.width));
@@ -65,19 +85,39 @@
     makeStars();
   }
 
-  function update(dt) {
+  function update(dt, time) {
     var step = Math.min(dt / 16.67, 2);
+    var boost = time < speedBoostUntil ? 2.4 : 1;
 
     for (var i = 0; i < stars.length; i += 1) {
       var star = stars[i];
-      star.x += star.vx * step;
-      star.y += star.vy * step;
+      star.x += star.vx * step * boost;
+      star.y += star.vy * step * boost;
 
       if (star.x < -12) star.x = width + 12;
       else if (star.x > width + 12) star.x = -12;
 
       if (star.y < -12) star.y = height + 12;
       else if (star.y > height + 12) star.y = -12;
+    }
+
+    // 偶尔划过一颗流星；Konami 彩蛋会一次放一小把
+    if (!nextMeteorAt) {
+      nextMeteorAt = time + 6000 + Math.random() * 9000;
+    } else if (time > nextMeteorAt) {
+      spawnMeteor();
+      nextMeteorAt = time + 16000 + Math.random() * 22000;
+    }
+
+    for (var j = meteors.length - 1; j >= 0; j -= 1) {
+      var meteor = meteors[j];
+      meteor.x += meteor.vx * step;
+      meteor.y += meteor.vy * step;
+      meteor.life -= dt;
+
+      if (meteor.life <= 0 || meteor.y > height + 160) {
+        meteors.splice(j, 1);
+      }
     }
   }
 
@@ -181,13 +221,45 @@
       ctx.stroke();
     }
 
+    // 流星：头亮尾淡
+    for (i = 0; i < meteors.length; i += 1) {
+      var meteor = meteors[i];
+      var mag = Math.sqrt(meteor.vx * meteor.vx + meteor.vy * meteor.vy) || 1;
+      var ux = meteor.vx / mag;
+      var uy = meteor.vy / mag;
+      var tailX = meteor.x - ux * meteor.length;
+      var tailY = meteor.y - uy * meteor.length;
+      var fade = Math.min(
+        1,
+        (meteor.maxLife - meteor.life) / 220,
+        meteor.life / 320
+      );
+      var gradient = ctx.createLinearGradient(tailX, tailY, meteor.x, meteor.y);
+
+      gradient.addColorStop(0, "rgba(255, 255, 255, 0)");
+      gradient.addColorStop(1, accent);
+
+      ctx.globalAlpha = Math.max(0, fade);
+      ctx.strokeStyle = gradient;
+      ctx.lineWidth = meteor.width;
+      ctx.beginPath();
+      ctx.moveTo(tailX, tailY);
+      ctx.lineTo(meteor.x, meteor.y);
+      ctx.stroke();
+
+      ctx.fillStyle = accent;
+      ctx.beginPath();
+      ctx.arc(meteor.x, meteor.y, 1.7, 0, TAU);
+      ctx.fill();
+    }
+
     ctx.globalAlpha = 1;
   }
 
   function frame(time) {
     var dt = lastTime ? time - lastTime : 16.67;
     lastTime = time;
-    update(dt);
+    update(dt, time);
     draw(time);
     rafId = window.requestAnimationFrame(frame);
   }
@@ -196,6 +268,8 @@
     if (running || motionQuery.matches) return;
     running = true;
     lastTime = 0;
+    nextMeteorAt = 0;
+    meteors = [];
     rafId = window.requestAnimationFrame(frame);
   }
 
@@ -256,6 +330,16 @@
 
     window.addEventListener("blur", function () {
       pointer.active = false;
+    });
+
+    // Konami 彩蛋：星星加速一会儿，再放几颗流星
+    document.addEventListener("konami", function () {
+      if (motionQuery.matches) return;
+
+      speedBoostUntil = performance.now() + 8000;
+      for (var i = 0; i < 5; i += 1) {
+        spawnMeteor();
+      }
     });
 
     if (window.ResizeObserver) {

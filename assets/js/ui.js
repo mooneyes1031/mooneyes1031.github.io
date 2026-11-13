@@ -79,6 +79,23 @@
     var lastY = window.pageYOffset;
     var ticking = false;
     var musicPanel = document.getElementById("music-panel");
+    var progress = document.querySelector("[data-reading-progress]");
+    var progressBar = progress ? progress.querySelector(".reading-progress__bar") : null;
+    var progressContent = document.querySelector(".post-content");
+
+    function updateReadingProgress() {
+      if (!progress || !progressBar || !progressContent) return;
+
+      var rect = progressContent.getBoundingClientRect();
+      var top = rect.top + window.pageYOffset;
+      var start = top - 80;
+      var end = top + progressContent.offsetHeight - window.innerHeight + 140;
+      var ratio = end > start ? (window.pageYOffset - start) / (end - start) : 1;
+
+      ratio = Math.max(0, Math.min(1, ratio));
+      progressBar.style.width = (ratio * 100).toFixed(2) + "%";
+      progress.classList.toggle("is-active", ratio > 0.005);
+    }
 
     function showControls() {
       body.classList.remove("ui-hidden");
@@ -92,6 +109,8 @@
       ticking = false;
       var y = window.pageYOffset;
       var delta = y - lastY;
+
+      updateReadingProgress();
 
       if (y <= 80 || (menuToggle && menuToggle.checked) || (musicPanel && !musicPanel.hidden)) {
         showControls();
@@ -133,6 +152,40 @@
         var title = document.querySelector(".navigation-title");
         if (title) title.focus({ preventScroll: true });
       });
+    });
+
+    updateReadingProgress();
+    window.addEventListener("resize", updateReadingProgress, { passive: true });
+
+    // Konami 彩蛋：↑↑↓↓←→←→BA
+    var konami = ["arrowup", "arrowup", "arrowdown", "arrowdown", "arrowleft", "arrowright", "arrowleft", "arrowright", "b", "a"];
+    var konamiPos = 0;
+
+    document.addEventListener("keydown", function (event) {
+      var target = event.target;
+      var tag = target && target.tagName ? target.tagName.toLowerCase() : "";
+
+      if (tag === "input" || tag === "textarea" || tag === "select" || (target && target.isContentEditable)) {
+        return;
+      }
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
+
+      var key = (event.key || "").toLowerCase();
+
+      if (key === konami[konamiPos]) {
+        konamiPos += 1;
+
+        if (konamiPos === konami.length) {
+          konamiPos = 0;
+          document.dispatchEvent(new CustomEvent("konami"));
+          body.classList.add("konami-active");
+          window.setTimeout(function () {
+            body.classList.remove("konami-active");
+          }, 8000);
+        }
+      } else {
+        konamiPos = key === konami[0] ? 1 : 0;
+      }
     });
   });
 })();

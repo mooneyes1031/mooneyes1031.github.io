@@ -30,11 +30,13 @@
     function open() {
       loadFrame();
       panel.hidden = false;
+      root.classList.add("is-open");
       toggle.setAttribute("aria-expanded", "true");
     }
 
     function shut() {
       panel.hidden = true;
+      root.classList.remove("is-open");
       toggle.setAttribute("aria-expanded", "false");
     }
 

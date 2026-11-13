@@ -2,6 +2,11 @@
   {{ .Title }} · {{ .Site.Title }}
 {{ end }}
 {{ define "content" }}
+  <div class="reading-progress" data-reading-progress aria-hidden="true">
+    <span class="reading-progress__bar">
+      <span class="reading-progress__moon"></span>
+    </span>
+  </div>
   <section class="container post">
     <article>
       {{ partial "posts/cover.html" . }}

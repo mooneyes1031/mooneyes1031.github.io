@@ -239,6 +239,23 @@ h1, h2, h3, h4, h5, h6,
   border: 0;
 }
 
+// 打开播放器时，按钮像一张慢慢转的黑胶
+.music-player.is-open .music-toggle i {
+  animation: vinyl-spin 5s linear infinite;
+}
+
+@keyframes vinyl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .music-player.is-open .music-toggle i {
+    animation: none;
+  }
+}
+
 // 深色模式（手动切换）
 body.colorscheme-dark {
   .music-toggle {
@@ -1341,6 +1358,45 @@ body.colorscheme-dark {
   margin-right: 1.5rem;
 }
 
+// 文章阅读进度：顶部细线，末端一颗小月亮
+.reading-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 2000;
+  height: 3px;
+  pointer-events: none;
+}
+
+.reading-progress__bar {
+  position: relative;
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--accent-current);
+  transition: width 0.08s linear;
+}
+
+.reading-progress__moon {
+  position: absolute;
+  top: 50%;
+  right: -4px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent-current);
+  box-shadow: 0 0 10px var(--accent-current);
+  opacity: 0;
+  transform: translateY(-50%) scale(0.6);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.reading-progress.is-active .reading-progress__moon {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
 body.colorscheme-dark {
   .entry__toc {
     background: #2a2a2a;
@@ -1803,6 +1859,52 @@ body.colorscheme-dark {
 
 body.image-lb-open {
   overflow: hidden;
+}
+
+// 灯箱：细白边 + 很淡的胶片颗粒 + 打开时轻轻放大
+.image-lightbox::after,
+.photo-lightbox::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+  mix-blend-mode: screen;
+}
+
+.image-lb-figure img,
+.photo-lb-figure img {
+  border: 0.5rem solid rgba(247, 245, 238, 0.94);
+  border-radius: 0.15rem;
+  background: #f7f5ee;
+  box-shadow: 0 1.2rem 4rem rgba(0, 0, 0, 0.55);
+}
+
+@keyframes lightbox-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.image-lightbox.is-open .image-lb-figure,
+.photo-lightbox.is-open .photo-lb-figure {
+  animation: lightbox-in 0.28s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image-lightbox.is-open .image-lb-figure,
+  .photo-lightbox.is-open .photo-lb-figure {
+    animation: none;
+  }
 }
 
 
@@ -2815,11 +2917,74 @@ html {
   font-size: 1.2rem;
   opacity: 0.8;
   white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.moon-phase:hover {
+  opacity: 1;
+}
+
+.moon-phase:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--accent-current);
+  outline-offset: 0.3rem;
+  border-radius: 0.4rem;
 }
 
 .moon-phase__icon {
+  display: inline-block;
   font-size: 1.5rem;
   line-height: 1;
+}
+
+@keyframes moon-bounce {
+  0%,
+  100% {
+    transform: none;
+  }
+
+  40% {
+    transform: scale(1.25) rotate(-8deg);
+  }
+
+  70% {
+    transform: scale(0.95) rotate(4deg);
+  }
+}
+
+.moon-phase.is-clicked .moon-phase__icon {
+  animation: moon-bounce 0.4s ease;
+}
+
+.moon-phase.is-spinning .moon-phase__icon {
+  filter: drop-shadow(0 0 6px var(--accent-current));
+}
+
+@keyframes moon-pop {
+  0%,
+  100% {
+    transform: none;
+  }
+
+  25% {
+    transform: scale(1.8) rotate(-15deg);
+  }
+
+  55% {
+    transform: scale(0.9) rotate(10deg);
+  }
+}
+
+body.konami-active .moon-phase__icon {
+  animation: moon-pop 1.4s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moon-phase.is-clicked .moon-phase__icon,
+  body.konami-active .moon-phase__icon {
+    animation: none;
+  }
 }
 
 // 手机上给左下/右下悬浮按钮留出空间，页脚链接和版权不被盖住
@@ -3922,7 +4087,7 @@ body.colorscheme-dark .error-game__status {
 
 @media (prefers-reduced-motion: reduce) {
   .ambient-stars {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -4993,6 +5158,8 @@ body.ui-hidden .music-player {
   .skip-link,
   .search-filter,
   .search-suggestion,
+  .reading-progress__bar,
+  .reading-progress__moon,
   .entry__toc summary::after {
     transition: none !important;
   }
