@@ -25,6 +25,10 @@
     var index = 0;
     var lastFocus = null;
     var touchStartX = 0;
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    var preloaded = Object.create(null);
+    var swapTimers = [];
+    var swapping = false;
 
     function closestGroup(link) {
       var node = link.parentNode;
@@ -42,6 +46,31 @@
         var group = closestGroup(link);
         return !group || !group.hidden;
       });
+    }
+
+    function preload(link) {
+      if (!link) return;
+      var url = link.getAttribute("data-full");
+      if (!url || preloaded[url]) return;
+      var image = new Image();
+      image.decoding = "async";
+      image.src = url;
+      preloaded[url] = image;
+    }
+
+    function preloadAround() {
+      if (!activeLinks.length) return;
+      preload(activeLinks[(index + 1) % activeLinks.length]);
+      preload(activeLinks[(index - 1 + activeLinks.length) % activeLinks.length]);
+    }
+
+    function clearSwap() {
+      swapTimers.forEach(function (id) {
+        window.clearTimeout(id);
+      });
+      swapTimers = [];
+      swapping = false;
+      box.classList.remove("is-swap-next", "is-swap-prev");
     }
 
     function render(i) {
@@ -70,25 +99,58 @@
 
     function open(i) {
       lastFocus = document.activeElement;
+      clearSwap();
       render(i);
+      preloadAround();
       box.hidden = false;
+      // 先让浏览器记录关闭状态，再加 is-open，过渡才会真正播放
+      void box.offsetWidth;
       box.classList.add("is-open");
       document.body.classList.add("photo-lb-open");
       closeBtn.focus();
     }
 
     function close() {
+      if (box.hidden || !box.classList.contains("is-open")) return;
+      clearSwap();
       box.classList.remove("is-open");
-      box.hidden = true;
-      document.body.classList.remove("photo-lb-open");
-      img.removeAttribute("src");
-      if (lastFocus && typeof lastFocus.focus === "function") {
-        lastFocus.focus();
-      }
+      window.setTimeout(function () {
+        if (box.classList.contains("is-open")) return;
+        box.hidden = true;
+        document.body.classList.remove("photo-lb-open");
+        img.removeAttribute("src");
+        img.alt = "";
+        if (lastFocus && typeof lastFocus.focus === "function") {
+          lastFocus.focus();
+        }
+      }, reduceMotion.matches ? 0 : 320);
     }
 
     function step(delta) {
-      render(index + delta);
+      if (!activeLinks.length || swapping || !box.classList.contains("is-open")) return;
+
+      if (reduceMotion.matches || activeLinks.length < 2) {
+        render(index + delta);
+        preloadAround();
+        return;
+      }
+
+      swapping = true;
+      var direction = delta > 0 ? "next" : "prev";
+      box.classList.remove("is-swap-next", "is-swap-prev");
+      void box.offsetWidth;
+      box.classList.add(direction === "next" ? "is-swap-next" : "is-swap-prev");
+
+      // 画面在 42% 处完全隐去，此时换图；动画结束再清理 class
+      swapTimers.push(window.setTimeout(function () {
+        render(index + delta);
+        preloadAround();
+      }, 150));
+      swapTimers.push(window.setTimeout(function () {
+        box.classList.remove("is-swap-next", "is-swap-prev");
+        swapping = false;
+        swapTimers = [];
+      }, 380));
     }
 
     allLinks.forEach(function (link) {
@@ -114,7 +176,7 @@
     });
 
     document.addEventListener("keydown", function (e) {
-      if (box.hidden) return;
+      if (box.hidden || !box.classList.contains("is-open")) return;
       if (e.key === "Escape") {
         e.preventDefault();
         close();

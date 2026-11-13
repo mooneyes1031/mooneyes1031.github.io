@@ -588,10 +588,16 @@ body.colorscheme-dark {
   justify-content: center;
   padding: 4rem;
   background: rgba(8, 8, 8, 0.94);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .photo-lightbox[hidden] {
   display: none;
+}
+
+.photo-lightbox.is-open {
+  opacity: 1;
 }
 
 .photo-lb-figure {
@@ -601,6 +607,18 @@ body.colorscheme-dark {
   max-width: 92vw;
   max-height: 90vh;
   margin: 0;
+  opacity: 0;
+  transform: translateY(1.4rem) scale(0.96);
+  transform-origin: center center;
+  transition:
+    opacity 0.3s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.photo-lightbox.is-open .photo-lb-figure {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 .photo-lb-figure img {
@@ -662,7 +680,12 @@ body.colorscheme-dark {
   font-size: 2.8rem;
   line-height: 1;
   cursor: pointer;
-  transition: background 0.2s ease;
+  opacity: 0;
+  transition: background 0.2s ease, opacity 0.25s ease;
+}
+
+.photo-lightbox.is-open .photo-lb-btn {
+  opacity: 1;
 }
 
 .photo-lb-btn:hover,
@@ -1895,15 +1918,92 @@ body.image-lb-open {
   }
 }
 
-.image-lightbox.is-open .image-lb-figure,
-.photo-lightbox.is-open .photo-lb-figure {
+.image-lightbox.is-open .image-lb-figure {
   animation: lightbox-in 0.28s ease both;
+}
+
+// 照片灯箱：大图从略小的画面里“显影”出来
+@keyframes photo-lb-develop {
+  from {
+    opacity: 0.45;
+    transform: scale(1.015);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.photo-lightbox.is-open .photo-lb-figure img {
+  animation: photo-lb-develop 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+// 上一张 / 下一张：先向一侧退场，再从另一侧进入
+@keyframes photo-lb-swap-next {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  42% {
+    opacity: 0;
+    transform: translateX(-1.6rem);
+  }
+
+  58% {
+    opacity: 0;
+    transform: translateX(1.6rem);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes photo-lb-swap-prev {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  42% {
+    opacity: 0;
+    transform: translateX(1.6rem);
+  }
+
+  58% {
+    opacity: 0;
+    transform: translateX(-1.6rem);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.photo-lightbox.is-swap-next .photo-lb-figure {
+  animation: photo-lb-swap-next 0.36s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.photo-lightbox.is-swap-prev .photo-lb-figure {
+  animation: photo-lb-swap-prev 0.36s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .image-lightbox.is-open .image-lb-figure,
-  .photo-lightbox.is-open .photo-lb-figure {
+  .photo-lightbox.is-open .photo-lb-figure img,
+  .photo-lightbox.is-swap-next .photo-lb-figure,
+  .photo-lightbox.is-swap-prev .photo-lb-figure {
     animation: none;
+  }
+
+  .photo-lightbox,
+  .photo-lb-figure,
+  .photo-lb-btn {
+    transition: none;
   }
 }
 
