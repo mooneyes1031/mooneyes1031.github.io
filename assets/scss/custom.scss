@@ -5055,6 +5055,7 @@ body.ui-hidden .music-player {
   .navigation,
   .float-container,
   .music-player,
+  .cursor-fireflies,
   .reading-progress,
   .reading-moon,
   .post-share,
@@ -5169,5 +5170,33 @@ body.ui-hidden .music-player {
   body.ui-hidden .float-container,
   body.ui-hidden .music-player {
     transform: none !important;
+  }
+}
+
+// ==========================================================================
+//  30. 鼠标萤火 / Cursor fireflies
+//  只在桌面精确指针下显示；鼠标停下两秒后自己暗下去。
+// ==========================================================================
+
+.cursor-fireflies {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: var(--accent-current);
+  pointer-events: none;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-fireflies {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-fireflies {
+    display: none;
   }
 }
