@@ -5055,7 +5055,7 @@ body.ui-hidden .music-player {
   .navigation,
   .float-container,
   .music-player,
-  .cursor-fireflies,
+  .cursor-stardust,
   .reading-progress,
   .reading-moon,
   .post-share,
@@ -5174,11 +5174,11 @@ body.ui-hidden .music-player {
 }
 
 // ==========================================================================
-//  30. 鼠标萤火 / Cursor fireflies
-//  只在桌面精确指针下显示；鼠标停下两秒后自己暗下去。
+//  30. 鼠标星尘 / Cursor stardust
+//  只在桌面精确指针下显示；粒子燃尽后自动停下，不在鼠标边聚团。
 // ==========================================================================
 
-.cursor-fireflies {
+.cursor-stardust {
   position: fixed;
   inset: 0;
   z-index: 90;
@@ -5190,13 +5190,13 @@ body.ui-hidden .music-player {
 }
 
 @media (hover: none), (pointer: coarse) {
-  .cursor-fireflies {
+  .cursor-stardust {
     display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cursor-fireflies {
+  .cursor-stardust {
     display: none;
   }
 }

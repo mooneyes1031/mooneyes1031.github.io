@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  var canvas = document.querySelector("[data-cursor-fireflies]");
+  var canvas = document.querySelector("[data-cursor-stardust]");
   if (!canvas) return;
 
   var ctx = canvas.getContext("2d");
@@ -11,21 +11,16 @@
   var fineQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
   var darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
   var TAU = Math.PI * 2;
-  var FLY_COUNT = 10;
-  var IDLE_AFTER = 2200;
-  var FADE_IN = 220;
-  var FADE_OUT = 650;
+  var MAX_DUST = 180;
 
   var width = 0;
   var height = 0;
   var dpr = 1;
-  var flies = [];
+  var dust = [];
   var pointer = { x: 0, y: 0, active: false };
   var accent = [166, 90, 31];
-  var core = [210, 172, 143];
+  var bright = [210, 172, 143];
   var intensity = 1;
-  var presence = 0;
-  var lastMove = 0;
   var rafId = 0;
   var lastTime = 0;
   var running = false;
@@ -38,13 +33,13 @@
     if (!parts || parts.length < 3) return;
 
     accent = [Number(parts[0]), Number(parts[1]), Number(parts[2])];
-    core = accent.map(function (channel) {
-      return Math.round(channel + (255 - channel) * 0.32);
+    bright = accent.map(function (channel) {
+      return Math.round(channel + (255 - channel) * 0.55);
     });
 
     // 浅色主题的铜色更深，稍微提亮一点才不会糊在纸上
     var luminance = accent[0] * 0.299 + accent[1] * 0.587 + accent[2] * 0.114;
-    intensity = luminance < 170 ? 1.3 : 1;
+    intensity = luminance < 170 ? 1.25 : 1;
   }
 
   function rgba(rgb, alpha) {
@@ -52,27 +47,8 @@
       Math.max(0, Math.min(1, alpha)) + ")";
   }
 
-  function makeFlies() {
-    flies = [];
-
-    for (var i = 0; i < FLY_COUNT; i += 1) {
-      var angle = Math.random() * TAU;
-      var radius = 40 + Math.random() * 130;
-
-      flies.push({
-        x: pointer.x + Math.cos(angle) * radius,
-        y: pointer.y + Math.sin(angle) * radius * 0.8,
-        vx: 0,
-        vy: 0,
-        phase: Math.random() * TAU,
-        speed: 0.55 + Math.random() * 0.85,
-        size: 1.2 + Math.random() * 1.4,
-        lag: 0.024 + Math.random() * 0.034,
-        orbit: 58 + Math.random() * 108,
-        blink: Math.random() * TAU,
-        blinkSpeed: 0.6 + Math.random() * 0.9
-      });
-    }
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
   }
 
   function resize() {
@@ -85,67 +61,87 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  function update(dt, time) {
+  function spawn(x, y, vx, vy) {
+    var angle = Math.random() * TAU;
+    var drift = Math.random() * 0.32;
+    var life = 520 + Math.random() * 460;
+
+    dust.push({
+      x: x + (Math.random() - 0.5) * 7,
+      y: y + (Math.random() - 0.5) * 7,
+      vx: clamp(vx * 0.05, -1.5, 1.5) + Math.cos(angle) * drift,
+      vy: clamp(vy * 0.05, -1.5, 1.5) + Math.sin(angle) * drift - 0.08,
+      life: life,
+      maxLife: life,
+      size: 0.5 + Math.random() * 1.2 + (Math.random() > 0.9 ? 0.8 : 0),
+      twinkle: Math.random() * TAU,
+      twinkleSpeed: 0.004 + Math.random() * 0.006,
+      warm: Math.random() > 0.28
+    });
+
+    if (dust.length > MAX_DUST) {
+      dust.splice(0, dust.length - MAX_DUST);
+    }
+  }
+
+  function emit(fromX, fromY, toX, toY) {
+    var dx = toX - fromX;
+    var dy = toY - fromY;
+    var distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < 1) return;
+
+    var count = Math.min(4, Math.max(1, Math.round(distance / 8)));
+
+    for (var i = 1; i <= count; i += 1) {
+      var t = i / (count + 1);
+      spawn(fromX + dx * t, fromY + dy * t, dx, dy);
+    }
+  }
+
+  function update(dt) {
     var step = Math.min(dt / 16.67, 2);
-    var idle = time - lastMove > IDLE_AFTER;
-    var target = pointer.active && !idle ? 1 : 0;
 
-    if (target) {
-      presence = Math.min(1, presence + dt / FADE_IN);
-    } else {
-      presence = Math.max(0, presence - dt / FADE_OUT);
+    for (var i = dust.length - 1; i >= 0; i -= 1) {
+      var p = dust[i];
+      p.life -= dt;
+
+      if (p.life <= 0) {
+        dust.splice(i, 1);
+        continue;
+      }
+
+      p.x += p.vx * step;
+      p.y += p.vy * step;
+      p.vx *= 0.985;
+      p.vy = p.vy * 0.985 + 0.002;
     }
 
-    if (!pointer.active && presence === 0) return false;
-    if (idle && presence === 0) {
-      pointer.active = false;
-      return false;
-    }
-
-    for (var i = 0; i < flies.length; i += 1) {
-      var fly = flies[i];
-      var angle = fly.phase + time * 0.00055 * fly.speed;
-      var targetX = pointer.x + Math.cos(angle) * fly.orbit;
-      var targetY = pointer.y + Math.sin(angle * 1.28) * fly.orbit * 0.74;
-
-      fly.vx += (targetX - fly.x) * fly.lag * step;
-      fly.vy += (targetY - fly.y) * fly.lag * step;
-      fly.vx *= 0.94;
-      fly.vy *= 0.94;
-      fly.x += fly.vx * step;
-      fly.y += fly.vy * step;
-    }
-
-    return true;
+    return dust.length > 0;
   }
 
   function draw(time) {
     ctx.clearRect(0, 0, width, height);
 
-    for (var i = 0; i < flies.length; i += 1) {
-      var fly = flies[i];
-      var pulse = 0.52 + 0.48 * Math.pow(
-        Math.max(0, Math.sin(time * 0.0013 * fly.blinkSpeed + fly.blink)),
-        2
-      );
-      var alpha = presence * pulse * intensity;
+    for (var i = 0; i < dust.length; i += 1) {
+      var p = dust[i];
+      var life = p.life / p.maxLife;
+      var twinkle = 0.6 + 0.4 * Math.sin(time * p.twinkleSpeed + p.twinkle);
+      var alpha = Math.min(1, life * 2.2) * twinkle * intensity;
+      var rgb = p.warm ? accent : bright;
 
       if (alpha <= 0.01) continue;
 
-      var radius = fly.size * 4.8;
-      var glow = ctx.createRadialGradient(fly.x, fly.y, 0, fly.x, fly.y, radius);
-      glow.addColorStop(0, rgba(core, alpha));
-      glow.addColorStop(0.3, rgba(accent, alpha * 0.7));
-      glow.addColorStop(1, rgba(accent, 0));
+      if (p.size > 1.1) {
+        ctx.fillStyle = rgba(rgb, alpha * 0.18);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 3.4, 0, TAU);
+        ctx.fill();
+      }
 
-      ctx.fillStyle = glow;
+      ctx.fillStyle = rgba(rgb, alpha);
       ctx.beginPath();
-      ctx.arc(fly.x, fly.y, radius, 0, TAU);
-      ctx.fill();
-
-      ctx.fillStyle = rgba(core, alpha);
-      ctx.beginPath();
-      ctx.arc(fly.x, fly.y, Math.max(0.6, fly.size * 0.62), 0, TAU);
+      ctx.arc(p.x, p.y, p.size, 0, TAU);
       ctx.fill();
     }
   }
@@ -154,7 +150,7 @@
     var dt = lastTime ? Math.min(time - lastTime, 48) : 16.67;
     lastTime = time;
 
-    if (!update(dt, time)) {
+    if (!update(dt)) {
       stop();
       return;
     }
@@ -180,11 +176,8 @@
       rafId = 0;
     }
 
+    dust = [];
     ctx.clearRect(0, 0, width, height);
-  }
-
-  function hide() {
-    pointer.active = false;
   }
 
   function onPointerMove(event) {
@@ -192,18 +185,14 @@
       return;
     }
 
-    if (!pointer.active) {
-      pointer.x = event.clientX;
-      pointer.y = event.clientY;
-      pointer.active = true;
-      presence = 0;
-      makeFlies();
-    } else {
-      pointer.x = event.clientX;
-      pointer.y = event.clientY;
-    }
+    var prevX = pointer.active ? pointer.x : event.clientX;
+    var prevY = pointer.active ? pointer.y : event.clientY;
 
-    lastMove = performance.now();
+    pointer.x = event.clientX;
+    pointer.y = event.clientY;
+    pointer.active = true;
+
+    emit(prevX, prevY, pointer.x, pointer.y);
     start();
   }
 
@@ -211,18 +200,13 @@
     readPalette();
   }
 
-  function handleMotionChange() {
-    if (motionQuery.matches) {
-      hide();
-      presence = 0;
-      stop();
-    }
+  function hide() {
+    pointer.active = false;
   }
 
   function bindEvents() {
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("resize", resize, { passive: true });
-    window.addEventListener("scroll", hide, { passive: true });
     window.addEventListener("blur", hide);
 
     document.addEventListener("mouseout", function (event) {
@@ -237,16 +221,25 @@
     });
 
     if (typeof motionQuery.addEventListener === "function") {
-      motionQuery.addEventListener("change", handleMotionChange);
+      motionQuery.addEventListener("change", function () {
+        if (motionQuery.matches) {
+          hide();
+          stop();
+        }
+      });
     } else if (typeof motionQuery.addListener === "function") {
-      motionQuery.addListener(handleMotionChange);
+      motionQuery.addListener(function () {
+        if (motionQuery.matches) {
+          hide();
+          stop();
+        }
+      });
     }
 
     if (typeof fineQuery.addEventListener === "function") {
       fineQuery.addEventListener("change", function () {
         if (!fineQuery.matches) {
           hide();
-          presence = 0;
           stop();
         }
       });

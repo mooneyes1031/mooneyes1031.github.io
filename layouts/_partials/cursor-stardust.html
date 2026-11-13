@@ -1,10 +1,10 @@
 {{/*
-  鼠标萤火拖尾
+  鼠标星尘拖尾
   - 固定在内容上方、导航和悬浮按钮下方，不挡点击
   - 只在桌面精确指针下出现，手机和减少动态效果时隐藏
 */}}
-<canvas class="cursor-fireflies" data-cursor-fireflies aria-hidden="true"></canvas>
-{{- with resources.Get "js/cursor-fireflies.js" }}
+<canvas class="cursor-stardust" data-cursor-stardust aria-hidden="true"></canvas>
+{{- with resources.Get "js/cursor-stardust.js" }}
   {{- if hugo.IsServer }}
     <script src="{{ .RelPermalink }}" defer></script>
   {{- else }}
