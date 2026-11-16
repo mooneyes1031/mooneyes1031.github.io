@@ -52,6 +52,8 @@
 - 删一张：删图片 + 删 `[captions]` 对应行 + 检查 `featured`
 - 删整本相册：删文件夹，并从 `albumOrder`、`[albums]`、`[albumDescriptions]` 删掉对应项
 - 相册封面默认是文件名排序第一张；新增或删除照片都不需要改模板
+- 灯箱大图按屏幕和照片方向自动选 800 / 1200 / 1600 WebP；当前图加载完才预取前后各一张
+- 原图只作为 Hugo 缩放的输入，不发布到 `public/`（`content/photos/index.md` 的 `[build] publishResources = false`）
 
 ### 留言板
 

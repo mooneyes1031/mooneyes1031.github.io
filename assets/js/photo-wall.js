@@ -26,6 +26,7 @@
     var lastFocus = null;
     var touchStartX = 0;
     var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     var preloaded = Object.create(null);
     var swapTimers = [];
     var swapping = false;
@@ -48,21 +49,57 @@
       });
     }
 
+    // 从分开的 data 属性拼 srcset，避开 Hugo 压缩器把空格转成 %20
+    function srcsetFor(link) {
+      var full = link.getAttribute("data-full");
+      var width = parseInt(link.getAttribute("data-full-width"), 10);
+      if (!full || !width) return "";
+      var parts = [];
+      var small = link.getAttribute("data-full-800");
+      if (small) parts.push(small + " 800w");
+      var medium = link.getAttribute("data-full-1200");
+      if (medium) parts.push(medium + " 1200w");
+      parts.push(full + " " + width + "w");
+      return parts.join(", ");
+    }
+
+    function sizesFor(link) {
+      var w = parseInt(link.getAttribute("data-full-width"), 10);
+      var h = parseInt(link.getAttribute("data-full-height"), 10);
+      if (!w || !h) return img.getAttribute("sizes") || "";
+      // 大图最大 92vw × 82vh，去掉 0.5rem 白边（根字号 10px）
+      var contentWidth = Math.min(
+        window.innerWidth * 0.92 - 10,
+        (window.innerHeight * 0.82 - 10) * w / h
+      );
+      return Math.max(1, Math.round(contentWidth)) + "px";
+    }
+
     function preload(link) {
       if (!link) return;
       var url = link.getAttribute("data-full");
       if (!url || preloaded[url]) return;
       var image = new Image();
       image.decoding = "async";
+      var sizes = sizesFor(link);
+      var srcset = srcsetFor(link);
+      if (sizes && srcset) {
+        image.setAttribute("sizes", sizes);
+        image.setAttribute("srcset", srcset);
+      }
       image.src = url;
       preloaded[url] = image;
     }
 
     function preloadAround() {
-      if (!activeLinks.length) return;
+      if (!activeLinks.length || !box.classList.contains("is-open")) return;
+      if (connection && (connection.saveData || /(^|-)2g$/.test(connection.effectiveType || ""))) return;
       preload(activeLinks[(index + 1) % activeLinks.length]);
       preload(activeLinks[(index - 1 + activeLinks.length) % activeLinks.length]);
     }
+
+    // 等当前大图加载完再预取前后两张，避免三张大图抢同一条带宽
+    img.addEventListener("load", preloadAround);
 
     function clearSwap() {
       swapTimers.forEach(function (id) {
@@ -77,6 +114,16 @@
       if (!activeLinks.length) return;
       index = (i + activeLinks.length) % activeLinks.length;
       var link = activeLinks[index];
+      var sizes = sizesFor(link);
+      if (sizes) {
+        img.setAttribute("sizes", sizes);
+      }
+      var srcset = srcsetFor(link);
+      if (srcset) {
+        img.setAttribute("srcset", srcset);
+      } else {
+        img.removeAttribute("srcset");
+      }
       img.src = link.getAttribute("data-full");
       img.alt = link.getAttribute("data-alt") || "";
       var text = link.getAttribute("data-caption") || "";
@@ -101,7 +148,6 @@
       lastFocus = document.activeElement;
       clearSwap();
       render(i);
-      preloadAround();
       box.hidden = false;
       // 先让浏览器记录关闭状态，再加 is-open，过渡才会真正播放
       void box.offsetWidth;
@@ -119,6 +165,7 @@
         box.hidden = true;
         document.body.classList.remove("photo-lb-open");
         img.removeAttribute("src");
+        img.removeAttribute("srcset");
         img.alt = "";
         if (lastFocus && typeof lastFocus.focus === "function") {
           lastFocus.focus();
@@ -131,7 +178,6 @@
 
       if (reduceMotion.matches || activeLinks.length < 2) {
         render(index + delta);
-        preloadAround();
         return;
       }
 
@@ -144,7 +190,6 @@
       // 画面在 42% 处完全隐去，此时换图；动画结束再清理 class
       swapTimers.push(window.setTimeout(function () {
         render(index + delta);
-        preloadAround();
       }, 150));
       swapTimers.push(window.setTimeout(function () {
         box.classList.remove("is-swap-next", "is-swap-prev");

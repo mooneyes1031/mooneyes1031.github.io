@@ -19,6 +19,11 @@ featured = [
   "moon/05-moon.jpg",
 ]
 
+# 原图只作为 Hugo 缩放的输入，不直接发布到 public。
+# 页面引用的是生成的 WebP（缩略图 360/540/720，灯箱 800/1200/1600）。
+[build]
+publishResources = false
+
 # 相册显示名：文件夹名 -> 页面上的中文名
 [albums]
 "city-night" = "城市夜色"

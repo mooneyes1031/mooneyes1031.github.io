@@ -24,13 +24,20 @@
   {{- $thumb = $resized -}}
 {{- end -}}
 
-{{- /* 灯箱大图：1600px WebP，只有点开才加载 */ -}}
-{{- $large := $image -}}
+{{- /* 灯箱大图：800 / 1200 / 1600 三档 WebP，按屏幕和像素密度挑；只有点开才加载 */ -}}
 {{- $largeWidth := $image.Width -}}
 {{- if gt $largeWidth 1600 -}}
   {{- $largeWidth = 1600 -}}
 {{- end -}}
-{{- $large = $image.Resize (printf "%dx webp q78" $largeWidth) -}}
+{{- $large := $image.Resize (printf "%dx webp q78" $largeWidth) -}}
+{{- $large800 := "" -}}
+{{- if lt 800 $largeWidth -}}
+  {{- $large800 = $image.Resize "800x webp q78" -}}
+{{- end -}}
+{{- $large1200 := "" -}}
+{{- if lt 1200 $largeWidth -}}
+  {{- $large1200 = $image.Resize "1200x webp q78" -}}
+{{- end -}}
 
 {{- /* 灯箱信息：有 EXIF 就显示相机参数，没有则至少显示尺寸。 */ -}}
 {{- $exifParts := slice -}}
@@ -61,7 +68,7 @@
 {{- $exif := delimit $exifParts " · " -}}
 
 <figure class="photo-item">
-  <a class="photo-link" href="{{ $large.RelPermalink }}" data-full="{{ $large.RelPermalink }}" data-caption="{{ $caption }}" data-alt="{{ $alt }}" data-exif="{{ $exif }}" data-album="{{ $album }}">
+  <a class="photo-link" href="{{ $large.RelPermalink }}" data-full="{{ $large.RelPermalink }}" data-full-width="{{ $large.Width }}" data-full-height="{{ $large.Height }}"{{ with $large800 }} data-full-800="{{ .RelPermalink }}"{{ end }}{{ with $large1200 }} data-full-1200="{{ .RelPermalink }}"{{ end }} data-caption="{{ $caption }}" data-alt="{{ $alt }}" data-exif="{{ $exif }}" data-album="{{ $album }}">
     <img src="{{ $thumb.RelPermalink }}"
       srcset="{{ delimit $srcset ", " }}"
       sizes="(max-width: 768px) 45vw, 272px"
