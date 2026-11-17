@@ -621,6 +621,15 @@ body.colorscheme-dark {
   transform: translateY(0) scale(1);
 }
 
+.photo-lb-media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 92vw;
+  max-height: 82vh;
+}
+
 .photo-lb-figure img {
   display: block;
   width: auto;
@@ -629,6 +638,67 @@ body.colorscheme-dark {
   max-height: 82vh;
   border-radius: 0.4rem;
   box-shadow: 0 1rem 4rem rgba(0, 0, 0, 0.5);
+}
+
+// 大图还没下载完时先占住尺寸，显示一层很淡的闪动和加载圈，避免灯箱中间空一块
+.photo-lb-loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2.8rem;
+  height: 2.8rem;
+  margin: -1.4rem 0 0 -1.4rem;
+  border: 2px solid rgba(33, 33, 33, 0.16);
+  border-top-color: var(--accent-current);
+  border-radius: 50%;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.18s ease;
+}
+
+.photo-lightbox.is-loading .photo-lb-loader {
+  opacity: 1;
+  visibility: visible;
+  animation: photo-lb-spin 0.8s linear infinite;
+}
+
+.photo-lightbox.is-loading .photo-lb-media img {
+  background: linear-gradient(110deg, #ece8de 8%, #faf8f2 18%, #ece8de 33%);
+  background-size: 200% 100%;
+  animation: photo-lb-shimmer 1.4s linear infinite;
+}
+
+.photo-lb-error {
+  margin: 1.2rem 0 0;
+  color: #f0b36b;
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+.photo-lb-error[hidden] {
+  display: none;
+}
+
+// 图挂了就收起空图框，只留提示，避免灯箱里一块突兀的米色空白
+.photo-lightbox.is-error .photo-lb-media {
+  display: none;
+}
+
+.photo-lightbox.is-error .photo-lb-error {
+  margin: 0 0 1.2rem;
+}
+
+@keyframes photo-lb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes photo-lb-shimmer {
+  to {
+    background-position: -200% 0;
+  }
 }
 
 .photo-lb-info {
@@ -673,14 +743,17 @@ body.colorscheme-dark {
   width: 4.6rem;
   height: 4.6rem;
   padding: 0;
-  border: 0;
+  border: 1px solid rgba(255, 255, 255, 0.26);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.5);
   color: #fff;
   font-size: 2.8rem;
   line-height: 1;
   cursor: pointer;
   opacity: 0;
+  box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   transition: background 0.2s ease, opacity 0.25s ease;
 }
 
@@ -690,7 +763,8 @@ body.colorscheme-dark {
 
 .photo-lb-btn:hover,
 .photo-lb-btn:focus {
-  background: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.66);
   outline: none;
 }
 
@@ -851,6 +925,7 @@ body.colorscheme-dark {
     font-size: 1.1rem;
   }
 
+  .photo-lb-media,
   .photo-lb-figure img {
     max-height: 78vh;
   }
@@ -918,6 +993,19 @@ body.colorscheme-dark {
   color: #888;
   font-size: 1.4rem;
   text-align: left;
+}
+
+.search-recent-title {
+  margin: 0 0 0.4rem;
+  color: var(--ui-muted);
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: left;
+}
+
+.search-recent-title[hidden] {
+  display: none;
 }
 
 .search-results {
@@ -1996,13 +2084,16 @@ body.image-lb-open {
   .image-lightbox.is-open .image-lb-figure,
   .photo-lightbox.is-open .photo-lb-figure img,
   .photo-lightbox.is-swap-next .photo-lb-figure,
-  .photo-lightbox.is-swap-prev .photo-lb-figure {
+  .photo-lightbox.is-swap-prev .photo-lb-figure,
+  .photo-lightbox.is-loading .photo-lb-loader,
+  .photo-lightbox.is-loading .photo-lb-media img {
     animation: none;
   }
 
   .photo-lightbox,
   .photo-lb-figure,
-  .photo-lb-btn {
+  .photo-lb-btn,
+  .photo-lb-loader {
     transition: none;
   }
 }
@@ -4955,6 +5046,43 @@ body.ui-hidden .music-player {
   }
 }
 
+// 主题按钮改成了真正的 <button>，补回主题原来的方块外观和悬停效果
+.float-container .colorscheme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.2rem;
+  background: #e0e0e0;
+  color: #000;
+  font-size: 2rem;
+  line-height: 1;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: color 0.25s ease-in, opacity 0.25s ease-in;
+}
+
+.float-container .colorscheme-toggle:hover,
+.float-container .colorscheme-toggle:focus {
+  color: var(--accent-current);
+  opacity: 1;
+}
+
+body.colorscheme-dark .float-container .colorscheme-toggle {
+  background: #424242;
+  color: #dadada;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.colorscheme-auto .float-container .colorscheme-toggle {
+    background: #424242;
+    color: #dadada;
+  }
+}
+
 // ==========================================================================
 //  25. 搜索页：类型筛选 + 热门标签快捷入口
 // ==========================================================================
@@ -5256,6 +5384,7 @@ body.ui-hidden .music-player {
 @media (prefers-reduced-motion: reduce) {
   .float-container,
   .music-player,
+  .navigation .navigation-list,
   .skip-link,
   .search-filter,
   .search-suggestion,
@@ -5298,5 +5427,163 @@ body.ui-hidden .music-player {
 @media (prefers-reduced-motion: reduce) {
   .cursor-stardust {
     display: none;
+  }
+}
+
+// ==========================================================================
+//  31. 手机菜单：全屏抽屉 / Mobile menu drawer
+//  原来的折叠列表只占页面顶部一小块，下面正文仍然露出来。
+//  这里改成从导航栏下方展开的全屏抽屉，带遮罩、锁滚动、Esc 和点击外部关闭。
+// ==========================================================================
+
+@media only screen and (max-width: 768px) {
+  html.menu-open,
+  body.menu-open {
+    overflow: hidden;
+  }
+
+  .navigation {
+    position: relative;
+    z-index: 130;
+  }
+
+  .navigation .container {
+    position: relative;
+  }
+
+  // 复选框视觉上隐藏，但保留键盘焦点；按空格即可开关菜单
+  .navigation #menu-toggle {
+    position: absolute !important;
+    top: 50%;
+    right: 2rem;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    visibility: visible;
+    clip-path: inset(50%);
+    pointer-events: none;
+  }
+
+  // 焦点在隐藏的复选框上时，把描边画到看得见的汉堡按钮上
+  .navigation #menu-toggle:focus-visible + .menu-button {
+    outline: 2px solid var(--accent-current);
+    outline-offset: 2px;
+    border-radius: 0.4rem;
+  }
+
+  body.menu-open .navigation {
+    background: #fafafa;
+  }
+
+  // .wrapper 本来有 z-index: 1，会把导航锁在遮罩下面；打开菜单时让它回到普通层叠顺序
+  body.menu-open .wrapper {
+    z-index: auto;
+  }
+
+  body.menu-open .reading-progress {
+    opacity: 0;
+  }
+
+  body.colorscheme-dark.menu-open .navigation {
+    background: #212121;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body.colorscheme-auto.menu-open .navigation {
+      background: #212121;
+    }
+  }
+
+  // 遮罩：压在正文和悬浮按钮上，点击任意空白处关闭菜单
+  body.menu-open::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .navigation .navigation-list {
+    position: fixed !important;
+    top: var(--mobile-menu-top, 6rem) !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    z-index: 120 !important;
+    width: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 2.4rem 2rem calc(3.2rem + env(safe-area-inset-bottom, 0px)) !important;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: #fafafa;
+    border-top: 1px solid #e5e5e5 !important;
+    border-bottom: 0 !important;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-1rem);
+    transition: opacity 0.24s ease, transform 0.24s ease, visibility 0.24s;
+  }
+
+  #menu-toggle:checked + .menu-button + .navigation-list {
+    visibility: visible !important;
+    opacity: 1 !important;
+    max-height: none !important;
+    transform: translateY(0);
+  }
+
+  .navigation .navigation-list .navigation-item {
+    float: none !important;
+    border-top: 1px solid rgba(128, 128, 128, 0.16);
+  }
+
+  .navigation .navigation-list .navigation-item:first-child {
+    border-top: 0;
+  }
+
+  .navigation .navigation-list .navigation-item a,
+  .navigation .navigation-list .navigation-item span {
+    display: block;
+    margin: 0;
+    padding: 1.45rem 1rem;
+    font-size: 1.8rem;
+    line-height: 1.5;
+    text-align: center;
+    border-radius: 0.6rem;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .navigation .navigation-list .navigation-item a:hover,
+  .navigation .navigation-list .navigation-item a:focus {
+    background: var(--accent-soft);
+    color: var(--accent-current);
+    text-decoration: none;
+  }
+
+  .navigation .navigation-list .navigation-item .navigation-link.is-active {
+    background: var(--accent-soft);
+    text-decoration: none;
+  }
+
+  body.colorscheme-dark .navigation .navigation-list {
+    background: #212121;
+    border-top-color: #424242 !important;
+  }
+
+  body.colorscheme-dark .navigation .navigation-list .navigation-item {
+    border-top-color: rgba(255, 255, 255, 0.12);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body.colorscheme-auto .navigation .navigation-list {
+      background: #212121;
+      border-top-color: #424242 !important;
+    }
+
+    body.colorscheme-auto .navigation .navigation-list .navigation-item {
+      border-top-color: rgba(255, 255, 255, 0.12);
+    }
   }
 }

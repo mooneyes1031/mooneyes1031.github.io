@@ -8,6 +8,7 @@
     var input = document.getElementById("search-input");
     var status = document.getElementById("search-status");
     var list = document.getElementById("search-results");
+    var recentTitle = document.getElementById("search-recent-title");
     var suggestions = document.getElementById("search-suggestions");
     var filters = Array.prototype.slice.call(document.querySelectorAll("[data-search-section]"));
     var indexURL = box.getAttribute("data-index");
@@ -165,17 +166,39 @@
       return li;
     }
 
+    function renderRecent() {
+      var recent = filteredItems().slice().sort(function (a, b) {
+        return (b.date || "").localeCompare(a.date || "");
+      }).slice(0, 5);
+
+      list.innerHTML = "";
+      if (recentTitle) recentTitle.hidden = !recent.length;
+      if (!recent.length) return;
+
+      var frag = document.createDocumentFragment();
+      recent.forEach(function (item) {
+        frag.appendChild(makeResult(item));
+      });
+      list.appendChild(frag);
+    }
+
     function run() {
       if (!loaded || loadError) return;
 
       var raw = input.value.trim();
-      if (suggestions) suggestions.hidden = !!raw;
 
       if (!raw) {
-        list.innerHTML = "";
-        setStatus(items.length ? baseStatus() : "还没有内容。");
+        if (suggestions) suggestions.hidden = false;
+        renderRecent();
+        var count = filteredItems().length;
+        setStatus(count
+          ? "共 " + count + " " + filterLabel() + "，下面是最近更新。"
+          : "这个分类下还没有内容。");
         return;
       }
+
+      if (suggestions) suggestions.hidden = true;
+      if (recentTitle) recentTitle.hidden = true;
 
       var query = normalize(raw);
       var results = [];

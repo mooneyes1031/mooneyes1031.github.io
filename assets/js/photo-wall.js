@@ -22,6 +22,7 @@
     var closeBtn = box.querySelector('[data-action="close"]');
     var prevBtn = box.querySelector('[data-action="prev"]');
     var nextBtn = box.querySelector('[data-action="next"]');
+    var error = document.getElementById("photo-lb-error");
     var index = 0;
     var lastFocus = null;
     var touchStartX = 0;
@@ -64,15 +65,44 @@
     }
 
     function sizesFor(link) {
+      var fit = imageSizeFor(link);
+      return fit ? fit.width + "px" : "";
+    }
+
+    function imageSizeFor(link) {
       var w = parseInt(link.getAttribute("data-full-width"), 10);
       var h = parseInt(link.getAttribute("data-full-height"), 10);
-      if (!w || !h) return img.getAttribute("sizes") || "";
-      // 大图最大 92vw × 82vh，去掉 0.5rem 白边（根字号 10px）
-      var contentWidth = Math.min(
-        window.innerWidth * 0.92 - 10,
-        (window.innerHeight * 0.82 - 10) * w / h
-      );
-      return Math.max(1, Math.round(contentWidth)) + "px";
+      if (!w || !h) return null;
+      var mobile = window.innerWidth <= 768;
+      // 和 CSS 对齐：桌面 92vw × 82vh，手机 92vw × 78vh；减去 0.5rem 白边和灯箱内边距
+      var maxW = Math.min(window.innerWidth * 0.92, window.innerWidth - (mobile ? 24 : 80)) - 10;
+      var maxH = window.innerHeight * (mobile ? 0.78 : 0.82) - 10;
+      if (maxW < 1 || maxH < 1) return null;
+      var scale = Math.min(maxW / w, maxH / h);
+      return {
+        width: Math.max(1, Math.round(w * scale)),
+        height: Math.max(1, Math.round(h * scale))
+      };
+    }
+
+    function markLoading(link) {
+      var fit = imageSizeFor(link);
+      box.classList.add("is-loading");
+      box.classList.remove("is-error");
+      box.setAttribute("aria-busy", "true");
+      if (error) error.hidden = true;
+      if (fit) {
+        img.style.width = fit.width + "px";
+        img.style.height = fit.height + "px";
+      } else {
+        img.style.width = "";
+        img.style.height = "";
+      }
+    }
+
+    function markLoaded() {
+      box.classList.remove("is-loading");
+      box.removeAttribute("aria-busy");
     }
 
     function preload(link) {
@@ -99,7 +129,16 @@
     }
 
     // 等当前大图加载完再预取前后两张，避免三张大图抢同一条带宽
-    img.addEventListener("load", preloadAround);
+    img.addEventListener("load", function () {
+      markLoaded();
+      preloadAround();
+    });
+
+    img.addEventListener("error", function () {
+      markLoaded();
+      box.classList.add("is-error");
+      if (error) error.hidden = false;
+    });
 
     function clearSwap() {
       swapTimers.forEach(function (id) {
@@ -124,6 +163,7 @@
       } else {
         img.removeAttribute("srcset");
       }
+      markLoading(link);
       img.src = link.getAttribute("data-full");
       img.alt = link.getAttribute("data-alt") || "";
       var text = link.getAttribute("data-caption") || "";
@@ -164,9 +204,14 @@
         if (box.classList.contains("is-open")) return;
         box.hidden = true;
         document.body.classList.remove("photo-lb-open");
+        box.classList.remove("is-loading", "is-error");
+        box.removeAttribute("aria-busy");
+        if (error) error.hidden = true;
         img.removeAttribute("src");
         img.removeAttribute("srcset");
         img.alt = "";
+        img.style.width = "";
+        img.style.height = "";
         if (lastFocus && typeof lastFocus.focus === "function") {
           lastFocus.focus();
         }
@@ -248,6 +293,16 @@
     box.addEventListener("touchstart", function (e) {
       touchStartX = e.changedTouches[0].clientX;
     }, { passive: true });
+
+    window.addEventListener("resize", function () {
+      if (box.hidden || !box.classList.contains("is-open")) return;
+      var link = activeLinks[index];
+      var fit = link ? imageSizeFor(link) : null;
+      if (!fit) return;
+      img.style.width = fit.width + "px";
+      img.style.height = fit.height + "px";
+      img.setAttribute("sizes", fit.width + "px");
+    });
 
     box.addEventListener("touchend", function (e) {
       var dx = e.changedTouches[0].clientX - touchStartX;

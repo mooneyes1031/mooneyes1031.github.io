@@ -14,13 +14,20 @@
 
     // 手机浏览器的状态栏颜色：跟随站内主题（含手动切换）。
     var colorMeta = document.getElementById("theme-color-meta");
+    var themeToggle = document.getElementById("dark-mode-toggle");
     var darkMedia = window.matchMedia("(prefers-color-scheme: dark)");
 
     function syncThemeColor() {
-      if (!colorMeta) return;
       var isDark = body.classList.contains("colorscheme-dark") ||
         (body.classList.contains("colorscheme-auto") && darkMedia.matches);
-      colorMeta.setAttribute("content", isDark ? "#212121" : "#fafafa");
+      if (colorMeta) {
+        colorMeta.setAttribute("content", isDark ? "#212121" : "#fafafa");
+      }
+      if (themeToggle) {
+        var label = isDark ? "切换到浅色模式" : "切换到深色模式";
+        themeToggle.setAttribute("aria-label", label);
+        themeToggle.setAttribute("title", label);
+      }
     }
 
     syncThemeColor();
@@ -37,35 +44,112 @@
       darkMedia.addListener(syncThemeColor);
     }
 
-    // 移动端菜单：补上展开状态，支持 Esc 关闭，并在桌面宽度自动收起。
+    // 移动端菜单：全屏抽屉 + 遮罩，支持 Esc、点击外部关闭、键盘 Tab 循环。
     var menuToggle = document.getElementById("menu-toggle");
     var menuButton = document.querySelector(".menu-button");
+    var menuList = document.querySelector(".navigation-list");
+    var navigation = document.querySelector(".navigation");
 
-    if (menuToggle && menuButton) {
-      function syncMenuState() {
+    if (menuToggle && menuButton && menuList) {
+      var menuLinks = Array.prototype.slice.call(menuList.querySelectorAll("a[href]"));
+
+      menuList.id = menuList.id || "site-menu";
+      menuToggle.setAttribute("aria-controls", menuList.id);
+
+      function menuTop() {
+        if (!navigation) return 60;
+        var rect = navigation.getBoundingClientRect();
+        return Math.max(0, Math.round(rect.bottom));
+      }
+
+      function setMenuTop() {
+        document.documentElement.style.setProperty("--mobile-menu-top", menuTop() + "px");
+      }
+
+      function syncMenuState(restoreFocus) {
         var open = menuToggle.checked;
         menuButton.setAttribute("aria-expanded", open ? "true" : "false");
         menuButton.setAttribute("aria-label", open ? "关闭菜单" : "打开菜单");
         menuToggle.setAttribute("aria-label", open ? "关闭菜单" : "打开菜单");
-      }
+        menuToggle.setAttribute("aria-expanded", open ? "true" : "false");
+        document.documentElement.classList.toggle("menu-open", open);
+        body.classList.toggle("menu-open", open);
 
-      menuToggle.addEventListener("change", syncMenuState);
-      syncMenuState();
-
-      document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape" && menuToggle.checked) {
-          menuToggle.checked = false;
-          syncMenuState();
+        if (open) {
+          setMenuTop();
+          // 等抽屉的 visibility 过渡结束，再把焦点送进去
+          window.setTimeout(function () {
+            if (menuToggle.checked && menuLinks.length) menuLinks[0].focus();
+          }, 260);
+        } else if (restoreFocus) {
           menuToggle.focus();
         }
+      }
+
+      menuToggle.addEventListener("change", function () {
+        syncMenuState(true);
+      });
+
+      // 原生 checkbox 只吃空格；补上回车，让按钮语义完整
+      menuToggle.addEventListener("keydown", function (event) {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
+        menuToggle.checked = !menuToggle.checked;
+        syncMenuState(true);
+      });
+
+      syncMenuState(false);
+
+      document.addEventListener("keydown", function (event) {
+        if (!menuToggle.checked) return;
+
+        if (event.key === "Escape") {
+          event.preventDefault();
+          menuToggle.checked = false;
+          syncMenuState(true);
+          return;
+        }
+
+        if (event.key === "Tab" && menuLinks.length) {
+          var first = menuLinks[0];
+          var last = menuLinks[menuLinks.length - 1];
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+      });
+
+      // 点遮罩或正文空白处关闭；导航栏和抽屉内部的点击不算
+      document.addEventListener("click", function (event) {
+        if (!menuToggle.checked) return;
+        if (navigation && navigation.contains(event.target)) return;
+        menuToggle.checked = false;
+        syncMenuState(true);
+      });
+
+      menuLinks.forEach(function (link) {
+        link.addEventListener("click", function () {
+          menuToggle.checked = false;
+          syncMenuState(false);
+        });
+      });
+
+      window.addEventListener("resize", function () {
+        if (menuToggle.checked) setMenuTop();
       });
 
       var desktopMedia = window.matchMedia("(min-width: 769px)");
       function closeOnDesktop() {
-        if (desktopMedia.matches && menuToggle.checked) {
-          menuToggle.checked = false;
-          syncMenuState();
-        }
+        if (!desktopMedia.matches || !menuToggle.checked) return;
+        var active = document.activeElement;
+        var title = document.querySelector(".navigation-title");
+        menuToggle.checked = false;
+        if (menuList.contains(active) && title) title.focus();
+        syncMenuState(false);
       }
       if (desktopMedia.addEventListener) {
         desktopMedia.addEventListener("change", closeOnDesktop);

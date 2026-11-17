@@ -152,7 +152,11 @@
     <button type="button" class="photo-lb-btn photo-lb-close" data-action="close" aria-label="关闭">&times;</button>
     <button type="button" class="photo-lb-btn photo-lb-prev" data-action="prev" aria-label="上一张">&lsaquo;</button>
     <figure class="photo-lb-figure">
-      <img id="photo-lb-img" alt="" decoding="async">
+      <div class="photo-lb-media">
+        <img id="photo-lb-img" alt="" decoding="async">
+        <span class="photo-lb-loader" aria-hidden="true"></span>
+      </div>
+      <p class="photo-lb-error" id="photo-lb-error" hidden>这张图没有加载出来，试试上一张或下一张。</p>
       <div class="photo-lb-info">
         <p class="photo-lb-caption" id="photo-lb-caption" hidden></p>
         <p class="photo-lb-exif" id="photo-lb-exif" hidden></p>
