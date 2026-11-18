@@ -434,19 +434,24 @@ body.colorscheme-dark {
   border-radius: 0.8rem;
   background: #fff;
   color: #212121;
-  text-decoration: none;
   box-shadow: 0 0.4rem 1.4rem rgba(0, 0, 0, 0.08);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .photo-album-card:hover,
-.photo-album-card:focus {
+.photo-album-card:focus-within {
   transform: translateY(-0.2rem);
   box-shadow: 0 0.8rem 2rem rgba(0, 0, 0, 0.12);
+}
+
+.photo-album-card__media,
+.photo-album-card__body {
+  color: inherit;
   text-decoration: none;
 }
 
 .photo-album-card__media {
+  position: relative;
   display: block;
   aspect-ratio: 4 / 3;
   overflow: hidden;
@@ -463,8 +468,41 @@ body.colorscheme-dark {
 }
 
 .photo-album-card:hover .photo-album-card__media img,
-.photo-album-card:focus .photo-album-card__media img {
+.photo-album-card:focus-within .photo-album-card__media img {
   transform: scale(1.03);
+}
+
+.photo-album-card__preview {
+  position: absolute;
+  right: 0.8rem;
+  bottom: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.58);
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1.2;
+  opacity: 0;
+  transform: translateY(0.3rem);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.photo-album-card:hover .photo-album-card__preview,
+.photo-album-card:focus-within .photo-album-card__preview,
+.photo-album-card__media:focus-visible .photo-album-card__preview {
+  opacity: 1;
+  transform: none;
+}
+
+@media (hover: none) {
+  .photo-album-card__preview {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .photo-album-card__body {
@@ -482,6 +520,8 @@ body.colorscheme-dark {
 }
 
 .photo-album-card__title {
+  margin: 0;
+  color: inherit;
   font-size: 1.7rem;
   font-weight: 600;
   line-height: 1.35;
@@ -3484,20 +3524,21 @@ body.colorscheme-dark .footnote-popover {
   .photo-link img,
   .photo-album-card,
   .photo-album-card__media img,
+  .photo-album-card__preview,
   .photo-filter {
     transition: none;
   }
 
   .photo-item:hover,
   .photo-album-card:hover,
-  .photo-album-card:focus {
+  .photo-album-card:focus-within {
     transform: none;
   }
 
   .photo-link:hover img,
   .photo-link:focus img,
   .photo-album-card:hover .photo-album-card__media img,
-  .photo-album-card:focus .photo-album-card__media img {
+  .photo-album-card:focus-within .photo-album-card__media img {
     transform: none;
   }
 }

@@ -13,6 +13,8 @@
     var allLinks = Array.prototype.slice.call(wall.querySelectorAll(".photo-link"));
     if (!allLinks.length) return;
 
+    var coverLinks = Array.prototype.slice.call(document.querySelectorAll("[data-photo-cover]"));
+
     var activeLinks = allLinks.slice();
     var img = document.getElementById("photo-lb-img");
     var caption = document.getElementById("photo-lb-caption");
@@ -187,8 +189,8 @@
       }
     }
 
-    function open(i) {
-      lastFocus = document.activeElement;
+    function open(i, returnFocus) {
+      lastFocus = returnFocus || document.activeElement;
       clearSwap();
       render(i);
       box.hidden = false;
@@ -219,6 +221,63 @@
           lastFocus.focus();
         }
       }, reduceMotion.matches ? 0 : 320);
+    }
+
+    function groupFor(id) {
+      for (var i = 0; i < groups.length; i++) {
+        if (groups[i].getAttribute("data-photo-album") === id) return groups[i];
+      }
+      return null;
+    }
+
+    // 相册总览的封面：点图片直接在当前页开灯箱，不再先跳到相册目录
+    function openCover(cover) {
+      var group = groupFor(cover.getAttribute("data-photo-cover"));
+      if (!group) return false;
+      var links = Array.prototype.slice.call(group.querySelectorAll(".photo-link"));
+      if (!links.length) return false;
+      activeLinks = links;
+      open(0, cover);
+      return true;
+    }
+
+    function findPhotoLink(id, albumId) {
+      for (var i = 0; i < allLinks.length; i++) {
+        if (allLinks[i].getAttribute("data-photo-id") !== id) continue;
+        if (albumId) {
+          var linkGroup = closestGroup(allLinks[i]);
+          if (!linkGroup || linkGroup.getAttribute("data-photo-album") !== albumId) continue;
+        }
+        return allLinks[i];
+      }
+      return null;
+    }
+
+    // 首页「拾光」点某张照片进来时，带上 ?photo=文件名，落地后直接打开这张
+    function openPhotoFromURL() {
+      var photo = null;
+      var albumId = null;
+      try {
+        var params = new URLSearchParams(window.location.search);
+        photo = params.get("photo");
+        albumId = params.get("album");
+      } catch (err) {
+        return;
+      }
+      if (!photo) return;
+      var link = findPhotoLink(photo, albumId);
+      if (!link) return;
+      var group = closestGroup(link);
+      if (group && group.hidden) {
+        applyFilter(group.getAttribute("data-photo-album"), false);
+      }
+      activeLinks = visibleLinks();
+      var target = activeLinks.indexOf(link);
+      if (target < 0) {
+        activeLinks = allLinks.slice();
+        target = allLinks.indexOf(link);
+      }
+      if (target >= 0) open(target);
     }
 
     function step(delta) {
@@ -257,6 +316,13 @@
           target = allLinks.indexOf(link);
         }
         open(target);
+      });
+    });
+
+    coverLinks.forEach(function (cover) {
+      cover.addEventListener("click", function (e) {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+        if (openCover(cover)) e.preventDefault();
       });
     });
 
@@ -398,6 +464,8 @@
       }
       applyFilter(initial, false);
     }
+
+    openPhotoFromURL();
   }
 
   if (document.readyState === "loading") {

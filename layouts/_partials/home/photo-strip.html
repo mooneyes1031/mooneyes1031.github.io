@@ -48,9 +48,10 @@
             {{- $albumLabel = . -}}
           {{- end -}}
         {{- end -}}
-        {{- $photoURL := `photos/` | relURL -}}
+        {{- $photoName := path.Base $image.Name -}}
+        {{- $photoURL := printf "photos/?%s" (querify "photo" $photoName) | relURL -}}
         {{- if $albumID -}}
-          {{- $photoURL = printf "photos/?album=%s" $albumID | relURL -}}
+          {{- $photoURL = printf "photos/?%s" (querify "album" $albumID "photo" $photoName) | relURL -}}
         {{- end -}}
         {{- $widths := slice 360 540 720 -}}
         {{- $srcset := slice -}}
@@ -68,7 +69,7 @@
           {{- $thumb = $resized -}}
         {{- end -}}
         <figure class="home-photo">
-          <a class="home-photo__link" href="{{ $photoURL }}" aria-label="查看{{ with $albumLabel }}{{ . }}相册{{ else }}照片{{ end }}{{ with $caption }}：{{ . }}{{ end }}">
+          <a class="home-photo__link" href="{{ $photoURL }}" aria-label="打开{{ with $albumLabel }}{{ . }}中的{{ end }}照片{{ with $caption }}：{{ . }}{{ end }}">
             <img src="{{ $thumb.RelPermalink }}"
               srcset="{{ delimit $srcset ", " }}"
               sizes="(max-width: 768px) 45vw, 190px"

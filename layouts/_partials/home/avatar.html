@@ -2,7 +2,7 @@
   首页头像：优先从 assets/ 读图，构建时生成 240 / 480 两种 WebP。
   找不到资源（例如外链头像）时退回原图，不影响显示。
 */}}
-{{- $avatarAlt := printf "%s的头像" (site.Params.author | default "站长") -}}
+{{- $avatarAlt := printf "%s的头像：坐在车里望向窗外的背影" (site.Params.author | default "站长") -}}
 {{ if and (isset .Site.Params "avatarurl") (not (isset .Site.Params "gravatar")) }}
   {{ with .Site.Params.avatarURL }}
     {{- $src := . -}}

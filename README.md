@@ -46,7 +46,7 @@
 
 ### 照片墙
 
-照片按主题放在 `content/photos/` 的子文件夹里（如 `city-night/`、`forest/`），图片直接拖进去即可。`index.md` 里的 `groupBy = "folder"` 会按文件夹自动分组，`[albums]` 映射中文名，`albumOrder` 控制顺序。`/photos/` 默认只显示相册总览（封面 + 名称 + 张数），点封面进入相册，网址写进 `?album=`；点「全部照片」会写 `?view=all`。首页「拾光」从 `featured` 取图，路径写 `文件夹/文件名`，点缩略图会进入对应主题相册。
+照片按主题放在 `content/photos/` 的子文件夹里（如 `city-night/`、`forest/`），图片直接拖进去即可。`index.md` 里的 `groupBy = "folder"` 会按文件夹自动分组，`[albums]` 映射中文名，`albumOrder` 控制顺序。`/photos/` 默认显示相册总览（封面 + 名称 + 张数）：点封面会直接在当前页打开该相册的灯箱，点封面下方的文字或「查看相册」才进入相册，网址写进 `?album=`；点「全部照片」会写 `?view=all`。首页「拾光」从 `featured` 取图，路径写 `文件夹/文件名`，点缩略图会带着 `?album=…&photo=文件名` 进入对应相册并直接打开这张照片。
 
 - 换照片：优先用新图覆盖同名文件；改文件名要同步 `[captions]` 和 `featured`
 - 删一张：删图片 + 删 `[captions]` 对应行 + 检查 `featured`

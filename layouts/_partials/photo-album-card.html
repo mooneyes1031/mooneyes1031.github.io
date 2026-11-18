@@ -4,6 +4,7 @@
 {{- $label := .label -}}
 {{- $description := .description -}}
 {{- $id := .id -}}
+{{- $albumURL := printf "%s?album=%s" $page.RelPermalink ($id | urlquery) -}}
 
 {{- /* 封面缩略图复用照片墙的 360 / 540 / 720 三档 WebP */ -}}
 {{- $widths := slice 360 540 720 -}}
@@ -22,8 +23,8 @@
   {{- $thumb = $resized -}}
 {{- end -}}
 
-<a class="photo-album-card" href="{{ $page.RelPermalink }}?album={{ $id | urlquery }}">
-  <span class="photo-album-card__media">
+<article class="photo-album-card">
+  <a class="photo-album-card__media" href="{{ $albumURL }}" data-photo-cover="{{ $id }}" aria-label="预览{{ $label }}相册">
     <img src="{{ $thumb.RelPermalink }}"
       srcset="{{ delimit $srcset ", " }}"
       sizes="(max-width: 768px) 45vw, 300px"
@@ -32,15 +33,16 @@
       height="{{ $thumb.Height }}"
       loading="lazy"
       decoding="async">
-  </span>
-  <span class="photo-album-card__body">
-    <span class="photo-album-card__head">
-      <span class="photo-album-card__title">{{ $label }}</span>
+    <span class="photo-album-card__preview" aria-hidden="true"><i class="fa-solid fa-expand"></i> 预览</span>
+  </a>
+  <a class="photo-album-card__body" href="{{ $albumURL }}">
+    <div class="photo-album-card__head">
+      <h2 class="photo-album-card__title">{{ $label }}</h2>
       <span class="photo-album-card__count">{{ len $images }} 张</span>
-    </span>
+    </div>
     {{- with $description }}
     <span class="photo-album-card__desc">{{ . }}</span>
     {{- end }}
     <span class="photo-album-card__more">查看相册 <span aria-hidden="true">→</span></span>
-  </span>
-</a>
+  </a>
+</article>

@@ -68,7 +68,7 @@
 {{- $exif := delimit $exifParts " · " -}}
 
 <figure class="photo-item">
-  <a class="photo-link" href="{{ $large.RelPermalink }}" data-full="{{ $large.RelPermalink }}" data-full-width="{{ $large.Width }}" data-full-height="{{ $large.Height }}"{{ with $large800 }} data-full-800="{{ .RelPermalink }}"{{ end }}{{ with $large1200 }} data-full-1200="{{ .RelPermalink }}"{{ end }} data-caption="{{ $caption }}" data-alt="{{ $alt }}" data-exif="{{ $exif }}" data-album="{{ $album }}">
+  <a class="photo-link" href="{{ $large.RelPermalink }}" data-photo-id="{{ path.Base $image.Name }}" data-full="{{ $large.RelPermalink }}" data-full-width="{{ $large.Width }}" data-full-height="{{ $large.Height }}"{{ with $large800 }} data-full-800="{{ .RelPermalink }}"{{ end }}{{ with $large1200 }} data-full-1200="{{ .RelPermalink }}"{{ end }} data-caption="{{ $caption }}" data-alt="{{ $alt }}" data-exif="{{ $exif }}" data-album="{{ $album }}">
     <img src="{{ $thumb.RelPermalink }}"
       srcset="{{ delimit $srcset ", " }}"
       sizes="(max-width: 768px) 45vw, 272px"
