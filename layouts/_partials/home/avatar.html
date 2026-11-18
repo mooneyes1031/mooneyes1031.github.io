@@ -2,6 +2,7 @@
   首页头像：优先从 assets/ 读图，构建时生成 240 / 480 两种 WebP。
   找不到资源（例如外链头像）时退回原图，不影响显示。
 */}}
+{{- $avatarAlt := printf "%s的头像" (site.Params.author | default "站长") -}}
 {{ if and (isset .Site.Params "avatarurl") (not (isset .Site.Params "gravatar")) }}
   {{ with .Site.Params.avatarURL }}
     {{- $src := . -}}
@@ -26,17 +27,17 @@
       <img src="{{ $fallback.RelPermalink }}"
         srcset="{{ delimit $srcset ", " }}"
         sizes="(max-width: 768px) 17rem, 20rem"
-        alt="avatar"
+        alt="{{ $avatarAlt }}"
         width="{{ $fallback.Width }}"
         height="{{ $fallback.Height }}"
         loading="eager"
         decoding="async">
     </div>
     {{- else -}}
-    <div class="avatar"><img src="{{ $src | relURL }}" alt="avatar" width="240" height="240" loading="eager" decoding="async"></div>
+    <div class="avatar"><img src="{{ $src | relURL }}" alt="{{ $avatarAlt }}" width="240" height="240" loading="eager" decoding="async"></div>
     {{- end -}}
   {{ end }}
 {{ end }}
 {{ with .Site.Params.gravatar }}
-  <div class="avatar"><img src="https://www.gravatar.com/avatar/{{md5 .}}?s=240&d=mp" width="240" height="240" alt="gravatar"></div>
+  <div class="avatar"><img src="https://www.gravatar.com/avatar/{{md5 .}}?s=240&d=mp" width="240" height="240" alt="{{ $avatarAlt }}"></div>
 {{ end }}

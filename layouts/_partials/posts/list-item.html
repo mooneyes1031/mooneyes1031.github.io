@@ -1,17 +1,22 @@
 {{/*
   文章列表卡片：/posts/、标签页、分类页、系列页、首页「最新文章」共用。
+  调用时传 dict：
+  - page  = 文章页面
+  - level = 标题层级（列表页用 2，首页「最新文章」用 3）
   想改摘要长度，调下面的 truncate 140。
 */}}
-{{- $summary := .Description | default .Summary | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | htmlUnescape | strings.TrimSpace -}}
-<li class="post-list-item{{ if .Params.featured }} is-featured{{ end }}">
+{{- $page := .page -}}
+{{- $level := .level | default 2 -}}
+{{- $summary := $page.Description | default $page.Summary | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | htmlUnescape | strings.TrimSpace -}}
+<li class="post-list-item{{ if $page.Params.featured }} is-featured{{ end }}">
   <div class="post-list-meta">
-    <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format (.Site.Params.dateFormat | default "2006-01-02") }}</time>
+    <time datetime="{{ $page.Date.Format "2006-01-02" }}">{{ $page.Date | time.Format ($page.Site.Params.dateFormat | default "2006-01-02") }}</time>
     <span class="post-list-dot" aria-hidden="true">·</span>
     <span class="post-list-reading">
       <i class="fa-regular fa-clock" aria-hidden="true"></i>
-      {{ .ReadingTime }} 分钟
+      {{ $page.ReadingTime }} 分钟
     </span>
-    {{- if .Params.featured }}
+    {{- if $page.Params.featured }}
     <span class="post-list-pin">
       <i class="fa-solid fa-thumbtack" aria-hidden="true"></i>
       精选
@@ -19,13 +24,15 @@
     {{- end }}
   </div>
 
-  <a class="title post-list-title" href="{{ .Params.externalLink | default .RelPermalink }}">{{ .Title }}</a>
+  <h{{ $level }} class="post-list-heading">
+    <a class="title post-list-title" href="{{ $page.Params.externalLink | default $page.RelPermalink }}">{{ $page.Title }}</a>
+  </h{{ $level }}>
 
   {{- with $summary }}
   <p class="post-list-summary">{{ . | truncate 140 }}</p>
   {{- end }}
 
-  {{- with .GetTerms "tags" }}
+  {{- with $page.GetTerms "tags" }}
   <div class="post-list-tags">
     {{- range . }}
     <a class="post-list-tag" href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a>

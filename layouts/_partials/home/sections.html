@@ -40,7 +40,7 @@
           <i class="fa-solid fa-thumbtack" aria-hidden="true"></i>
           精选
         </p>
-        <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+        <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
         {{- with .Description | default .Summary | plainify | replaceRE "\\s*链接到标题\\s*" "" | replaceRE "\\s+" " " | htmlUnescape | strings.TrimSpace }}
         <p class="home-featured-summary">{{ . | truncate 110 }}</p>
         {{- end }}
@@ -67,7 +67,7 @@
   {{- with $latest }}
   <ul class="home-post-list">
     {{- range . }}
-      {{ partial "posts/list-item.html" . }}
+      {{ partial "posts/list-item.html" (dict "page" . "level" 3) }}
     {{- end }}
   </ul>
   {{- else }}

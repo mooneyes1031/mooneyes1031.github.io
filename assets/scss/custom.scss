@@ -1270,7 +1270,23 @@ body.colorscheme-dark {
   line-height: 1.6;
 }
 
+// 标题锚点：默认透明而不是 visibility:hidden，
+// 这样键盘 Tab 能落到链接上，聚焦时再显示出来。
+:is(h1, h2, h3, h4, h5, h6) .heading-link {
+  visibility: visible;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+:is(h1, h2, h3, h4, h5, h6):hover .heading-link,
+:is(h1, h2, h3, h4, h5, h6):focus-within .heading-link {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .entry__toc summary {
+  padding: 1rem 0;
   color: #212121;
   font-weight: 600;
   cursor: pointer;
@@ -2243,19 +2259,19 @@ body.image-lb-open {
   margin-right: 0.3rem;
 }
 
-.home-featured-card h2 {
+.home-featured-card h3 {
   margin: 0.6rem 0;
   font-size: 2rem;
   line-height: 1.45;
 }
 
-.home-featured-card h2 a {
+.home-featured-card h3 a {
   color: #212121;
   text-decoration: none;
 }
 
-.home-featured-card h2 a:hover,
-.home-featured-card h2 a:focus {
+.home-featured-card h3 a:hover,
+.home-featured-card h3 a:focus {
   color: var(--accent);
 }
 
@@ -2320,6 +2336,14 @@ body.image-lb-open {
 .list ul li .post-list-title:focus {
   color: var(--accent);
   text-decoration: none;
+}
+
+// 标题层级由模板决定，这里只负责去掉 h2/h3 自带的大间距和字号
+.post-list-heading {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
 }
 
 .post-list-summary {
@@ -2510,12 +2534,12 @@ body.colorscheme-dark {
     color: var(--accent-dark);
   }
 
-  .home-featured-card h2 a {
+  .home-featured-card h3 a {
     color: #dadada;
   }
 
-  .home-featured-card h2 a:hover,
-  .home-featured-card h2 a:focus {
+  .home-featured-card h3 a:hover,
+  .home-featured-card h3 a:focus {
     color: var(--accent-dark);
   }
 
@@ -2629,12 +2653,12 @@ body.colorscheme-dark {
       color: var(--accent-dark);
     }
 
-    .home-featured-card h2 a {
+    .home-featured-card h3 a {
       color: #dadada;
     }
 
-    .home-featured-card h2 a:hover,
-    .home-featured-card h2 a:focus {
+    .home-featured-card h3 a:hover,
+    .home-featured-card h3 a:focus {
       color: var(--accent-dark);
     }
 
@@ -5051,16 +5075,16 @@ body.ui-hidden .music-player {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3rem;
-  height: 3rem;
+  width: 4.4rem;
+  height: 4.4rem;
   padding: 0;
   border: 0;
-  border-radius: 0.2rem;
+  border-radius: 0.4rem;
   background: #e0e0e0;
   color: #000;
   font-size: 2rem;
   line-height: 1;
-  opacity: 0.5;
+  opacity: 0.7;
   cursor: pointer;
   transition: color 0.25s ease-in, opacity 0.25s ease-in;
 }
@@ -5390,6 +5414,7 @@ body.colorscheme-dark .float-container .colorscheme-toggle {
   .search-suggestion,
   .reading-progress__bar,
   .reading-progress__moon,
+  .heading-link,
   .entry__toc summary::after {
     transition: none !important;
   }

@@ -68,8 +68,7 @@
 
       function syncMenuState(restoreFocus) {
         var open = menuToggle.checked;
-        menuButton.setAttribute("aria-expanded", open ? "true" : "false");
-        menuButton.setAttribute("aria-label", open ? "关闭菜单" : "打开菜单");
+        // 状态和名字都放在真正可聚焦的复选框上；label 只负责显示图标
         menuToggle.setAttribute("aria-label", open ? "关闭菜单" : "打开菜单");
         menuToggle.setAttribute("aria-expanded", open ? "true" : "false");
         document.documentElement.classList.toggle("menu-open", open);

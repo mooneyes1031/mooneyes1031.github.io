@@ -50,7 +50,7 @@
               <span>{{ len $yearPages }} 篇 · {{ $yearWords }} 字</span>
             </div>
 
-            <div class="annual-bars" aria-label="{{ .Key }} 年每月发文数">
+            <div class="annual-bars" role="img" aria-label="{{ .Key }} 年每月发文数">
               {{ range seq 1 12 }}
                 {{ $month := . }}
                 {{ $monthCount := 0 }}

@@ -1,6 +1,9 @@
 (function () {
   "use strict";
 
+  // 关闭灯箱后回到透明占位图，DOM 里始终保留一个可用的 src。
+  var PLACEHOLDER = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
   function init() {
     var wall = document.getElementById("photo-wall");
     var overview = document.getElementById("photo-albums");
@@ -207,8 +210,8 @@
         box.classList.remove("is-loading", "is-error");
         box.removeAttribute("aria-busy");
         if (error) error.hidden = true;
-        img.removeAttribute("src");
         img.removeAttribute("srcset");
+        img.src = PLACEHOLDER;
         img.alt = "";
         img.style.width = "";
         img.style.height = "";

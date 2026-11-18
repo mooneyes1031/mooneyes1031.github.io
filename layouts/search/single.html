@@ -14,7 +14,7 @@
       {{- $noteCount := len (where site.RegularPages "Section" "notes") -}}
       <div class="search-box" data-index="{{ "index.json" | relURL }}?v={{ now.Unix }}">
         <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-        <input id="search-input" type="search" placeholder="搜索标题、标签、正文…" autocomplete="off" aria-label="搜索文章">
+        <input id="search-input" type="search" placeholder="搜索标题、标签、正文…" autocomplete="off" aria-label="搜索站内内容">
       </div>
 
       <div class="search-filters" role="group" aria-label="按内容类型筛选">
@@ -43,7 +43,7 @@
       <ul class="search-results" id="search-results"></ul>
 
       <noscript>
-        <p class="search-noscript">搜索需要启用 JavaScript。你可以直接浏览 <a href="{{ "posts/" | relURL }}">文章列表</a>。</p>
+        <p class="search-noscript">搜索需要启用 JavaScript。你可以直接浏览 <a href="{{ "posts/" | relURL }}">文章列表</a> 或 <a href="{{ "notes/" | relURL }}">碎碎念</a>。</p>
       </noscript>
     </article>
   </section>

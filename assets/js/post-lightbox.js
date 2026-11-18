@@ -1,6 +1,10 @@
 (function () {
   "use strict";
 
+  // 关闭灯箱后把 src 换回透明占位图，避免浏览器继续占着上一张大图，
+  // 也避免 DOM 里出现没有 src 的 img。
+  var PLACEHOLDER = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
   function init() {
     var box = document.getElementById("image-lightbox");
     if (!box) return;
@@ -55,7 +59,7 @@
       box.classList.remove("is-open");
       box.hidden = true;
       document.body.classList.remove("image-lb-open");
-      img.removeAttribute("src");
+      img.src = PLACEHOLDER;
       if (lastFocus && typeof lastFocus.focus === "function") {
         lastFocus.focus();
       }

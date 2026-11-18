@@ -1,0 +1,15 @@
+{{/*
+  标题链接（覆盖主题同名文件）。
+
+  和主题原版的区别：图标链接只保留 aria-label，不再输出 sr-only 文字。
+  主题原版会在每个标题后面加一段「链接到标题」，这段文字会进入全文 RSS、
+  复制出来的标题和搜索结果里，读起来很吵。
+
+  aria-label 只是属性，不会变成正文，屏幕阅读器仍然能听出链接用途。
+*/}}
+<h{{ .Level }} id="{{ .Anchor | safeURL }}">
+  {{ .Text | safeHTML }}
+  <a class="heading-link" href="#{{ .Anchor | safeURL }}" aria-label="链接到标题：{{ .Text | plainify }}" title="{{ i18n "link_to_heading" | default "Link to heading" }}">
+    <i class="fa-solid fa-link" aria-hidden="true"></i>
+  </a>
+</h{{ .Level }}>

@@ -32,3 +32,12 @@
   })();
 </script>
 {{ partial "head/json-ld.html" . }}
+
+{{- /* 照片墙没有 JS 时：收起相册入口和筛选，直接显示全部照片。样式放在 head 里才是合法 HTML。 */}}
+<noscript>
+  <style>
+    .photos-page .photo-albums,
+    .photos-page .photo-filters { display: none; }
+    .photos-page #photo-wall { display: block !important; }
+  </style>
+</noscript>

@@ -22,7 +22,7 @@
   <ul>
     {{ range .Paginator.Pages }}
       {{- if eq .Section "posts" -}}
-        {{ partial "posts/list-item.html" . }}
+        {{ partial "posts/list-item.html" (dict "page" . "level" 2) }}
       {{- else -}}
         <li>
           <span class="date">{{ .Date | time.Format (.Site.Params.dateFormat | default "2006-01-02") }}</span>
